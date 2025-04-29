@@ -1,0 +1,13 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  parent: one
+  caregiver: one
+  child: one
+  status: 1
+
+two:
+  parent: two
+  caregiver: two
+  child: two
+  status: 1
