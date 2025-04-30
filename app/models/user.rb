@@ -6,5 +6,5 @@ class User < ApplicationRecord
   validates :nickname, presence: true
   validates :role, presence: true
 
-  enum role: { parent: 0, caregiver: 1 }
+  enum role: { role_parent: 0, role_caregiver: 1 }
 end
