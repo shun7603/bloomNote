@@ -5,17 +5,17 @@
   <!-- 子ども選択ボタン -->
   <div class="mb-3">
     <h5>子どもを選択：</h5>
-    <% @children.each do |child| %>
-      <button class="btn btn-outline-primary btn-sm me-2" onclick="showRoutine(<%= child.id %>, '<%= j child.name %>')">
-        <%= child.name %>ちゃん
-      </button>
-    <% end %>
+<% @children.each do |child| %>
+  <button class="btn" onclick="showRoutine(<%= child.id %>, '<%= j child.name %>')">
+    <%= child.name %>ちゃん
+  </button>
+<% end %>
   </div>
 
   <!-- ヘッダー（名前はJSで動的に変わる） -->
   <div class="d-flex justify-content-between align-items-center mb-3">
     <h3 id="child-name-header" class="fw-bold">ルーティン</h3>
-    <%# <%= image_tag "", style: "height: 24px;" %> %>
+    <%# <%= image_tag "", style: "height: 24px;" %> 
   </div>
 
   <!-- 子どもごとのルーティン情報（最初は非表示） -->
