@@ -1,45 +1,25 @@
-<h2>Sign up</h2>
+<div class="form-container">
+  <%= form_for(resource, as: resource_name, url: registration_path(resource_name)) do |f| %>
+    <div class="mb-3">
+      <%= f.label :nickname %>
+      <%= f.text_field :nickname, class: "form-control" %>
+    </div>
 
-<%= form_for(resource, as: resource_name, url: registration_path(resource_name)) do |f| %>
-  <%= render "devise/shared/error_messages", resource: resource %>
+    <div class="mb-3">
+      <%= f.label :email %>
+      <%= f.email_field :email, class: "form-control" %>
+    </div>
 
-  <!-- ニックネーム -->
-  <div class="field">
-    <%= f.label :nickname, "ニックネーム" %><br />
-    <%= f.text_field :nickname, autofocus: true, required: true, autocomplete: "nickname" %>
-  </div>
+    <div class="mb-3">
+      <%= f.label :password %>
+      <%= f.password_field :password, class: "form-control" %>
+    </div>
 
-  <!-- ユーザー区分（役割） -->
-  <div class="field">
-    <%= f.label :role, "ユーザー区分" %><br />
-    <%= f.select :role, User.roles.keys.map { |r| [r.titleize, r] }, { prompt: "選択してください" }, required: true %>
-  </div>
+    <div class="mb-3">
+      <%= f.label :password_confirmation %>
+      <%= f.password_field :password_confirmation, class: "form-control" %>
+    </div>
 
-  <!-- メールアドレス -->
-  <div class="field">
-    <%= f.label :email, "メールアドレス" %><br />
-    <%= f.email_field :email, autocomplete: "email" %>
-  </div>
-
-  <!-- パスワード -->
-  <div class="field">
-    <%= f.label :password, "パスワード" %>
-    <% if @minimum_password_length %>
-      <em>(<%= @minimum_password_length %>文字以上)</em>
-    <% end %><br />
-    <%= f.password_field :password, autocomplete: "new-password" %>
-  </div>
-
-  <!-- パスワード確認 -->
-  <div class="field">
-    <%= f.label :password_confirmation, "パスワード確認" %><br />
-    <%= f.password_field :password_confirmation, autocomplete: "new-password" %>
-  </div>
-
-  <!-- 登録ボタン -->
-  <div class="actions">
-    <%= f.submit "新規登録", class: "signup-button" %>
-  </div>
-<% end %>
-
-<%= render "devise/shared/links" %>
+    <%= f.submit "登録する", class: "btn btn-primary" %>
+  <% end %>
+</div>
