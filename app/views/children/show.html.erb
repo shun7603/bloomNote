@@ -1,0 +1,21 @@
+<%= javascript_importmap_tags "home" %>
+
+<div class="container p-3">
+  <h3><%= @child.name %>ちゃんのルーティン</h3>
+
+  <!-- ルーティンタイムライン -->
+  <div class="bg-light rounded p-3 d-flex justify-content-between text-center">
+    <% @routine.each do |item| %>
+      <div>
+        <%= image_tag "#{item[:task]}.png", style: "height: 32px;" %><br>
+        <%= item[:time] %><br><%= item[:task] %>
+      </div>
+    <% end %>
+  </div>
+
+  <!-- 今やるべきタスク -->
+  <div id="routine-data" data-routine='<%= raw @routine.to_json %>'></div>
+  <div id="task-footer" class="bg-warning text-center p-2 rounded mt-3 fw-bold">
+    今やるべきタスク：判定中…
+  </div>
+</div>

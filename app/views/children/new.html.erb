@@ -21,10 +21,14 @@
     <%= f.date_field :birth_date %>
   </div>
 
-  <div>
-    <%= f.label :gender, "性別" %><br>
-    <%= f.select :gender, Child.genders.keys.map { |k| [k.humanize, k] } %>
-  </div>
+<div>
+  <%= f.label :gender, "性別" %><br>
+  <%= f.select :gender, options_for_select([
+    ['選択してください', ''],
+    ['男の子', 'boy'],
+    ['女の子', 'girl']
+  ], selected: @child.gender) %>
+</div>
 
   <div>
     <%= f.submit "登録する" %>
