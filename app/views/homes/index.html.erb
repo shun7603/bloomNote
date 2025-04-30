@@ -2,58 +2,69 @@
 
 <div class="container p-3">
 
-  <!-- ヘッダー -->
+  <!-- 子ども選択ボタン -->
+  <div class="mb-3">
+    <h5>子どもを選択：</h5>
+    <% @children.each do |child| %>
+      <button class="btn btn-outline-primary btn-sm me-2" onclick="showRoutine(<%= child.id %>, '<%= j child.name %>')">
+        <%= child.name %>ちゃん
+      </button>
+    <% end %>
+  </div>
+
+  <!-- ヘッダー（名前はJSで動的に変わる） -->
   <div class="d-flex justify-content-between align-items-center mb-3">
-    <h3 class="fw-bold">ルーティン</h3>
-    <%# <%= image_tag "", style: "height: 24px;" %> 
+    <h3 id="child-name-header" class="fw-bold">ルーティン</h3>
+    <%# <%= image_tag "", style: "height: 24px;" %> %>
   </div>
 
-  <!-- ルーティンタイムライン -->
-  <div class="bg-light rounded p-3 d-flex justify-content-between text-center">
-    <div>
-      <%= image_tag "milk.png", style: "height: 32px;" %><br>
-      08:00<br>ミルク
+  <!-- 子どもごとのルーティン情報（最初は非表示） -->
+  <% @children.each do |child| %>
+    <div class="child-routine-section" id="routine-<%= child.id %>" style="display: none;">
+
+      <!-- ルーティンタイムライン -->
+      <div class="bg-light rounded p-3 d-flex justify-content-between text-center">
+        <% @routine.each do |item| %>
+          <div>
+            <%= image_tag "#{item[:task]}.png", style: "height: 32px;" %><br>
+            <%= item[:time] %><br><%= item[:task] %>
+          </div>
+        <% end %>
+      </div>
+
+      <!-- ミルク追加ボタン -->
+      <div class="text-center my-3">
+        <button class="btn btn-outline-primary">＋ミルク</button>
+      </div>
+
+      <!-- 今日の記録 -->
+      <h5 class="fw-bold">今日の記録</h5>
+      <ul class="list-unstyled">
+        <li>08:30　ミルク 160ml</li>
+        <li>10:45　睡眠スタート</li>
+        <li>12:15　排泄</li>
+      </ul>
+
+      <!-- 緊急連絡 -->
+      <div class="bg-light rounded p-2 my-3 d-flex align-items-center">
+        <%= image_tag "contact.png", style: "height: 24px;", class: "me-2" %>
+        <strong>緊急連絡</strong>
+      </div>
+
+      <!-- アイコン選択 -->
+      <div class="d-flex justify-content-around my-2">
+        <div><%= image_tag "milk.png", style: "height: 24px;" %><br>ミルク</div>
+        <div><%= image_tag "sleep.png", style: "height: 24px;" %><br>睡眠</div>
+        <div><%= image_tag "diaper.png", style: "height: 24px;" %><br>排泄</div>
+      </div>
+
+      <!-- 今やるべきタスク -->
+      <div id="routine-data-<%= child.id %>" data-routine='<%= raw @routine.to_json %>'></div>
+      <div id="task-footer-<%= child.id %>" class="bg-warning text-center p-2 rounded mt-3 fw-bold">
+        今やるべきタスク：判定中…
+      </div>
+
     </div>
-    <div>
-      <%= image_tag "sleep.png", style: "height: 32px;" %><br>
-      09:00<br>睡眠
-    </div>
-    <div>
-      <%= image_tag "diaper.png", style: "height: 32px;" %><br>
-      11:00<br>排泄
-    </div>
-  </div>
-
-  <!-- ミルク追加ボタン -->
-  <div class="text-center my-3">
-    <button class="btn btn-outline-primary">＋ミルク</button>
-  </div>
-
-  <!-- 今日の記録 -->
-  <h5 class="fw-bold">今日の記録</h5>
-  <ul class="list-unstyled">
-    <li>08:30　ミルク 160ml</li>
-    <li>10:45　睡眠スタート</li>
-    <li>12:15　排泄</li>
-  </ul>
-
-  <!-- 緊急連絡 -->
-  <div class="bg-light rounded p-2 my-3 d-flex align-items-center">
-    <%= image_tag "contact.png", style: "height: 24px;", class: "me-2" %>
-    <strong>緊急連絡</strong>
-  </div>
-
-  <!-- アイコン選択 -->
-  <div class="d-flex justify-content-around my-2">
-    <div><%= image_tag "milk.png", style: "height: 24px;" %><br>ミルク</div>
-    <div><%= image_tag "sleep.png", style: "height: 24px;" %><br>睡眠</div>
-    <div><%= image_tag "diaper.png", style: "height: 24px;" %><br>排泄</div>
-  </div>
-
-  <!-- 今やるべきタスク（JSで変化） -->
-  <div id="routine-data" data-routine='<%= raw @routine.to_json %>'></div>
-  <div id="task-footer" class="bg-warning text-center p-2 rounded mt-3 fw-bold">
-    今やるべきタスク：判定中…
-  </div>
+  <% end %>
 
 </div>

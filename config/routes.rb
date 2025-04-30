@@ -6,5 +6,5 @@ Rails.application.routes.draw do
   devise_for :users
   get "up" => "rails/health#show", as: :rails_health_check
   resources :homes 
-  resources :children, only: [:new, :create, :index]
+  resources :children, only: [:new, :create, :index, :show]
 end
