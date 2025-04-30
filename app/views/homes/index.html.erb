@@ -1,4 +1,51 @@
-<%= render "shared/header" %>
+<header class="bg-light border-bottom py-2 px-3 d-flex justify-content-between align-items-center">
+  <h1 class="h6 mb-0">ホーム</h1>
+  <button class="btn btn-sm btn-outline-secondary">☰</button>
+</header>
 
-<h1>BloomNoteへようこそ！</h1>
-<p>ログインして育児記録をつけよう！</p>
+<main class="container py-4">
+
+  <!-- 🔵 記録ボタンセクション -->
+  <section class="mb-4">
+    <h2 class="h6 mb-3">記録</h2>
+    <div class="d-flex flex-wrap gap-2">
+      <button class="btn btn-outline-primary">🍼 ミルク</button>
+      <button class="btn btn-outline-success">😴 睡眠</button>
+      <button class="btn btn-outline-warning">🚽 排泄</button>
+    </div>
+  </section>
+
+  <!-- 🔵 ルーティン表示エリア -->
+  <section class="mb-4">
+    <h2 class="h6 mb-3">今日のルーティン</h2>
+    <div class="d-flex justify-content-around text-center border rounded p-3 bg-white">
+      <div>
+        <div class="fs-4">🍼</div>
+        <small>08:00</small><br>ミルク
+      </div>
+      <div>
+        <div class="fs-4">😴</div>
+        <small>09:00</small><br>睡眠
+      </div>
+      <div>
+        <div class="fs-4">🚽</div>
+        <small>11:00</small><br>排泄
+      </div>
+    </div>
+  </section>
+
+  <!-- 🔵 緊急連絡エリア -->
+  <section>
+    <h2 class="h6 mb-3">緊急連絡</h2>
+    <div class="d-flex gap-2">
+      <button class="btn btn-danger">📞 連絡する</button>
+      <button class="btn btn-outline-secondary">🍼 ミルク関連</button>
+      <button class="btn btn-outline-secondary">😴 睡眠関連</button>
+    </div>
+  </section>
+
+</main>
+
+<footer class="bg-light text-center py-2 border-top">
+  <small>今やるべきタスクはハイライトされます</small>
+</footer>

@@ -1,0 +1,14 @@
+
+main h2 {
+  font-weight: bold;
+  font-size: 1rem;
+}
+
+button {
+  font-size: 0.9rem;
+}
+
+footer small {
+  font-size: 0.85rem;
+  color: #666;
+}
