@@ -1,51 +1,50 @@
-<header class="bg-light border-bottom py-2 px-3 d-flex justify-content-between align-items-center">
-  <h1 class="h6 mb-0">ホーム</h1>
-  <button class="btn btn-sm btn-outline-secondary">☰</button>
-</header>
+<div class="container p-3 border rounded shadow-sm">
+  <h3>ルーティン</h3>
 
-<main class="container py-4">
-
-  <!-- 🔵 記録ボタンセクション -->
-  <section class="mb-4">
-    <h2 class="h6 mb-3">記録</h2>
-    <div class="d-flex flex-wrap gap-2">
-      <button class="btn btn-outline-primary">🍼 ミルク</button>
-      <button class="btn btn-outline-success">😴 睡眠</button>
-      <button class="btn btn-outline-warning">🚽 排泄</button>
+  <!-- ルーティンタイムライン -->
+  <div class="bg-light rounded p-3 d-flex justify-content-between text-center">
+    <div>
+      <img src="/icons/milk.png" style="height: 24px;">
+      <div>08:00<br>ミルク</div>
     </div>
-  </section>
-
-  <!-- 🔵 ルーティン表示エリア -->
-  <section class="mb-4">
-    <h2 class="h6 mb-3">今日のルーティン</h2>
-    <div class="d-flex justify-content-around text-center border rounded p-3 bg-white">
-      <div>
-        <div class="fs-4">🍼</div>
-        <small>08:00</small><br>ミルク
-      </div>
-      <div>
-        <div class="fs-4">😴</div>
-        <small>09:00</small><br>睡眠
-      </div>
-      <div>
-        <div class="fs-4">🚽</div>
-        <small>11:00</small><br>排泄
-      </div>
+    <div>
+      <img src="/icons/sleep.png" style="height: 24px;">
+      <div>09:00<br>睡眠</div>
     </div>
-  </section>
-
-  <!-- 🔵 緊急連絡エリア -->
-  <section>
-    <h2 class="h6 mb-3">緊急連絡</h2>
-    <div class="d-flex gap-2">
-      <button class="btn btn-danger">📞 連絡する</button>
-      <button class="btn btn-outline-secondary">🍼 ミルク関連</button>
-      <button class="btn btn-outline-secondary">😴 睡眠関連</button>
+    <div>
+      <img src="/icons/diaper.png" style="height: 24px;">
+      <div>11:00<br>排泄</div>
     </div>
-  </section>
+  </div>
 
-</main>
+  <!-- ミルク追加ボタン -->
+  <div class="text-center my-3">
+    <%= button_to "+ ミルク", add_milk_path, method: :post, class: "btn btn-outline-primary" %>
+  </div>
 
-<footer class="bg-light text-center py-2 border-top">
-  <small>今やるべきタスクはハイライトされます</small>
-</footer>
+  <!-- 今日の記録 -->
+  <h5>今日の記録</h5>
+  <ul class="list-unstyled">
+    <li>08:30 ミルク 160ml</li>
+    <li>10:45 睡眠スタート</li>
+    <li>12:15 排泄</li>
+  </ul>
+
+  <!-- 緊急連絡 -->
+  <div class="bg-light rounded p-2 my-3 d-flex align-items-center">
+    <img src="/icons/contact.png" style="height: 20px;" class="me-2">
+    <strong>緊急連絡</strong>
+  </div>
+
+  <!-- アイコン選択 -->
+  <div class="d-flex justify-content-around my-2">
+    <div><img src="/icons/milk.png" style="height: 24px;"><br>ミルク</div>
+    <div><img src="/icons/sleep.png" style="height: 24px;"><br>睡眠</div>
+    <div><img src="/icons/diaper.png" style="height: 24px;"><br>排泄</div>
+  </div>
+
+  <!-- 今やるべき -->
+  <div class="bg-warning text-center p-2 rounded mt-3">
+    今やるべきタスク：ミルク
+  </div>
+</div>
