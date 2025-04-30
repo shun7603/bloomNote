@@ -1,8 +1,10 @@
 class User < ApplicationRecord
-  # Devise（ユーザー認証機能）
+  # Deviseの設定
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :validatable
 
-  # enum（ユーザーの役割を切り替えられる）
-  enum role: { guardian: 0, caregiver: 1 } 
+  validates :nickname, presence: true
+  validates :role, presence: true
+
+  enum role: { parent: 0, caregiver: 1 }
 end
