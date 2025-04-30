@@ -78,3 +78,5 @@ gem 'devise'
 gem "sassc", "~> 2.4"
 gem 'jquery-rails'
 gem 'pg'
+gem "bootstrap", "~> 5.3"
+gem 'dartsass-sprockets'

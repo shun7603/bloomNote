@@ -1,4 +1,50 @@
-<%= render "shared/header" %>
+<%= javascript_importmap_tags "home" %>
+<div class="container p-3 border rounded shadow-sm">
+  <h3>ルーティン</h3>
 
-<h1>BloomNoteへようこそ！</h1>
-<p>ログインして育児記録をつけよう！</p>
+  <!-- ルーティンタイムライン -->
+  <div class="bg-light rounded p-3 d-flex justify-content-between text-center">
+    <div>
+      <%= image_tag "milk.png", style: "height: 24px;" %>
+      <div>08:00<br>ミルク</div>
+    </div>
+    <div>
+      <%= image_tag "sleep.png", style: "height: 24px;" %>
+      <div>09:00<br>睡眠</div>
+    </div>
+    <div>
+      <%= image_tag "diaper.png", style: "height: 24px;" %>
+      <div>11:00<br>排泄</div>
+    </div>
+  </div>
+
+  <!-- ミルク追加ボタン -->
+  <div class="text-center my-3">
+ <button class="btn">＋ミルク</button>
+
+  <!-- 今日の記録 -->
+  <h5>今日の記録</h5>
+  <ul class="list-unstyled">
+    <li>08:30 ミルク 160ml</li>
+    <li>10:45 睡眠スタート</li>
+    <li>12:15 排泄</li>
+  </ul>
+
+  <!-- 緊急連絡 -->
+  <div class="bg-light rounded p-2 my-3 d-flex align-items-center">
+    <%= image_tag "contact.png", style: "height: 20px;", class: "me-2" %>
+    <strong>緊急連絡</strong>
+  </div>
+
+  <!-- アイコン選択 -->
+  <div class="d-flex justify-content-around my-2">
+    <div><%= image_tag "milk.png", style: "height: 24px;" %><br>ミルク</div>
+    <div><%= image_tag "sleep.png", style: "height: 24px;" %><br>睡眠</div>
+    <div><%= image_tag "diaper.png", style: "height: 24px;" %><br>排泄</div>
+  </div>
+
+  <!-- 今やるべき -->
+  <div class="bg-warning text-center p-2 rounded mt-3">
+    今やるべきタスク：ミルク
+  </div>
+</div>

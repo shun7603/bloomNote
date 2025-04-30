@@ -1,22 +1,90 @@
 
-.form-container {
-  max-width: 400px;
-  margin: 40px auto;
-  padding: 20px;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  background-color: #f9f9f9;
+@import "bootstrap";
+
+@import "custom";
+
+body {
+  font-family: 'Arial', sans-serif;
+  margin: 0;
+  padding: 0;
+  background: #fdfdfd;
+  color: #333;
 }
 
-.form-container input[type="submit"] {
-  background-color: #4CAF50;
-  color: white;
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #eaeaea;
+  padding: 10px 15px;
+}
+
+h1 {
+  font-size: 16px;
+  margin: 0;
+}
+
+.menu {
+  font-size: 20px;
+}
+
+.routine {
+  display: flex;
+  justify-content: space-around;
+  padding: 15px;
+  border-bottom: 1px solid #ddd;
+  background: #fff;
+}
+
+.item {
+  text-align: center;
+}
+
+.add-button {
+  display: block;
+  width: 80%;
+  margin: 20px auto;
   padding: 10px;
-  border: none;
-  border-radius: 4px;
+  background-color: #fff;
+  border: 2px solid #000;
+  font-size: 16px;
+  border-radius: 12px;
   cursor: pointer;
 }
 
-.form-container input[type="submit"]:hover {
-  background-color: #45a049;
+.record {
+  padding: 15px;
+}
+
+.record h2 {
+  margin-bottom: 10px;
+  font-size: 16px;
+}
+
+.record ul {
+  list-style: none;
+  padding: 0;
+}
+
+.record li {
+  margin-bottom: 8px;
+}
+
+.emergency {
+  padding: 15px;
+  border-top: 1px solid #ddd;
+}
+
+.tags span {
+  display: inline-block;
+  margin-right: 10px;
+  font-size: 14px;
+}
+
+footer {
+  text-align: center;
+  padding: 10px;
+  font-size: 14px;
+  background: #f0f0f0;
+  border-top: 1px solid #ccc;
 }
