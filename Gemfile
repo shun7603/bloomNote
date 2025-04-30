@@ -47,6 +47,9 @@ gem "bootsnap", require: false
 group :development, :test do
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
   gem "debug", platforms: %i[ mri windows ]
+  gem 'rspec-rails', '~> 4.0.0'
+  gem 'faker'
+  gem 'factory_bot_rails'
 end
 
 group :development do
@@ -56,6 +59,7 @@ group :development do
   gem 'annotate'
   gem 'better_errors'
   gem 'binding_of_caller'
+  gem 'pg'
 
   # Add speed badges [https://github.com/MiniProfiler/rack-mini-profiler]
   # gem "rack-mini-profiler"
@@ -71,3 +75,5 @@ group :test do
   gem "selenium-webdriver"
 end
 gem 'devise'
+gem "sassc", "~> 2.4"
+gem 'jquery-rails'
