@@ -1,5 +1,7 @@
 ja:
   activerecord:
+    models:
+      record: "育児記録"
     attributes:
       record:
         record_type:
@@ -24,3 +26,13 @@ ja:
           medical: "医療"
           schedule: "スケジュール"
           concern_note: "気になること"
+        quantity: "回数"
+        recorded_at: "記録日時"
+    errors:
+      models:
+        record:
+          attributes:
+            quantity:
+              blank: "を入力してください"
+              not_a_number: "を入力してください"
+              greater_than: "は1以上で入力してください"
