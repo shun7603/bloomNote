@@ -42,6 +42,7 @@
 <h5 class="fw-bold mb-2">
   記録一覧（<%= @selected_date&.strftime('%Y年%m月%d日') || "日付不明" %>）
 </h5>
+
 <ul class="list-group">
   <% @records.each do |record| %>
     <li class="list-group-item d-flex justify-content-between align-items-start">
@@ -98,11 +99,14 @@
   <% end %>
 </ul>
 
-    <!-- 緊急連絡 -->
-    <div class="bg-light rounded p-2 my-3 d-flex align-items-center">
-      <i class="bi bi-telephone-fill me-2" style="font-size: 1.3rem;"></i>
-      <strong>緊急連絡</strong>
-    </div>
+<!-- 緊急連絡ボタン（モーダル起動） -->
+<div class="bg-light rounded p-2 my-3 d-flex align-items-center"
+     role="button"
+     data-bs-toggle="modal"
+     data-bs-target="#emergencyModal">
+  <i class="bi bi-telephone-fill me-2" style="font-size: 1.3rem;"></i>
+  <strong>緊急連絡</strong>
+</div>
 
     <!-- アイコン選択 -->
     <div class="d-flex justify-content-around my-2">
@@ -290,6 +294,73 @@
           <p>まず子どもを登録してください。</p>
         <% end %>
       </div>
+    </div>
+  </div>
+</div>
+<!-- 緊急連絡モーダル -->
+<div class="modal fade" id="emergencyModal" tabindex="-1" aria-labelledby="emergencyModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+
+      <!-- モーダルヘッダー -->
+      <div class="modal-header">
+        <h5 class="modal-title" id="emergencyModalLabel">緊急連絡先</h5>
+        <!-- 追加ボタン（モーダル開く） -->
+        <button class="btn btn-sm btn-outline-primary ms-3" data-bs-toggle="modal" data-bs-target="#newHospitalModal">＋病院を追加</button>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="閉じる"></button>
+      </div>
+
+      <!-- モーダルボディ -->
+      <div class="modal-body">
+        <% if current_user.hospitals.any? %>
+<% current_user.hospitals.each do |hospital| %>
+  <div class="border rounded p-2 mb-3">
+    <p>
+      <strong><%= hospital.name %></strong><br>
+      <%= link_to hospital.phone_number, "tel:#{hospital.phone_number}", class: "btn btn-outline-danger btn-sm mt-1" %>
+    </p>
+    <!-- 編集ボタン -->
+    <button class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#editHospitalModal-<%= hospital.id %>">編集</button>
+  </div> <!-- ← これが抜けてた！ -->
+<% end %>
+        <% else %>
+          <p>登録された病院情報がありません。</p>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="text-end">
+  <button class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#editHospitalModal">追加・編集</button>
+</div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- 病院情報 新規追加モーダル -->
+<div class="modal fade" id="newHospitalModal" tabindex="-1" aria-labelledby="newHospitalModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <%= form_with(model: current_user.hospitals.build, local: true) do |f| %>
+        <div class="modal-header">
+          <h5 class="modal-title" id="newHospitalModalLabel">病院を追加</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <div class="mb-3">
+            <%= f.label :name, "病院名" %>
+            <%= f.text_field :name, class: "form-control" %>
+          </div>
+          <div class="mb-3">
+            <%= f.label :phone_number, "電話番号" %>
+            <%= f.telephone_field :phone_number, class: "form-control" %>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <%= f.submit "追加する", class: "btn btn-primary" %>
+        </div>
+      <% end %>
     </div>
   </div>
 </div>
