@@ -8,6 +8,7 @@ Rails.application.routes.draw do
   resources :homes 
   resources :children, only: [:new, :create, :index, :show]
   resources :children do
+    resources :routines, only: [:create]
     resources :records, only: [:create]
   end
 end

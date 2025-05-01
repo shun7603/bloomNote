@@ -1,73 +1,76 @@
 <%= javascript_importmap_tags "home" %>
 
-<div class="container p-3" style="max-width: 420px; background-color: #fffefc; border-radius: 20px; border: 1px solid #ddd;">
-
-  <!-- ヘッダー -->
-  <div class="d-flex justify-content-between align-items-center mb-3">
-    <h3 class="fw-bold">BloomNote</h3>
-    <i class="bi bi-list fs-3"></i>
-  </div>
-
-  <h4 class="fw-bold mb-2">ルーティン</h4>
-
-  <!-- ルーティンタイムライン -->
-  <div class="bg-light rounded p-3 d-flex justify-content-between text-center">
-    <div>
-      <%= image_tag "milk.png", style: "height: 32px;" %><br>
-      <strong>ミルク</strong><br>
-      <small>08:00</small>
-    </div>
-    <div>
-      <%= image_tag "sleep.png", style: "height: 32px;" %><br>
-      <strong>睡眠</strong><br>
-      <small>09:00</small>
-    </div>
-    <div>
-      <%= image_tag "diaper.png", style: "height: 32px;" %><br>
-      <strong>排泄</strong><br>
-      <small>11:00</small>
-    </div>
-  </div>
-
-  <!-- 機能ボタン -->
-  <div class="text-center my-3">
-    <button class="btn btn-outline-primary rounded-pill px-4" data-bs-toggle="modal" data-bs-target="#childModal">＋ 子ども登録</button>
-    <button class="btn btn-outline-success rounded-pill px-4" data-bs-toggle="modal" data-bs-target="#routineModal">＋ ルーティン追加</button>
-    <button class="btn btn-outline-secondary rounded-pill px-4" data-bs-toggle="modal" data-bs-target="#editChildModal">⚙ 子ども編集</button>
-  </div>
-
-  <!-- 今日の記録 -->
-  <h5 class="fw-bold">今日の記録</h5>
-  <ul class="list-unstyled">
-    <% @records&.each do |record| %>
-      <li><%= record.recorded_at.strftime("%H:%M") %>　<%= record.record_type_i18n %> <%= record.quantity %></li>
-    <% end %>
-  </ul>
-
-  <!-- 緊急連絡 -->
-  <div class="bg-light rounded p-2 my-3 d-flex align-items-center">
-    <i class="bi bi-telephone-fill me-2" style="font-size: 1.3rem;"></i>
-    <strong>緊急連絡</strong>
-  </div>
-
-  <!-- アイコン選択 -->
-  <div class="d-flex justify-content-around my-2">
+<% if @children.blank? %>
+  <!-- 子ども未登録の場合のダミー表示 -->
+  <div class="container p-3" style="max-width: 420px; background-color: #fffefc; border-radius: 20px; border: 1px solid #ddd;">
     <div class="text-center">
-      <%= image_tag "milk.png", style: "height: 24px;" %><br>ミルク
-    </div>
-    <div class="text-center">
-      <%= image_tag "sleep.png", style: "height: 24px;" %><br>睡眠
-    </div>
-    <div class="text-center">
-      <%= image_tag "diaper.png", style: "height: 24px;" %><br>排泄
+      <h3 class="fw-bold">BloomNote</h3>
+      <p class="text-muted">まずは子どもを登録してください。</p>
+      <button class="btn btn-primary rounded-pill px-4" data-bs-toggle="modal" data-bs-target="#childModal">＋ 子ども登録</button>
     </div>
   </div>
+<% else %>
+  <!-- 子どもが登録されている場合の表示 -->
+  <div class="container p-3" style="max-width: 420px; background-color: #fffefc; border-radius: 20px; border: 1px solid #ddd;">
 
-  <!-- 今やるべきタスク -->
-  <div class="text-center p-2 rounded mt-3 fw-bold" style="background-color: #fff3cd;">
-    今やるべきタスク：<%= @next_task || "未定" %>
+    <!-- ヘッダー -->
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <h3 class="fw-bold">BloomNote</h3>
+      <i class="bi bi-list fs-3"></i>
+    </div>
+
+    <h4 class="fw-bold mb-2">ルーティン</h4>
+
+
+    <!-- 機能ボタン -->
+    <div class="text-center my-3">
+      <button class="btn btn-outline-primary rounded-pill px-4" data-bs-toggle="modal" data-bs-target="#childModal">＋ 子ども登録</button>
+      <button class="btn btn-outline-success rounded-pill px-4" data-bs-toggle="modal" data-bs-target="#routineModal">＋ ルーティン追加</button>
+      <button class="btn btn-outline-secondary rounded-pill px-4" data-bs-toggle="modal" data-bs-target="#editChildModal">⚙ 子ども編集</button>
+    </div>
+
+    <!-- 今日の記録 -->
+    <h5 class="fw-bold">今日の記録</h5>
+    <ul class="list-unstyled">
+      <% if @records.present? %>
+        <% @records.each do |record| %>
+          <li><%= record.recorded_at.strftime("%H:%M") %>　<%= record.record_type_i18n %> <%= record.quantity %></li>
+        <% end %>
+      <% else %>
+        <p class="text-muted">記録はまだありません</p>
+      <% end %>
+    </ul>
+
+    <!-- 緊急連絡 -->
+    <div class="bg-light rounded p-2 my-3 d-flex align-items-center">
+      <i class="bi bi-telephone-fill me-2" style="font-size: 1.3rem;"></i>
+      <strong>緊急連絡</strong>
+    </div>
+
+    <!-- アイコン選択 -->
+    <div class="d-flex justify-content-around my-2">
+      <div class="text-center">
+        <%= image_tag "milk.png", style: "height: 24px;" %><br>ミルク
+      </div>
+      <div class="text-center">
+        <%= image_tag "sleep.png", style: "height: 24px;" %><br>睡眠
+      </div>
+      <div class="text-center">
+        <%= image_tag "diaper.png", style: "height: 24px;" %><br>排泄
+      </div>
+    </div>
+
+    <!-- 今やるべきタスク -->
+    <div class="text-center p-2 rounded mt-3 fw-bold" style="background-color: #fff3cd;">
+      今やるべきタスク：<%= @next_task || "未定" %>
+    </div>
   </div>
-</div>
+<% end %>
+
+<!-- モーダルたちは分岐の外で常に表示可能にする -->
+<%= render "shared/child_modals" %>
+<%= render "shared/routine_modal" %>
+<%= render "shared/record_modal" %>
 
 <!-- 子ども登録モーダル -->
 <div class="modal fade" id="childModal" tabindex="-1" aria-labelledby="childModalLabel" aria-hidden="true">
@@ -197,8 +200,7 @@
             </div>
             <div class="mb-3">
               <%= f.label :recorded_at, "記録日時" %>
-              <%= f.datetime_local_field :recorded_at, Time.current, class: "form-control" %>
-            </div>
+              <%= f.datetime_local_field :recorded_at, value: Time.current.strftime("%Y-%m-%dT%H:%M"), class: "form-control" %>            </div>
             <div class="mb-3">
               <%= f.label :memo, "メモ" %>
               <%= f.text_area :memo, class: "form-control", rows: 2 %>

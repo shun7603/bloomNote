@@ -1,0 +1,28 @@
+<!-- 子ども登録モーダル -->
+<div class="modal fade" id="childModal" tabindex="-1" aria-labelledby="childModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="childModalLabel">子どもを登録</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <%= form_with(model: Child.new, url: children_path, local: true) do |f| %>
+          <div class="mb-3">
+            <%= f.label :name %>
+            <%= f.text_field :name, class: "form-control" %>
+          </div>
+          <div class="mb-3">
+            <%= f.label :birth_date %>
+            <%= f.date_field :birth_date, class: "form-control" %>
+          </div>
+          <div class="mb-3">
+            <%= f.label :gender %>
+            <%= f.select :gender, [["男の子", "boy"], ["女の子", "girl"]], {}, class: "form-select" %>
+          </div>
+          <%= f.submit "登録", class: "btn btn-primary" %>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>

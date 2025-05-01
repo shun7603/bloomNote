@@ -1,0 +1,40 @@
+<div class="modal fade" id="recordModal" tabindex="-1" aria-labelledby="recordModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="recordModalLabel">育児記録を追加</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <% if @children.present? %>
+          <%= form_with(model: [@children.first, Record.new], url: child_records_path(@children.first), local: true) do |f| %>
+            <div class="mb-3">
+              <%= f.label :record_type, "記録の種類" %>
+              <%= f.select :record_type, Record.record_types.map { |k, _| [k.humanize, k] }, {}, class: "form-select" %>
+            </div>
+            <div class="mb-3">
+              <%= f.label :category, "カテゴリ" %>
+              <%= f.select :category, Record.categories.map { |k, v| [v, k] }, {}, class: "form-select" %>
+            </div>
+            <div class="mb-3">
+              <%= f.label :quantity, "量や回数" %>
+              <%= f.number_field :quantity, class: "form-control" %>
+            </div>
+            <div class="mb-3">
+              <%= f.label :recorded_at, "記録日時" %>
+<%= f.datetime_local_field :recorded_at, value: Time.current.strftime("%Y-%m-%dT%H:%M"), class: "form-control" %>            </div>
+            <div class="mb-3">
+              <%= f.label :memo, "メモ" %>
+              <%= f.text_area :memo, class: "form-control", rows: 2 %>
+            </div>
+            <div class="text-end">
+              <%= f.submit "記録する", class: "btn btn-primary" %>
+            </div>
+          <% end %>
+        <% else %>
+          <p>まず子どもを登録してください。</p>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>

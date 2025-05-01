@@ -24,7 +24,7 @@ class Record < ApplicationRecord
     health: "健康",
     medical: "医療",
     schedule: "スケジュール",
-    concern: "気になること"
+    concern_note: "気になること"
   }
 
   validates :record_type, :recorded_at, :category, presence: true

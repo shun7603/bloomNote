@@ -26,7 +26,7 @@ ActiveRecord::Schema[7.1].define(version: 2025_05_01_020347) do
   create_table "children", charset: "utf8mb3", force: :cascade do |t|
     t.bigint "user_id", null: false
     t.string "name"
-    t.date "birth_data"
+    t.date "birth_date"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer "gender", default: 0, null: false

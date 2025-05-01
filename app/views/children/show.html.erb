@@ -3,15 +3,17 @@
 <div class="container p-3">
   <h3><%= @child.name %>ちゃんのルーティン</h3>
 
-  <!-- ルーティンタイムライン -->
-  <div class="bg-light rounded p-3 d-flex justify-content-between text-center">
-    <% @routine.each do |item| %>
-      <div>
-        <%= image_tag "#{item[:task]}.png", style: "height: 32px;" %><br>
-        <%= item[:time] %><br><%= item[:task] %>
-      </div>
-    <% end %>
-  </div>
+<!-- ルーティンタイムライン -->
+<div class="bg-light rounded p-3 d-flex justify-content-between text-center">
+  <% task_image = { "ミルク" => "milk", "睡眠" => "sleep", "排泄" => "diaper" } %>
+
+  <% @routine.each do |item| %>
+    <div>
+      <%= image_tag "#{task_image[item[:task]]}.png", style: "height: 32px;" %><br>
+      <%= item[:time] %><br><%= item[:task] %>
+    </div>
+  <% end %>
+</div>
 
   <!-- 今やるべきタスク -->
   <div id="routine-data" data-routine='<%= raw @routine.to_json %>'></div>
