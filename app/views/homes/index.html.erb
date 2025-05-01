@@ -1,70 +1,169 @@
 <%= javascript_importmap_tags "home" %>
 
-<div class="container p-3">
+<div class="container p-3" style="max-width: 420px; background-color: #fffefc; border-radius: 20px; border: 1px solid #ddd;">
 
-  <!-- 子ども選択ボタン -->
-  <div class="mb-3">
-    <h5>子どもを選択：</h5>
-<% @children.each do |child| %>
-  <button class="btn" onclick="showRoutine(<%= child.id %>, '<%= j child.name %>')">
-    <%= child.name %>ちゃん
-  </button>
-<% end %>
-  </div>
-
-  <!-- ヘッダー（名前はJSで動的に変わる） -->
+  <!-- ヘッダー -->
   <div class="d-flex justify-content-between align-items-center mb-3">
-    <h3 id="child-name-header" class="fw-bold">ルーティン</h3>
-    <%# <%= image_tag "", style: "height: 24px;" %> 
+    <h3 class="fw-bold">BloomNote</h3>
+    <i class="bi bi-list fs-3"></i>
   </div>
 
-  <!-- 子どもごとのルーティン情報（最初は非表示） -->
-  <% @children.each do |child| %>
-    <div class="child-routine-section" id="routine-<%= child.id %>" style="display: none;">
+  <h4 class="fw-bold mb-2">ルーティン</h4>
 
-      <!-- ルーティンタイムライン -->
-      <div class="bg-light rounded p-3 d-flex justify-content-between text-center">
-        <% @routine.each do |item| %>
-          <div>
-            <%= image_tag "#{item[:task]}.png", style: "height: 32px;" %><br>
-            <%= item[:time] %><br><%= item[:task] %>
+  <!-- ルーティンタイムライン -->
+  <div class="bg-light rounded p-3 d-flex justify-content-between text-center">
+    <div>
+      <%= image_tag "milk.png", style: "height: 32px;" %><br>
+      <strong>ミルク</strong><br>
+      <small>08:00</small>
+    </div>
+    <div>
+      <%= image_tag "sleep.png", style: "height: 32px;" %><br>
+      <strong>睡眠</strong><br>
+      <small>09:00</small>
+    </div>
+    <div>
+      <%= image_tag "diaper.png", style: "height: 32px;" %><br>
+      <strong>排泄</strong><br>
+      <small>11:00</small>
+    </div>
+  </div>
+
+  <!-- 機能ボタン -->
+  <div class="text-center my-3">
+    <button class="btn btn-outline-primary rounded-pill px-4" data-bs-toggle="modal" data-bs-target="#childModal">＋ 子ども登録</button>
+    <button class="btn btn-outline-success rounded-pill px-4" data-bs-toggle="modal" data-bs-target="#routineModal">＋ ルーティン追加</button>
+    <button class="btn btn-outline-secondary rounded-pill px-4" data-bs-toggle="modal" data-bs-target="#editChildModal">⚙ 子ども編集</button>
+  </div>
+
+  <!-- 今日の記録 -->
+  <h5 class="fw-bold">今日の記録</h5>
+  <ul class="list-unstyled">
+    <% @records&.each do |record| %>
+      <li><%= record.recorded_at.strftime("%H:%M") %>　<%= record.record_type_i18n %> <%= record.quantity %></li>
+    <% end %>
+  </ul>
+
+  <!-- 緊急連絡 -->
+  <div class="bg-light rounded p-2 my-3 d-flex align-items-center">
+    <i class="bi bi-telephone-fill me-2" style="font-size: 1.3rem;"></i>
+    <strong>緊急連絡</strong>
+  </div>
+
+  <!-- アイコン選択 -->
+  <div class="d-flex justify-content-around my-2">
+    <div class="text-center">
+      <%= image_tag "milk.png", style: "height: 24px;" %><br>ミルク
+    </div>
+    <div class="text-center">
+      <%= image_tag "sleep.png", style: "height: 24px;" %><br>睡眠
+    </div>
+    <div class="text-center">
+      <%= image_tag "diaper.png", style: "height: 24px;" %><br>排泄
+    </div>
+  </div>
+
+  <!-- 今やるべきタスク -->
+  <div class="text-center p-2 rounded mt-3 fw-bold" style="background-color: #fff3cd;">
+    今やるべきタスク：<%= @next_task || "未定" %>
+  </div>
+</div>
+
+<!-- 子ども登録モーダル -->
+<div class="modal fade" id="childModal" tabindex="-1" aria-labelledby="childModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="childModalLabel">子どもを登録</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <%= form_with(model: Child.new, url: children_path, local: true) do |f| %>
+          <div class="mb-3">
+            <%= f.label :name %>
+            <%= f.text_field :name, class: "form-control" %>
           </div>
+          <div class="mb-3">
+            <%= f.label :birth_date %>
+            <%= f.date_field :birth_date, class: "form-control" %>
+          </div>
+          <div class="mb-3">
+            <%= f.label :gender %>
+            <%= f.select :gender, [["男の子", "boy"], ["女の子", "girl"]], {}, class: "form-select" %>
+          </div>
+          <%= f.submit "登録", class: "btn btn-primary" %>
         <% end %>
       </div>
-
-      <!-- ミルク追加ボタン -->
-      <div class="text-center my-3">
-        <button class="btn btn-outline-primary">＋ミルク</button>
-      </div>
-
-      <!-- 今日の記録 -->
-      <h5 class="fw-bold">今日の記録</h5>
-      <ul class="list-unstyled">
-        <li>08:30　ミルク 160ml</li>
-        <li>10:45　睡眠スタート</li>
-        <li>12:15　排泄</li>
-      </ul>
-
-      <!-- 緊急連絡 -->
-      <div class="bg-light rounded p-2 my-3 d-flex align-items-center">
-        <%= image_tag "contact.png", style: "height: 24px;", class: "me-2" %>
-        <strong>緊急連絡</strong>
-      </div>
-
-      <!-- アイコン選択 -->
-      <div class="d-flex justify-content-around my-2">
-        <div><%= image_tag "milk.png", style: "height: 24px;" %><br>ミルク</div>
-        <div><%= image_tag "sleep.png", style: "height: 24px;" %><br>睡眠</div>
-        <div><%= image_tag "diaper.png", style: "height: 24px;" %><br>排泄</div>
-      </div>
-
-      <!-- 今やるべきタスク -->
-      <div id="routine-data-<%= child.id %>" data-routine='<%= raw @routine.to_json %>'></div>
-      <div id="task-footer-<%= child.id %>" class="bg-warning text-center p-2 rounded mt-3 fw-bold">
-        今やるべきタスク：判定中…
-      </div>
-
     </div>
-  <% end %>
+  </div>
+</div>
 
+<!-- 子ども編集モーダル -->
+<div class="modal fade" id="editChildModal" tabindex="-1" aria-labelledby="editChildModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="editChildModalLabel">子ども情報を編集</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <% if @children.present? %>
+          <%= form_with(model: @children.first, url: child_path(@children.first), method: :patch, local: true) do |f| %>
+            <div class="mb-3">
+              <%= f.label :name %>
+              <%= f.text_field :name, class: "form-control" %>
+            </div>
+            <div class="mb-3">
+              <%= f.label :birth_date %>
+              <%= f.date_field :birth_date, class: "form-control" %>
+            </div>
+            <div class="mb-3">
+              <%= f.label :gender %>
+              <%= f.select :gender, [["男の子", "boy"], ["女の子", "girl"]], {}, class: "form-select" %>
+            </div>
+            <%= f.submit "更新", class: "btn btn-primary" %>
+          <% end %>
+        <% else %>
+          <p>編集できる子どもがいません。</p>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ルーティン登録モーダル -->
+<div class="modal fade" id="routineModal" tabindex="-1" aria-labelledby="routineModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="routineModalLabel">ルーティンを追加</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <% if @children.present? %>
+          <%= form_with(model: [@children.first, Routine.new], url: child_routines_path(@children.first), local: true) do |f| %>
+            <div class="mb-3">
+              <%= f.label :time %>
+              <%= f.time_field :time, class: "form-control" %>
+            </div>
+            <div class="mb-3">
+              <%= f.label :task %>
+              <%= f.text_field :task, class: "form-control" %>
+            </div>
+            <div class="mb-3">
+              <%= f.label :category %>
+              <%= f.select :category, Routine.categories.map { |k,v| [v, k] }, {}, class: "form-select" %>
+            </div>
+            <div class="mb-3">
+              <%= f.label :memo %>
+              <%= f.text_area :memo, class: "form-control" %>
+            </div>
+            <%= f.submit "追加", class: "btn btn-success" %>
+          <% end %>
+        <% else %>
+          <p>子どもが登録されていません。</p>
+        <% end %>
+      </div>
+    </div>
+  </div>
 </div>

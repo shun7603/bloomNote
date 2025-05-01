@@ -1,9 +1,8 @@
 class HomesController < ApplicationController
-  before_action :authenticate_user!
-
   def index
-    @children = current_user.children  
-    
+    @children = current_user.children.includes(:routines, :records)
+  
+    # 仮データを用意（ダミー表示用）
     @routine = [
       { time: "08:00", task: "ミルク" },
       { time: "09:00", task: "睡眠" },

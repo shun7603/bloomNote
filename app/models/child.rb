@@ -1,6 +1,7 @@
 # app/models/child.rb
 class Child < ApplicationRecord
   belongs_to :user
+  has_many :routines, dependent: :destroy
 
   validates :name, presence: true
   validates :birth_date, presence: true

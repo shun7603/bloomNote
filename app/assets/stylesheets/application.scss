@@ -4,87 +4,97 @@
 @import "custom";
 
 body {
-  font-family: 'Arial', sans-serif;
-  margin: 0;
-  padding: 0;
-  background: #fdfdfd;
+  background-color: #f5f5f5;
+  font-family: "Helvetica Neue", "Yu Gothic UI", sans-serif;
   color: #333;
 }
 
-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background: #eaeaea;
-  padding: 10px 15px;
+// コンテナ全体
+.container {
+  background-color: #fffefc;
+  border: 1px solid #ddd;
+  border-radius: 20px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+  padding: 24px;
+  max-width: 420px;
+  margin: 40px auto;
 }
 
-h1 {
-  font-size: 16px;
-  margin: 0;
+// ヘッダー
+h3.fw-bold {
+  font-size: 1.4rem;
+  color: #222;
+  margin-bottom: 0;
 }
 
-.menu {
-  font-size: 20px;
+// 小見出し
+h4, h5 {
+  font-weight: bold;
+  color: #333;
+  margin-top: 20px;
 }
 
-.routine {
-  display: flex;
-  justify-content: space-around;
-  padding: 15px;
-  border-bottom: 1px solid #ddd;
-  background: #fff;
-}
-
-.item {
-  text-align: center;
-}
-
-.add-button {
-  display: block;
-  width: 80%;
-  margin: 20px auto;
-  padding: 10px;
-  background-color: #fff;
-  border: 2px solid #000;
-  font-size: 16px;
+// タイムライン
+.bg-light {
+  background-color: #fafafa !important;
   border-radius: 12px;
-  cursor: pointer;
 }
 
-.record {
-  padding: 15px;
+// タイムラインアイテム
+.bg-light .text-center {
+  flex: 1;
+  font-size: 0.85rem;
 }
 
-.record h2 {
-  margin-bottom: 10px;
-  font-size: 16px;
+// モーダルヘッダー
+.modal-title {
+  font-weight: bold;
+  color: #333;
 }
 
-.record ul {
-  list-style: none;
-  padding: 0;
+// ボタン
+.btn {
+  border-radius: 999px;
+  font-weight: bold;
 }
 
-.record li {
-  margin-bottom: 8px;
+.btn-outline-primary {
+  color: #3178c6;
+  border-color: #3178c6;
+}
+.btn-outline-primary:hover {
+  background-color: #3178c6;
+  color: #fff;
 }
 
-.emergency {
-  padding: 15px;
-  border-top: 1px solid #ddd;
+.btn-outline-success {
+  color: #37966f;
+  border-color: #37966f;
+}
+.btn-outline-success:hover {
+  background-color: #37966f;
+  color: #fff;
 }
 
-.tags span {
-  display: inline-block;
-  margin-right: 10px;
-  font-size: 14px;
+.btn-outline-secondary {
+  color: #555;
+  border-color: #aaa;
+}
+.btn-outline-secondary:hover {
+  background-color: #aaa;
+  color: #fff;
 }
 
-footer {
-  text-align: center;
-  padding: 10px;
-  font-size: 14px;
-  background: #f0f0f0;
-  border-top: 1px solid #ccc;
+// 緊急連絡
+.bg-light strong {
+  font-size: 1rem;
+  color: #c0392b;
+}
+
+// 今やるべきタスク
+#task-footer, [id^="task-footer"] {
+  background-color: #fff3cd;
+  color: #856404;
+  border-radius: 10px;
+  font-weight: bold;
 }
