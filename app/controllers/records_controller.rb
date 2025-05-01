@@ -4,11 +4,15 @@ class RecordsController < ApplicationController
   before_action :set_child
 
   def create
+    @child = Child.find(params[:child_id])
     @record = @child.records.build(record_params)
+  
     if @record.save
       redirect_to root_path, notice: "記録が追加されました"
     else
-      redirect_to root_path, alert: "記録に失敗しました"
+      @children = current_user.children
+      @records = @child.records.where(recorded_at: Time.zone.today.all_day)
+      render "homes/index"  # ←ここでrenderを使うのがポイント！
     end
   end
 

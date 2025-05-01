@@ -29,17 +29,22 @@
       <button class="btn btn-outline-secondary rounded-pill px-4" data-bs-toggle="modal" data-bs-target="#editChildModal">⚙ 子ども編集</button>
     </div>
 
-    <!-- 今日の記録 -->
-    <h5 class="fw-bold">今日の記録</h5>
-    <ul class="list-unstyled">
-      <% if @records.present? %>
-        <% @records.each do |record| %>
-          <li><%= record.recorded_at.strftime("%H:%M") %>　<%= record.record_type_i18n %> <%= record.quantity %></li>
-        <% end %>
-      <% else %>
-        <p class="text-muted">記録はまだありません</p>
-      <% end %>
-    </ul>
+<!-- 今日の記録 -->
+<h5 class="fw-bold">今日の記録</h5>
+<ul class="list-unstyled">
+  <% if @records.present? %>
+    <% @records.each do |record| %>
+      <li>
+        <%= record.recorded_at.strftime("%H:%M") %>　
+        <%= I18n.t("activerecord.attributes.record.record_type.#{record.record_type}") %>
+        （<%= I18n.t("activerecord.attributes.record.category.#{record.category}") %>）
+        <%= record.quantity %>
+      </li>
+    <% end %>
+  <% else %>
+    <p class="text-muted">記録はまだありません</p>
+  <% end %>
+</ul>
 
     <!-- 緊急連絡 -->
     <div class="bg-light rounded p-2 my-3 d-flex align-items-center">
@@ -81,11 +86,23 @@
         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
       <div class="modal-body">
-        <%= form_with(model: Child.new, url: children_path, local: true) do |f| %>
-          <div class="mb-3">
-            <%= f.label :name %>
-            <%= f.text_field :name, class: "form-control" %>
-          </div>
+<%= form_with(model: Child.new, url: children_path, local: true) do |f| %>
+
+  <% if f.object.errors.any? %>
+    <div class="alert alert-danger">
+      <ul class="mb-2">
+        <% f.object.errors.full_messages.each do |msg| %>
+          <li><%= msg %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <!-- この下に入力項目が続く -->
+  <div class="mb-3">
+    <%= f.label :name %>
+    <%= f.text_field :name, class: "form-control" %>
+  </div>
           <div class="mb-3">
             <%= f.label :birth_date %>
             <%= f.date_field :birth_date, class: "form-control" %>
@@ -185,8 +202,16 @@
       </div>
       <div class="modal-body">
         <% if @children.present? %>
-          <%= form_with(model: [@children.first, Record.new], url: child_records_path(@children.first), local: true) do |f| %>
-            <div class="mb-3">
+<%= form_with(model: [@children.first, @record || Record.new], url: child_records_path(@children.first), local: true, data: { turbo: false }) do |f| %>            <div class="mb-3">
+  <% if f.object.errors.any? %>
+  <div class="alert alert-danger">
+    <ul class="mb-2">
+      <% f.object.errors.full_messages.each do |msg| %>
+        <li><%= msg %></li>
+      <% end %>
+    </ul>
+  </div>
+<% end %>
               <%= f.label :record_type, "記録の種類" %>
               <%= f.select :record_type, Record.record_types.map { |k, _| [k.humanize, k] }, {}, class: "form-select" %>
             </div>

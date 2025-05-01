@@ -28,4 +28,5 @@ class Record < ApplicationRecord
   }
 
   validates :record_type, :recorded_at, :category, presence: true
+  validates :quantity, numericality: { only_integer: true, greater_than: 0 }
 end

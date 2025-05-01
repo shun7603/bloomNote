@@ -2,6 +2,7 @@ class HomesController < ApplicationController
   def index
     @children = current_user.children.includes(:records)
     @records = @children.first&.records&.order(recorded_at: :desc) || []
+    @record = Record.new
     @next_task = "ミルク"
   
     # 仮データを用意（ダミー表示用）

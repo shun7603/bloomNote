@@ -1,0 +1,26 @@
+ja:
+  activerecord:
+    attributes:
+      record:
+        record_type:
+          milk: "ミルク"
+          breast_milk: "母乳"
+          baby_food: "離乳食"
+          water: "水分補給"
+          sleep: "睡眠"
+          nap: "昼寝"
+          toilet: "排泄"
+          temperature: "体温"
+          medicine: "服薬"
+          hospital: "通院・予防接種"
+          bath: "お風呂"
+          outing: "外出"
+          event: "行事"
+          concern: "気になる様子"
+        category:
+          nutrition: "栄養"
+          life: "生活"
+          health: "健康"
+          medical: "医療"
+          schedule: "スケジュール"
+          concern_note: "気になること"
