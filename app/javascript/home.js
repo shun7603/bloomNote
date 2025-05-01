@@ -40,3 +40,10 @@ window.toggleForm = function(childId) {
     form.style.display = "none";
   }
 };
+document.addEventListener("DOMContentLoaded", () => {
+  const errorAlert = document.querySelector("#recordModal .alert-danger");
+  if (errorAlert) {
+    const recordModal = new bootstrap.Modal(document.getElementById("recordModal"));
+    recordModal.show();
+  }
+});

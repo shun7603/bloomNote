@@ -1,0 +1,35 @@
+<div class="modal fade" id="routineModal" tabindex="-1" aria-labelledby="routineModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="routineModalLabel">ルーティンを追加</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <% if @children.present? %>
+          <%= form_with(model: [@children.first, Routine.new], url: child_routines_path(@children.first), local: true) do |f| %>
+            <div class="mb-3">
+              <%= f.label :time %>
+              <%= f.time_field :time, class: "form-control" %>
+            </div>
+            <div class="mb-3">
+              <%= f.label :task %>
+              <%= f.text_field :task, class: "form-control" %>
+            </div>
+            <div class="mb-3">
+              <%= f.label :category %>
+              <%= f.select :category, Routine.categories.map { |k,v| [v, k] }, {}, class: "form-select" %>
+            </div>
+            <div class="mb-3">
+              <%= f.label :memo %>
+              <%= f.text_area :memo, class: "form-control" %>
+            </div>
+            <%= f.submit "追加", class: "btn btn-success" %>
+          <% end %>
+        <% else %>
+          <p>子どもが登録されていません。</p>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>

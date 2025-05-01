@@ -22,12 +22,11 @@ class ChildrenController < ApplicationController
   def create
     @child = current_user.children.build(child_params)
     if @child.save
-      redirect_to child_path(@child), notice: '子どもを登録しました'
+      redirect_to root_path, notice: '子どもを登録しました'
     else
       render :new
     end
   end
-
   private
 
   def child_params

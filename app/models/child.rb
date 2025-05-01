@@ -2,7 +2,8 @@
 class Child < ApplicationRecord
   belongs_to :user
   has_many :routines, dependent: :destroy
-
+  has_many :records, dependent: :destroy
+  
   validates :name, presence: true
   validates :birth_date, presence: true
   validates :gender, presence: true
