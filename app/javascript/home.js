@@ -47,3 +47,15 @@ document.addEventListener("DOMContentLoaded", () => {
     recordModal.show();
   }
 });
+
+document.addEventListener("DOMContentLoaded", () => {
+  // 🔽 編集モーダルでエラーがあったときに表示
+  const editModalId = "<%= j flash.now[:edit_hospital_id] %>";
+  if (editModalId) {
+    const targetModal = document.getElementById(`editHospitalModal-${editModalId}`);
+    if (targetModal) {
+      const modal = new bootstrap.Modal(targetModal);
+      modal.show();
+    }
+  }
+});
