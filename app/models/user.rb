@@ -1,5 +1,6 @@
 class User < ApplicationRecord
   # Deviseの設定
+  has_many :children
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :validatable
 

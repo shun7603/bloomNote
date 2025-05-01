@@ -1,0 +1,36 @@
+<!-- app/views/children/new.html.erb -->
+
+<h2>子どもの新規登録</h2>
+
+<%= form_with(model: @child, local: true) do |f| %>
+  <% if @child.errors.any? %>
+    <ul>
+      <% @child.errors.full_messages.each do |message| %>
+        <li><%= message %></li>
+      <% end %>
+    </ul>
+  <% end %>
+
+  <div>
+    <%= f.label :name, "名前" %><br>
+    <%= f.text_field :name %>
+  </div>
+
+  <div>
+    <%= f.label :birth_date, "生年月日" %><br>
+    <%= f.date_field :birth_date %>
+  </div>
+
+<div>
+  <%= f.label :gender, "性別" %><br>
+  <%= f.select :gender, options_for_select([
+    ['選択してください', ''],
+    ['男の子', 'boy'],
+    ['女の子', 'girl']
+  ], selected: @child.gender) %>
+</div>
+
+  <div>
+    <%= f.submit "登録する" %>
+  </div>
+<% end %>

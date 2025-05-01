@@ -1,6 +1,16 @@
-document.addEventListener("DOMContentLoaded", () => {
-  const routineDataElement = document.getElementById("routine-data");
-  if (!routineDataElement) return;
+console.log("✅ home.js 読み込まれました");
+window.showRoutine = function(childId, childName) {
+  document.querySelectorAll(".child-routine-section").forEach(el => el.style.display = "none");
+
+  const section = document.getElementById(`routine-${childId}`);
+  if (section) section.style.display = "block";
+
+  const header = document.getElementById("child-name-header");
+  if (header) header.textContent = `${childName}ちゃんのルーティン`;
+
+  const routineDataElement = document.getElementById(`routine-data-${childId}`);
+  const footer = document.getElementById(`task-footer-${childId}`);
+  if (!routineDataElement || !footer) return;
 
   const routineData = JSON.parse(routineDataElement.dataset.routine);
   const now = new Date();
@@ -19,8 +29,14 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  const footer = document.getElementById("task-footer");
-  if (footer) {
-    footer.textContent = `今やるべきタスク：${nextTask}`;
+  footer.textContent = `今やるべきタスク：${nextTask}`;
+};
+
+window.toggleForm = function(childId) {
+  const form = document.getElementById(`form-${childId}`);
+  if (form.style.display === "none" || form.style.display === "") {
+    form.style.display = "block";
+  } else {
+    form.style.display = "none";
   }
-});
+};
