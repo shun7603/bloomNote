@@ -14,12 +14,34 @@
   <div class="container p-3" style="max-width: 420px; background-color: #fffefc; border-radius: 20px; border: 1px solid #ddd;">
 
     <!-- ヘッダー -->
-    <div class="d-flex justify-content-between align-items-center mb-3">
-      <h3 class="fw-bold">BloomNote</h3>
-      <i class="bi bi-list fs-3"></i>
-    </div>
+<!-- ヘッダー内 -->
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h3 class="fw-bold">BloomNote</h3>
 
-    <h4 class="fw-bold mb-2">ルーティン</h4>
+  <!-- ハンバーガーメニュー付きのドロップダウン -->
+  <div class="dropdown">
+    <button class="btn" type="button" id="settingsDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+      <i class="bi bi-list fs-3"></i>
+    </button>
+    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="settingsDropdown">
+      <li>
+        <button class="dropdown-item" data-bs-toggle="modal" data-bs-target="#addCareRelationshipModal">
+          保育者を追加
+        </button>
+      </li>
+      <li>
+        <button class="dropdown-item" data-bs-toggle="modal" data-bs-target="#careRelationshipListModal">
+          関係者一覧
+        </button>
+      </li>
+      <li>
+        <button class="dropdown-item" data-bs-toggle="modal" data-bs-target="#switchStatusModal">
+          ステータス切替
+        </button>
+      </li>
+    </ul>
+  </div>
+</div>
 
 
     <!-- 機能ボタン -->
@@ -434,3 +456,28 @@
     });
   </script>
 <% end %>
+<div class="modal fade" id="addCareRelationshipModal" tabindex="-1" aria-labelledby="addCareRelationshipModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <%= form_with url: care_relationships_path, local: true do |f| %>
+        <div class="modal-header">
+          <h5 class="modal-title" id="addCareRelationshipModalLabel">保育者を追加</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="閉じる"></button>
+        </div>
+        <div class="modal-body">
+          <div class="mb-3">
+            <%= f.label :child_id, "子ども" %>
+            <%= f.collection_select :child_id, @children, :id, :name, {}, class: "form-select" %>
+          </div>
+          <div class="mb-3">
+            <%= f.label :caregiver_id, "保育者（メールなど）" %>
+            <%= f.text_field :caregiver_email, class: "form-control" %> <!-- emailで探す仕様でも可 -->
+          </div>
+        </div>
+        <div class="modal-footer">
+          <%= f.submit "追加", class: "btn btn-primary" %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>
