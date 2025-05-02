@@ -465,13 +465,23 @@
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="閉じる"></button>
         </div>
         <div class="modal-body">
+<% if flash[:care_relationship_errors] %>
+  <div class="alert alert-danger">
+    <ul class="mb-0">
+      <% flash[:care_relationship_errors].each do |msg| %>
+        <li><%= msg %></li>
+      <% end %>
+    </ul>
+  </div>
+<% end %>
+
           <div class="mb-3">
             <%= f.label :child_id, "子ども" %>
             <%= f.collection_select :child_id, @children, :id, :name, {}, class: "form-select" %>
           </div>
           <div class="mb-3">
             <%= f.label :caregiver_id, "保育者（メールなど）" %>
-            <%= f.text_field :caregiver_email, class: "form-control" %> <!-- emailで探す仕様でも可 -->
+<%= f.text_field :caregiver_email, name: 'care_relationship[caregiver_email]', class: "form-control" %>
           </div>
         </div>
         <div class="modal-footer">
@@ -481,3 +491,11 @@
     </div>
   </div>
 </div>
+<% if flash[:open_modal] %>
+  <script>
+    document.addEventListener("DOMContentLoaded", function() {
+      const modal = new bootstrap.Modal(document.getElementById("<%= flash[:open_modal] %>"));
+      modal.show();
+    });
+  </script>
+<% end %>

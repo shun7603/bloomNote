@@ -11,25 +11,30 @@ class CareRelationshipsController < ApplicationController
 
   def create
     caregiver = User.find_by(email: params[:care_relationship][:caregiver_email])
-    child = Child.find(params[:care_relationship][:child_id])
+    child = Child.find_by(id: params[:care_relationship][:child_id])
+    @children = current_user.children
 
-    if caregiver
+    if caregiver && child
       care_relationship = CareRelationship.new(
         parent_id: current_user.id,
         caregiver_id: caregiver.id,
         child_id: child.id,
-        status: 0 # 初期状態は「預かり中」など
+        status: 0
       )
 
       if care_relationship.save
         redirect_to root_path, notice: "保育者を追加しました"
       else
-        flash[:error] = care_relationship.errors.full_messages
-        redirect_to root_path
+        flash.now[:care_relationship_errors] = care_relationship.errors.full_messages
+        flash.now[:open_modal] = 'addCareRelationshipModal'
+        render 'homes/index', status: :unprocessable_entity
       end
     else
-      flash[:error] = ["そのメールアドレスのユーザーは存在しません"]
-      redirect_to root_path
+      flash.now[:care_relationship_errors] = ["そのメールアドレスのユーザーは存在しません"] if caregiver.nil?
+      flash.now[:care_relationship_errors] ||= []
+      flash.now[:care_relationship_errors] << "子どもが見つかりません" if child.nil?
+      flash.now[:open_modal] = 'addCareRelationshipModal'
+      render 'homes/index', status: :unprocessable_entity
     end
   end
 
