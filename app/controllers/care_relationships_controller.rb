@@ -14,8 +14,13 @@ class CareRelationshipsController < ApplicationController
       )
 
       if care_relationship.save
-        flash[:notice] = "保育者を追加しました"
-        redirect_to root_path
+        @care_relationship = care_relationship
+        flash.now[:notice] = "保育者を追加しました"
+
+        respond_to do |format|
+          format.turbo_stream
+          format.html { redirect_to root_path, notice: flash[:notice] }
+        end
       else
         flash.now[:care_relationship_errors] = care_relationship.errors.full_messages
         flash.now[:open_modal] = 'addCareRelationshipModal'
