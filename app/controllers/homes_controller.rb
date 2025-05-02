@@ -1,7 +1,7 @@
 class HomesController < ApplicationController
   def index
     @children = current_user.children.includes(:records)
-    
+
     # 安全にパースし、無効な日付でも落ちないようにする
     @selected_date =
       begin
@@ -20,11 +20,15 @@ class HomesController < ApplicationController
     @record = Record.new
     @next_task = "ミルク"
 
-    # 仮のルーティン（子ども未登録時用ダミー）
     @routine = [
       { time: "08:00", task: "ミルク" },
       { time: "09:00", task: "睡眠" },
       { time: "11:00", task: "排泄" }
     ]
+
+    # ✅ここを追加（保育者リスト用）
+    @care_relationships = CareRelationship
+                          .includes(:child, :caregiver)
+                          .where(parent_id: current_user.id)
   end
 end

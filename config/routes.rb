@@ -13,5 +13,5 @@ Rails.application.routes.draw do
 
   resources :hospitals, only: [:new, :create, :update]
 
-  resources :care_relationships, only: [:new, :create, :update, :index]
+  resources :care_relationships, only: [:create, :update]
 end

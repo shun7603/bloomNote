@@ -503,19 +503,22 @@
 <div class="modal fade" id="careRelationshipListModal" tabindex="-1" aria-labelledby="careRelationshipListModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-lg">
     <div class="modal-content">
+      <!-- モーダルヘッダー -->
       <div class="modal-header">
         <h5 class="modal-title" id="careRelationshipListModalLabel">関係者一覧</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="閉じる"></button>
       </div>
+
+      <!-- モーダルボディ -->
       <div class="modal-body">
-        <% if @care_relationships.any? %>
-          <table class="table table-bordered">
-            <thead>
+        <% if @care_relationships.present? && @care_relationships.any? %>
+          <table class="table table-hover table-bordered align-middle">
+            <thead class="table-light">
               <tr>
                 <th>子ども</th>
                 <th>親</th>
                 <th>保育者</th>
-                <th>ステータス</th>
+                <th class="text-center">ステータス</th>
               </tr>
             </thead>
             <tbody>
@@ -524,13 +527,48 @@
                   <td><%= rel.child.name %></td>
                   <td><%= rel.parent.nickname %></td>
                   <td><%= rel.caregiver.nickname %></td>
-                  <td><%= rel.status_before_type_cast == 0 ? "預かり中" : "終了" %></td>
+                  <td class="text-center">
+                    <% if rel.ongoing? %>
+                      <span class="badge bg-success">預かり中</span>
+                    <% else %>
+                      <span class="badge bg-secondary">終了</span>
+                    <% end %>
+                  </td>
                 </tr>
               <% end %>
             </tbody>
           </table>
         <% else %>
-          <p>関係者が登録されていません。</p>
+          <p class="text-muted">関係者が登録されていません。</p>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- ステータス切り替えモーダル -->
+<div class="modal fade" id="switchStatusModal" tabindex="-1" aria-labelledby="switchStatusModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="switchStatusModalLabel">保育ステータスを切り替え</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="閉じる"></button>
+      </div>
+
+      <div class="modal-body">
+        <% @care_relationships.each do |cr| %>
+          <div class="border rounded p-2 mb-3">
+            <p><strong>子ども：</strong><%= cr.child.name %></p>
+            <p><strong>保育者：</strong><%= cr.caregiver.nickname %></p>
+            <p>
+              <strong>現在：</strong>
+              <% if cr.ongoing? %>
+                <span class="badge bg-success">預かり中</span>
+              <% else %>
+                <span class="badge bg-secondary">終了</span>
+              <% end %>
+            </p>
+            <!-- 今後ここに「切り替えボタン」など追加予定ならここに -->
+          </div>
         <% end %>
       </div>
     </div>

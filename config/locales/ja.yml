@@ -34,3 +34,9 @@ ja:
       hospital:
         name: ""
         phone_number: ""
+
+      enums:
+        care_relationship:
+          status:
+            ongoing: 預かり中
+            ended: 終了
