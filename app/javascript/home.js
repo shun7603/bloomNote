@@ -47,3 +47,24 @@ document.addEventListener("DOMContentLoaded", () => {
     recordModal.show();
   }
 });
+
+document.addEventListener("DOMContentLoaded", () => {
+  // エラーがあったときにモーダルを自動で開く
+  const editModalId = "<%= j flash.now[:edit_hospital_id] %>";
+  if (editModalId) {
+    const targetModal = document.getElementById(`editHospitalModal-${editModalId}`);
+    if (targetModal) {
+      const modal = new bootstrap.Modal(targetModal);
+      modal.show();
+    }
+  }
+
+  // ✕ボタンで `/` に戻る処理を追加
+  document.querySelectorAll(".modal .btn-close").forEach(btn => {
+    btn.addEventListener("click", () => {
+      if (location.pathname.match(/^\/hospitals\/\d+$/)) {
+        window.location.href = "/";
+      }
+    });
+  });
+});
