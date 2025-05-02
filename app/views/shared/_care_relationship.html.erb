@@ -1,0 +1,18 @@
+<%= turbo_frame_tag "care_relationship_#{care_relationship.id}" do %>
+  <div class="border rounded p-2 mb-3">
+    <p><strong>子ども：</strong><%= care_relationship.child.name %></p>
+    <p><strong>保育者：</strong><%= care_relationship.caregiver.nickname %></p>
+    <p>
+      <strong>現在：</strong>
+      <% if care_relationship.ongoing? %>
+        <span class="badge bg-success">預かり中</span>
+      <% else %>
+        <span class="badge bg-secondary">終了</span>
+      <% end %>
+    </p>
+    <%= button_to "ステータス切替", care_relationship_path(care_relationship),
+          method: :patch,
+          data: { turbo_frame: "care_relationship_#{care_relationship.id}" },
+          class: "btn btn-sm btn-outline-primary" %>
+  </div>
+<% end %>

@@ -1,64 +1,59 @@
 <%= javascript_importmap_tags "home" %>
 
-<% if @children.blank? %>
-  <!-- 子ども未登録の場合のダミー表示 -->
-  <div class="container p-3" style="max-width: 420px; background-color: #fffefc; border-radius: 20px; border: 1px solid #ddd;">
+
+
+<%= turbo_frame_tag "flash" do %>
+  <%= render "shared/flash" %>
+<% end %>
+<div class="container p-3" style="max-width: 420px; background-color: #fffefc; border-radius: 20px; border: 1px solid #ddd;">
+  <!-- 🌟 ヘッダー─共通 -->
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h3 class="fw-bold">BloomNote</h3>
+    <div class="dropdown">
+      <button class="btn" type="button" id="settingsDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+        <i class="bi bi-list fs-3"></i>
+      </button>
+      <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="settingsDropdown">
+        <% if user_signed_in? %>
+          <li><button class="dropdown-item" data-bs-toggle="modal" data-bs-target="#addCareRelationshipModal">保育者を追加</button></li>
+          <li><button class="dropdown-item" data-bs-toggle="modal" data-bs-target="#careRelationshipListModal">関係者一覧</button></li>
+          <li><button class="dropdown-item" data-bs-toggle="modal" data-bs-target="#switchStatusModal">ステータス切替</button></li>
+          <li><hr class="dropdown-divider"></li>
+          <li>
+            <%= button_to "ログアウト", destroy_user_session_path, method: :delete, data: { turbo: true }, form: { class: "d-inline" }, class: "dropdown-item text-danger" %>
+          </li>
+        <% else %>
+          <li><%= link_to "新規登録", new_user_registration_path, class: "dropdown-item" %></li>
+          <li><%= link_to "ログイン", new_user_session_path, class: "dropdown-item" %></li>
+        <% end %>
+      </ul>
+    </div>
+  </div>
+
+  <% if @children.blank? %>
+    <!-- 🟡 子ども未登録時 -->
     <div class="text-center">
-      <h3 class="fw-bold">BloomNote</h3>
       <p class="text-muted">まずは子どもを登録してください。</p>
       <button class="btn btn-primary rounded-pill px-4" data-bs-toggle="modal" data-bs-target="#childModal">＋ 子ども登録</button>
     </div>
-  </div>
-<% else %>
-  <!-- 子どもが登録されている場合の表示 -->
-  <div class="container p-3" style="max-width: 420px; background-color: #fffefc; border-radius: 20px; border: 1px solid #ddd;">
-
-    <!-- ヘッダー -->
-<!-- ヘッダー内 -->
-<div class="d-flex justify-content-between align-items-center mb-3">
-  <h3 class="fw-bold">BloomNote</h3>
-
-  <!-- ハンバーガーメニュー付きのドロップダウン -->
-  <div class="dropdown">
-    <button class="btn" type="button" id="settingsDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-      <i class="bi bi-list fs-3"></i>
-    </button>
-    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="settingsDropdown">
-      <li>
-        <button class="dropdown-item" data-bs-toggle="modal" data-bs-target="#addCareRelationshipModal">
-          保育者を追加
-        </button>
-      </li>
-      <li>
-        <button class="dropdown-item" data-bs-toggle="modal" data-bs-target="#careRelationshipListModal">
-          関係者一覧
-        </button>
-      </li>
-      <li>
-        <button class="dropdown-item" data-bs-toggle="modal" data-bs-target="#switchStatusModal">
-          ステータス切替
-        </button>
-      </li>
-    </ul>
-  </div>
-</div>
-
-
-    <!-- 機能ボタン -->
+  <% else %>
+    <!-- 🟢 子ども登録済み時 -->
     <div class="text-center my-3">
       <button class="btn btn-outline-primary rounded-pill px-4" data-bs-toggle="modal" data-bs-target="#childModal">＋ 子ども登録</button>
       <button class="btn btn-outline-success rounded-pill px-4" data-bs-toggle="modal" data-bs-target="#routineModal">＋ ルーティン追加</button>
       <button class="btn btn-outline-secondary rounded-pill px-4" data-bs-toggle="modal" data-bs-target="#editChildModal">⚙ 子ども編集</button>
     </div>
 
-<!-- 📆 日付切り替えフォーム -->
-<%= form_with url: root_path, method: :get, local: true, class: "mb-3" do %>
-  <div class="d-flex align-items-center">
-    <%= label_tag :date, "表示する日付", class: "me-2 fw-bold" %>
-    <%= date_field_tag :date, @selected_date, class: "form-control w-auto" %>
-    <%= submit_tag "表示", class: "btn btn-outline-primary ms-2" %>
-  </div>
-<% end %>
+    <!-- 📆 日付切替えフォーム -->
+    <%= form_with url: root_path, method: :get, local: true, class: "mb-3" do %>
+      <div class="d-flex align-items-center">
+        <%= label_tag :date, "表示する日付", class: "me-2 fw-bold" %>
+        <%= date_field_tag :date, @selected_date, class: "form-control w-auto" %>
+        <%= submit_tag "表示", class: "btn btn-outline-primary ms-2" %>
+      </div>
+    <% end %>
+  <% end %>
+</div>
 
 <!-- 📋 今日の記録一覧 -->
 <h5 class="fw-bold mb-2">
@@ -80,13 +75,9 @@
       </div>
       <div>
         <%= link_to "編集", "#", class: "btn btn-sm btn-outline-secondary", data: { bs_toggle: "modal", bs_target: "#editRecordModal-#{record.id}" } %>
-        <%= button_to "削除", child_record_path(record.child, record), method: :delete,
-              data: { confirm: "本当に削除しますか？" },
-              class: "btn btn-sm btn-outline-danger" %>
+        <%= button_to "削除", child_record_path(record.child, record), method: :delete, data: { confirm: "本当に削除しますか？" }, class: "btn btn-sm btn-outline-danger" %>
       </div>
     </li>
-
-    <!-- ✏️ 編集モーダル -->
     <div class="modal fade" id="editRecordModal-<%= record.id %>" tabindex="-1" aria-hidden="true">
       <div class="modal-dialog">
         <div class="modal-content">
@@ -98,16 +89,12 @@
             <div class="modal-body">
               <%= f.label :record_type, "記録の種類" %>
               <%= f.select :record_type, Record.record_types.keys.map { |k| [I18n.t("activerecord.attributes.record.record_type.#{k}"), k] }, {}, class: "form-select mb-2" %>
-
               <%= f.label :category, "カテゴリ" %>
               <%= f.select :category, Record.categories.keys.map { |k| [I18n.t("activerecord.attributes.record.category.#{k}"), k] }, {}, class: "form-select mb-2" %>
-
               <%= f.label :quantity, "量や回数" %>
               <%= f.number_field :quantity, class: "form-control mb-2" %>
-
               <%= f.label :recorded_at, "日時" %>
               <%= f.datetime_local_field :recorded_at, class: "form-control mb-2" %>
-
               <%= f.label :memo, "メモ" %>
               <%= f.text_area :memo, class: "form-control", rows: 2 %>
             </div>
@@ -121,34 +108,29 @@
   <% end %>
 </ul>
 
-<!-- 緊急連絡ボタン（モーダル起動） -->
-<div class="bg-light rounded p-2 my-3 d-flex align-items-center"
-     role="button"
-     data-bs-toggle="modal"
-     data-bs-target="#emergencyModal">
+<!-- 緊急連絡ボタン -->
+<div class="bg-light rounded p-2 my-3 d-flex align-items-center" role="button" data-bs-toggle="modal" data-bs-target="#emergencyModal">
   <i class="bi bi-telephone-fill me-2" style="font-size: 1.3rem;"></i>
   <strong>緊急連絡</strong>
 </div>
 
-    <!-- アイコン選択 -->
-    <div class="d-flex justify-content-around my-2">
-      <div class="text-center">
-        <%= image_tag "milk.png", style: "height: 24px;" %><br>ミルク
-      </div>
-      <div class="text-center">
-        <%= image_tag "sleep.png", style: "height: 24px;" %><br>睡眠
-      </div>
-      <div class="text-center">
-        <%= image_tag "diaper.png", style: "height: 24px;" %><br>排泄
-      </div>
-    </div>
-
-    <!-- 今やるべきタスク -->
-    <div class="text-center p-2 rounded mt-3 fw-bold" style="background-color: #fff3cd;">
-      今やるべきタスク：<%= @next_task || "未定" %>
-    </div>
+<!-- アイコン選択 -->
+<div class="d-flex justify-content-around my-2">
+  <div class="text-center">
+    <%= image_tag "milk.png", style: "height: 24px;" %><br>ミルク
   </div>
-<% end %>
+  <div class="text-center">
+    <%= image_tag "sleep.png", style: "height: 24px;" %><br>睡眠
+  </div>
+  <div class="text-center">
+    <%= image_tag "diaper.png", style: "height: 24px;" %><br>排泄
+  </div>
+</div>
+
+<!-- 今やるべきタスク -->
+<div class="text-center p-2 rounded mt-3 fw-bold" style="background-color: #fff3cd;">
+  今やるべきタスク：<%= @next_task || "未定" %>
+</div>
 
 <!-- モーダルたちは分岐の外で常に表示可能にする -->
 <%= render "shared/child_modals" %>
@@ -459,7 +441,7 @@
 <div class="modal fade" id="addCareRelationshipModal" tabindex="-1" aria-labelledby="addCareRelationshipModalLabel" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
-      <%= form_with url: care_relationships_path, local: true do |f| %>
+<%= form_with model: CareRelationship.new, url: care_relationships_path, local: true do |f| %>
         <div class="modal-header">
           <h5 class="modal-title" id="addCareRelationshipModalLabel">保育者を追加</h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="閉じる"></button>
@@ -477,11 +459,12 @@
 
           <div class="mb-3">
             <%= f.label :child_id, "子ども" %>
-            <%= f.collection_select :child_id, @children, :id, :name, {}, class: "form-select" %>
+<%= f.select :child_id, @children.map { |c| [c.name, c.id] }, {}, class: "form-select" %>
+
           </div>
           <div class="mb-3">
             <%= f.label :caregiver_id, "保育者（メールなど）" %>
-<%= f.text_field :caregiver_email, name: 'care_relationship[caregiver_email]', class: "form-control" %>
+<%= f.text_field :caregiver_email, class: "form-control" %>
           </div>
         </div>
         <div class="modal-footer">
@@ -555,20 +538,17 @@
       </div>
 
       <div class="modal-body">
+<!-- ステータス切り替えモーダル -->
+<div class="modal fade" id="switchStatusModal" tabindex="-1" aria-labelledby="switchStatusModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="switchStatusModalLabel">保育ステータスを切り替え</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="閉じる"></button>
+      </div>
+      <div class="modal-body">
         <% @care_relationships.each do |cr| %>
-          <div class="border rounded p-2 mb-3">
-            <p><strong>子ども：</strong><%= cr.child.name %></p>
-            <p><strong>保育者：</strong><%= cr.caregiver.nickname %></p>
-            <p>
-              <strong>現在：</strong>
-              <% if cr.ongoing? %>
-                <span class="badge bg-success">預かり中</span>
-              <% else %>
-                <span class="badge bg-secondary">終了</span>
-              <% end %>
-            </p>
-            <!-- 今後ここに「切り替えボタン」など追加予定ならここに -->
-          </div>
+        <%= render partial: "shared/care_relationship", locals: { care_relationship: cr } %>          
         <% end %>
       </div>
     </div>

@@ -1,0 +1,5 @@
+<%= turbo_stream.replace "care_relationship_#{@care_relationship.id}",
+      partial: "shared/care_relationship",
+      locals: { care_relationship: @care_relationship } %>
+
+<%= turbo_stream.replace "flash", partial: "shared/flash" %>

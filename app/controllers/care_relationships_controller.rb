@@ -7,14 +7,15 @@ class CareRelationshipsController < ApplicationController
 
     if caregiver && child
       care_relationship = CareRelationship.new(
-        parent_id: current_user.id,
-        caregiver_id: caregiver.id,
-        child_id: child.id,
+        parent: current_user,
+        caregiver: caregiver,
+        child: child,
         status: :ongoing
       )
 
       if care_relationship.save
-        redirect_to root_path, notice: "保育者を追加しました"
+        flash[:notice] = "保育者を追加しました"
+        redirect_to root_path
       else
         flash.now[:care_relationship_errors] = care_relationship.errors.full_messages
         flash.now[:open_modal] = 'addCareRelationshipModal'
@@ -30,13 +31,21 @@ class CareRelationshipsController < ApplicationController
   end
 
   def update
-    care_relationship = CareRelationship.find(params[:id])
-    new_status = care_relationship.ongoing? ? :ended : :ongoing
+    @care_relationship = CareRelationship.find(params[:id])
+    new_status = @care_relationship.ongoing? ? :ended : :ongoing
 
-    if care_relationship.update(status: CareRelationship.statuses[new_status])
-      redirect_to root_path, notice: "ステータスを『#{care_relationship.status_i18n}』に切り替えました"
+    if @care_relationship.update(status: CareRelationship.statuses[new_status])
+      flash.now[:notice] = "ステータスを『#{@care_relationship.status_i18n}』に切り替えました"
+      respond_to do |format|
+        format.turbo_stream
+        format.html { redirect_to root_path, notice: flash[:notice] }
+      end
     else
-      redirect_to root_path, alert: "ステータスの切り替えに失敗しました"
+      flash.now[:alert] = "ステータスの切り替えに失敗しました"
+      respond_to do |format|
+        format.turbo_stream
+        format.html { redirect_to root_path, alert: flash[:alert] }
+      end
     end
   end
 
