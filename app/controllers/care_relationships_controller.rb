@@ -2,7 +2,7 @@ class CareRelationshipsController < ApplicationController
   before_action :set_children_and_users, only: [:new, :create, :index]
 
   def index
-    @care_relationships = CareRelationship.all.includes(:parent, :caregiver, :child)
+    @care_relationships = CareRelationship.includes(:parent, :caregiver, :child)
   end
 
   def new

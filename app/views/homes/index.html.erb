@@ -499,3 +499,40 @@
     });
   </script>
 <% end %>
+<!-- 関係者一覧モーダル -->
+<div class="modal fade" id="careRelationshipListModal" tabindex="-1" aria-labelledby="careRelationshipListModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="careRelationshipListModalLabel">関係者一覧</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="閉じる"></button>
+      </div>
+      <div class="modal-body">
+        <% if @care_relationships.any? %>
+          <table class="table table-bordered">
+            <thead>
+              <tr>
+                <th>子ども</th>
+                <th>親</th>
+                <th>保育者</th>
+                <th>ステータス</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% @care_relationships.each do |rel| %>
+                <tr>
+                  <td><%= rel.child.name %></td>
+                  <td><%= rel.parent.nickname %></td>
+                  <td><%= rel.caregiver.nickname %></td>
+                  <td><%= rel.status_before_type_cast == 0 ? "預かり中" : "終了" %></td>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
+        <% else %>
+          <p>関係者が登録されていません。</p>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>
