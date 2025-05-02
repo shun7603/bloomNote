@@ -1,5 +1,4 @@
 <% flash.each do |type, message| %>
-  <%# type（notice / alert / care_relationship_errorsなど）をbootstrap風に変換 %>
   <% css_class =
     case type.to_sym
     when :notice then "alert alert-success"

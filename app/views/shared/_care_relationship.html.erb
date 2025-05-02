@@ -1,5 +1,5 @@
 <%= turbo_frame_tag "care_relationship_#{care_relationship.id}" do %>
-  <div class="border rounded p-2 mb-3">
+  <div class="border rounded p-2 mb-3" data-controller="highlight">
     <p><strong>子ども：</strong><%= care_relationship.child.name %></p>
     <p><strong>保育者：</strong><%= care_relationship.caregiver.nickname %></p>
     <p>

@@ -3,3 +3,11 @@
       locals: { care_relationship: @care_relationship } %>
 
 <%= turbo_stream.replace "flash", partial: "shared/flash" %>
+
+<%= turbo_stream.replace "flash" do %>
+  <%= render "shared/flash" %>
+<% end %>
+
+<%= turbo_stream.replace "care_relationship_#{@care_relationship.id}" do %>
+  <%= render partial: "shared/care_relationship", locals: { care_relationship: @care_relationship } %>
+<% end %>
