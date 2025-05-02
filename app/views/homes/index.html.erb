@@ -183,6 +183,14 @@
         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
       <div class="modal-body">
+          <% if flash[:edit_child_error] %>
+    <div class="alert alert-danger">
+      <% @child.errors.full_messages.each do |message| %>
+        <p><%= message %></p>
+      <% end %>
+    </div>
+  <% end %>
+
         <% if @children.present? %>
           <%= form_with(model: @children.first, url: child_path(@children.first), method: :patch, local: true) do |f| %>
             <div class="mb-3">
@@ -319,7 +327,7 @@
                 <strong><%= hospital.name %></strong><br>
                 <%= link_to hospital.phone_number, "tel:#{hospital.phone_number}", class: "btn btn-outline-danger btn-sm mt-1" %>
               </p>
-              <!-- 編集ボタン（※親モーダルを閉じてから次を開く） -->
+              <!-- 編集ボタン -->
               <button class="btn btn-sm btn-outline-secondary"
                       data-bs-dismiss="modal"
                       data-bs-toggle="modal"
@@ -336,8 +344,9 @@
   </div>
 </div>
 
-<!-- 病院情報 編集モーダル（※親モーダルの外） -->
+<!-- 病院情報 編集モーダル -->
 <% current_user.hospitals.each do |hospital| %>
+  <% hospital = @hospital if flash[:hospital_modal_error].to_i == hospital.id %>
   <div class="modal fade"
        id="editHospitalModal-<%= hospital.id %>"
        tabindex="-1"
@@ -346,22 +355,33 @@
     <div class="modal-dialog">
       <div class="modal-content">
         <%= form_with(model: hospital, url: hospital_path(hospital), method: :patch, local: true) do |f| %>
-          <% if hospital.errors.any? %>
-            <div class="alert alert-danger">
-              <ul>
-              <% hospital.errors.full_messages.each do |msg| %>
+        <% if flash[:hospital_errors] && flash[:hospital_modal_error].to_i == hospital.id %>
+          <div class="alert alert-danger">
+            <ul>
+              <% flash[:hospital_errors].each do |msg| %>
                 <li><%= msg %></li>
               <% end %>
             </ul>
           </div>
         <% end %>
+
           <div class="modal-header">
-            <h5 class="modal-title" id="editHospitalModalLabel-<%= hospital.id %>">病院情報を編集</h5>
+            <h5 class="modal-title" id="editHospitalModalLabel-<%= hospital.id %>">緊急連絡情報を編集</h5>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="閉じる"></button>
           </div>
           <div class="modal-body">
+            <% if hospital.errors.any? %>
+              <div class="alert alert-danger">
+                <ul>
+                  <% hospital.errors.full_messages.each do |msg| %>
+                    <li><%= msg %></li>
+                  <% end %>
+                </ul>
+              </div>
+            <% end %>
+
             <div class="mb-3">
-              <%= f.label :name, "病院名" %>
+              <%= f.label :name, "緊急連絡先・病院" %>
               <%= f.text_field :name, class: "form-control" %>
             </div>
             <div class="mb-3">
@@ -384,7 +404,7 @@
     <div class="modal-content">
       <%= form_with(model: current_user.hospitals.build, local: true) do |f| %>
         <div class="modal-header">
-          <h5 class="modal-title" id="newHospitalModalLabel">病院を追加</h5>
+          <h5 class="modal-title" id="newHospitalModalLabel">緊急連絡名を追加</h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="閉じる"></button>
         </div>
         <div class="modal-body">
@@ -404,3 +424,13 @@
     </div>
   </div>
 </div>
+
+<!-- エラー発生時に対象の編集モーダルを自動で開く -->
+<% if flash[:hospital_modal_error] %>
+  <script>
+    document.addEventListener("DOMContentLoaded", function() {
+      const modal = new bootstrap.Modal(document.getElementById("editHospitalModal-<%= flash[:hospital_modal_error] %>"));
+      modal.show();
+    });
+  </script>
+<% end %>

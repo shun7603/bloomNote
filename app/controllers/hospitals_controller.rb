@@ -17,7 +17,8 @@ class HospitalsController < ApplicationController
     if @hospital.update(hospital_params)
       redirect_to root_path, notice: '病院情報を更新しました'
     else
-      flash.now[:edit_hospital_id] = @hospital.id
+      flash.now[:hospital_modal_error] = @hospital.id
+      @hospitals = current_user.hospitals
       render 'homes/index', status: :unprocessable_entity
     end
   end

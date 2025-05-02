@@ -49,7 +49,7 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 document.addEventListener("DOMContentLoaded", () => {
-  // 🔽 編集モーダルでエラーがあったときに表示
+  // エラーがあったときにモーダルを自動で開く
   const editModalId = "<%= j flash.now[:edit_hospital_id] %>";
   if (editModalId) {
     const targetModal = document.getElementById(`editHospitalModal-${editModalId}`);
@@ -58,4 +58,13 @@ document.addEventListener("DOMContentLoaded", () => {
       modal.show();
     }
   }
+
+  // ✕ボタンで `/` に戻る処理を追加
+  document.querySelectorAll(".modal .btn-close").forEach(btn => {
+    btn.addEventListener("click", () => {
+      if (location.pathname.match(/^\/hospitals\/\d+$/)) {
+        window.location.href = "/";
+      }
+    });
+  });
 });
