@@ -11,3 +11,7 @@
 <%= turbo_stream.replace "care_relationship_#{@care_relationship.id}" do %>
   <%= render partial: "shared/care_relationship", locals: { care_relationship: @care_relationship } %>
 <% end %>
+
+<%= turbo_stream.replace "care_relationship_#{@care_relationship.id}" do %>
+  <%= render partial: "shared/care_relationship", locals: { care_relationship: @care_relationship } %>
+<% end %>

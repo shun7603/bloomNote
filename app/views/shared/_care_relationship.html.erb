@@ -10,9 +10,17 @@
         <span class="badge bg-secondary">終了</span>
       <% end %>
     </p>
+
+    <!-- ステータス切替ボタン -->
     <%= button_to "ステータス切替", care_relationship_path(care_relationship),
           method: :patch,
           data: { turbo_frame: "care_relationship_#{care_relationship.id}" },
           class: "btn btn-sm btn-outline-primary" %>
+
+    <!-- 🔥 追加：削除ボタン（Turbo対応） -->
+    <%= button_to "削除", care_relationship_path(care_relationship),
+          method: :delete,
+          data: { turbo_stream: true },
+          class: "btn btn-sm btn-outline-danger ms-2" %>
   </div>
 <% end %>

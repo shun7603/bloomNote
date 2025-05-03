@@ -1,7 +1,5 @@
 <%= javascript_importmap_tags "home" %>
 
-
-
 <%= turbo_frame_tag "flash" do %>
   <%= render "shared/flash" %>
 <% end %>
@@ -516,6 +514,12 @@
                     <% else %>
                       <span class="badge bg-secondary">終了</span>
                     <% end %>
+                      <% if rel.parent == current_user %>
+    <%= button_to "削除", care_relationship_path(rel),
+        method: :delete,
+        data: { turbo_confirm: "本当に削除しますか？" },
+        class: "btn btn-sm btn-outline-danger mt-2" %>
+  <% end %>
                   </td>
                 </tr>
               <% end %>

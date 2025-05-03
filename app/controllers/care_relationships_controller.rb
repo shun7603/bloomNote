@@ -54,6 +54,26 @@ class CareRelationshipsController < ApplicationController
     end
   end
 
+  # app/controllers/care_relationships_controller.rb
+  def destroy
+    @care_relationship = CareRelationship.find(params[:id])
+    if @care_relationship.destroy
+      flash.now[:notice] = "関係を削除しました"
+      respond_to do |format|
+        format.turbo_stream
+        format.html { redirect_to root_path, notice: "関係を削除しました" }
+      end
+    else
+      flash.now[:alert] = "削除できませんでした"
+      respond_to do |format|
+        format.turbo_stream do
+          render turbo_stream: turbo_stream.replace("flash", partial: "shared/flash")
+        end
+        format.html { redirect_to root_path, alert: "削除できませんでした" }
+      end
+    end
+  end
+
   private
 
   def care_relationship_params

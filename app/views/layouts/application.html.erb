@@ -17,10 +17,6 @@
   </head>
 
   <body>
-    <!-- ✅ Turbo対応フラッシュメッセージ表示 -->
-    <%= turbo_frame_tag "flash" do %>
-      <%= render "shared/flash" %>
-    <% end %>
 
     <main>
       <%= yield %>

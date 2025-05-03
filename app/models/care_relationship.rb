@@ -5,5 +5,8 @@ class CareRelationship < ApplicationRecord
 
   enum status: { ongoing: 0, ended: 1 }
 
-  validates :parent_id, :caregiver_id, :child_id, :status, presence: true
+  validates :parent, presence: { message: "を入力してください" }
+  validates :caregiver, presence: { message: "を入力してください" }
+  validates :child, presence: { message: "を入力してください" }
+  validates :status, presence: { message: "を入力してください" }
 end
