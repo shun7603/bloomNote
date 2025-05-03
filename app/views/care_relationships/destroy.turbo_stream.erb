@@ -1,0 +1,3 @@
+<!-- app/views/care_relationships/destroy.turbo_stream.erb -->
+<%= turbo_stream.remove "care_relationship_#{@care_relationship.id}" %>
+<%= turbo_stream.replace "flash", partial: "shared/flash" %>

@@ -34,3 +34,24 @@ ja:
       hospital:
         name: ""
         phone_number: ""
+        
+      care_relationship:         # ← 👈ここが追加ポイント！
+        parent: "親"
+        caregiver: "保育者"
+        child: "子ども"
+        status: "ステータス"
+      care_relationship:
+        parent: "親"
+        caregiver: "保育者"
+        child: "子ども"
+        status: "ステータス"
+
+  enums:
+    care_relationship:
+      status:
+        ongoing: "預かり中"
+        ended: "終了"
+
+  errors:
+    messages:
+      blank: "を入力してください"

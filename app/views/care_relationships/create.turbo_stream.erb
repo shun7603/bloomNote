@@ -1,0 +1,11 @@
+<%= turbo_stream.append "care_relationship_list" do %>
+  <%= render partial: "shared/care_relationship", locals: { care_relationship: @care_relationship } %>
+<% end %>
+
+<%= turbo_stream.replace "flash" do %>
+  <%= render "shared/flash" %>
+<% end %>
+
+<%= turbo_stream.append "turbo_stream_controllers" do %>
+  <div data-controller="modal" data-modal-target-id-value="addCareRelationshipModal"></div>
+<% end %>

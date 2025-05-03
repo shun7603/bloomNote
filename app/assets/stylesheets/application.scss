@@ -98,3 +98,12 @@ h4, h5 {
   border-radius: 10px;
   font-weight: bold;
 }
+
+@keyframes highlight {
+  0%   { background-color: #fff3cd; }
+  100% { background-color: transparent; }
+}
+
+.highlight {
+  animation: highlight 2s ease-out;
+}

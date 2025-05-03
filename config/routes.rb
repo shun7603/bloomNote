@@ -1,15 +1,17 @@
 Rails.application.routes.draw do
-  get 'children/new'
-  get 'children/index'
-  get 'children/create'
   root to: 'homes#index'
+
   devise_for :users
   get 'up' => 'rails/health#show', as: :rails_health_check
-  resources :homes
-  resources :children, only: %i[new create index show update]
-  resources :hospitals, only: %i[new create edit update]
-  resources :children do
-    resources :records, only: %i[create update destroy]
+
+  resources :homes, only: [:index]
+
+  resources :children, only: [:new, :create, :index, :show, :update] do
+    resources :records, only: [:create, :update, :destroy]
     resources :routines
   end
+
+  resources :hospitals, only: [:new, :create, :update]
+
+  resources :care_relationships, only: [:create, :update, :destroy]
 end
