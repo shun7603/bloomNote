@@ -10,28 +10,40 @@ class HomesController < ApplicationController
         Date.current
       end
 
-    @records =
-      if @children.first.present?
-        @children.first.records
-                 .where(recorded_at: @selected_date.all_day)
-                 .order(recorded_at: :desc)
-      else
-        []
+    if @children.first.present?
+      child = @children.first
+
+      # 📋 今日の記録一覧（最新が上）
+      @records = child.records
+                      .where(recorded_at: @selected_date.all_day)
+                      .order(recorded_at: :desc)
+
+      # 🍼 新規記録フォーム用
+      @record = Record.new
+
+      # 🔁 ルーティン一覧（時刻順）
+      @routines = child.routines.order(:time)
+
+      # ⏰ 今やるべきルーティンを抽出
+      now_time = Time.current.strftime('%H:%M') # 現在時刻を "HH:MM" 文字列に
+      @next_routine = @routines.find { |r| r.time.strftime('%H:%M') > now_time }
+
+      # 📌 今やるべきタスク名と表示用文字列
+      @next_task = @next_routine&.task || "未定"
+      @next_routine_time = @next_routine&.time&.strftime('%H:%M')
+      @next_routine_task = begin
+        Routine.tasks[@next_routine&.task&.to_sym]
+      rescue StandardError
+        nil
       end
-
-    # 🍼 新規記録投稿用フォームオブジェクト
-    @record = Record.new
-
-    # 🔁 子どもがいるときのみルーティン取得（例: 08:00 ミルクなど）
-    @routines =
-      if @children.first.present?
-        @children.first.routines.order(:time)
-      else
-        []
-      end
-
-    # 💡 表示する今やるべきタスク（簡易ダミー）
-    @next_task = @routines.first&.task || "未定"
+    else
+      @records = []
+      @routines = []
+      @record = Record.new
+      @next_task = "未定"
+      @next_routine_time = nil
+      @next_routine_task = nil
+    end
 
     # 👩‍👧 保育者関係一覧（親が追加したもの）
     @care_relationships = CareRelationship

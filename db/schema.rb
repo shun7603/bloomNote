@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_05_01_020347) do
+ActiveRecord::Schema[7.1].define(version: 2025_05_04_135909) do
   create_table "care_relationships", charset: "utf8mb3", force: :cascade do |t|
     t.bigint "parent_id", null: false
     t.bigint "caregiver_id", null: false
@@ -56,7 +56,7 @@ ActiveRecord::Schema[7.1].define(version: 2025_05_01_020347) do
 
   create_table "routines", charset: "utf8mb3", force: :cascade do |t|
     t.bigint "child_id", null: false
-    t.string "time", null: false
+    t.time "time", null: false
     t.string "task", null: false
     t.string "category", null: false
     t.text "memo"

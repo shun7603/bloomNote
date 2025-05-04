@@ -1,11 +1,34 @@
 class RoutinesController < ApplicationController
   before_action :set_child
+
   def index
     @children = current_user.children.includes(:routines)
     @selected_date = params[:date]&.to_date || Date.current
     @records = Record.where(recorded_at: @selected_date.all_day)
 
     @care_relationships = current_user.care_relationships.includes(:child, :parent, :caregiver)
+
+    # 今やるべきルーティンの表示用処理
+    current_time = Time.current
+    routines = @child.routines.order(:time)
+
+    # 今日のそのルーティンがすでに記録されているか確認
+    recorded_types = Record.where(child_id: @child.id, recorded_at: current_time.all_day).pluck(:record_type)
+
+    next_routine = routines.find do |routine|
+      routine_time_today = Time.zone.parse("#{current_time.to_date} #{routine.time.strftime('%H:%M')}")
+      routine_time_today <= current_time && !recorded_types.include?(routine.task)
+    end
+
+    if next_routine
+      @next_routine_time = next_routine.time.strftime('%H:%M')
+      @next_routine_task = Routine.tasks[next_routine.task]
+      @next_task = I18n.t("activerecord.attributes.record.record_type.#{next_routine.task}")
+    else
+      @next_routine_time = nil
+      @next_routine_task = nil
+      @next_task = nil
+    end
   end
 
   def create
