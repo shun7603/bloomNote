@@ -558,3 +558,27 @@
     </div>
   </div>
 </div>
+<!-- ルーティン登録モーダル -->
+<div class="modal fade" id="routineModal" tabindex="-1" aria-labelledby="routineModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="routineModalLabel">ルーティンを追加</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <% if flash[:routine_errors] %>
+          <div class="alert alert-danger">
+            <ul>
+              <% flash[:routine_errors].each do |msg| %>
+                <li><%= msg %></li>
+              <% end %>
+            </ul>
+          </div>
+        <% end %>
+
+
+      </div>
+    </div>
+  </div>
+</div>
