@@ -1,15 +1,8 @@
 class HomesController < ApplicationController
   before_action :authenticate_user!
+
   def index
-    if user_signed_in?
-      @children = current_user.children.includes(:records)
-      @selected_date = params[:date].present? ? Date.parse(params[:date]) : Date.current
-      @records = Record.where(child: @children).where(recorded_at: @selected_date.all_day)
-    else
-      @children = []
-      @records = []
-    end
-    # 安全にパースし、無効な日付でも落ちないようにする
+    @children = current_user.children.includes(:records, :routines)
     @selected_date =
       begin
         params[:date].present? ? Date.parse(params[:date]) : Date.current
@@ -19,21 +12,28 @@ class HomesController < ApplicationController
 
     @records =
       if @children.first.present?
-        @children.first.records.where(recorded_at: @selected_date.all_day).order(recorded_at: :desc)
+        @children.first.records
+                 .where(recorded_at: @selected_date.all_day)
+                 .order(recorded_at: :desc)
       else
         []
       end
 
+    # 🍼 新規記録投稿用フォームオブジェクト
     @record = Record.new
-    @next_task = "ミルク"
 
-    @routine = [
-      { time: "08:00", task: "ミルク" },
-      { time: "09:00", task: "睡眠" },
-      { time: "11:00", task: "排泄" }
-    ]
+    # 🔁 子どもがいるときのみルーティン取得（例: 08:00 ミルクなど）
+    @routines =
+      if @children.first.present?
+        @children.first.routines.order(:time)
+      else
+        []
+      end
 
-    # ✅ここを追加（保育者リスト用）
+    # 💡 表示する今やるべきタスク（簡易ダミー）
+    @next_task = @routines.first&.task || "未定"
+
+    # 👩‍👧 保育者関係一覧（親が追加したもの）
     @care_relationships = CareRelationship
                           .includes(:child, :caregiver)
                           .where(parent_id: current_user.id)

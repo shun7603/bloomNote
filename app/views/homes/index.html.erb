@@ -3,6 +3,22 @@
 <%= turbo_frame_tag "flash" do %>
   <%= render "shared/flash" %>
 <% end %>
+<% if @routines.present? %>
+  <div class="my-3">
+    <h5 class="fw-bold">登録ルーティン</h5>
+    <ul class="list-group">
+      <% @routines.each do |routine| %>
+        <li class="list-group-item">
+          🕒 <%= routine.time.strftime("%H:%M") %>　
+          <%= Routine.tasks[routine.task] %>（<%= Routine.categories[routine.category] %>）
+          <% if routine.memo.present? %>
+            - <span class="text-muted"><%= routine.memo %></span>
+          <% end %>
+        </li>
+      <% end %>
+    </ul>
+  </div>
+<% end %>
 <div class="container p-3" style="max-width: 420px; background-color: #fffefc; border-radius: 20px; border: 1px solid #ddd;">
   <!-- 🌟 ヘッダー─共通 -->
   <div class="d-flex justify-content-between align-items-center mb-3">
