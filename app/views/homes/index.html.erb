@@ -232,10 +232,13 @@
               <%= f.label :time %>
               <%= f.time_field :time, class: "form-control" %>
             </div>
-            <div class="mb-3">
-              <%= f.label :task %>
-              <%= f.text_field :task, class: "form-control" %>
-            </div>
+<div class="mb-3">
+  <%= f.label :task, "記録の種類" %>
+  <%= f.select :task,
+        Routine.tasks.map { |key, label| [label, key] },
+        { prompt: "選択してください" },
+        class: "form-select" %>
+</div>
             <div class="mb-3">
               <%= f.label :category %>
               <%= f.select :category, Routine.categories.map { |k,v| [v, k] }, {}, class: "form-select" %>
@@ -554,30 +557,6 @@
         <% @care_relationships.each do |cr| %>
         <%= render partial: "shared/care_relationship", locals: { care_relationship: cr } %>          
         <% end %>
-      </div>
-    </div>
-  </div>
-</div>
-<!-- ルーティン登録モーダル -->
-<div class="modal fade" id="routineModal" tabindex="-1" aria-labelledby="routineModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="routineModalLabel">ルーティンを追加</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-      </div>
-      <div class="modal-body">
-        <% if flash[:routine_errors] %>
-          <div class="alert alert-danger">
-            <ul>
-              <% flash[:routine_errors].each do |msg| %>
-                <li><%= msg %></li>
-              <% end %>
-            </ul>
-          </div>
-        <% end %>
-
-
       </div>
     </div>
   </div>

@@ -6,28 +6,47 @@
         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
       <div class="modal-body">
+        <% if flash[:routine_errors] %>
+          <div class="alert alert-danger"><ul><% flash[:routine_errors].each do |msg| %><li><%= msg %></li><% end %></ul></div>
+        <% end %>
+
         <% if @children.present? %>
-          <%= form_with(model: [@children.first, Routine.new], url: child_routines_path(@children.first), local: true) do |f| %>
+          <%= form_with(model: [@children.first, Routine.new],
+                        url: child_routines_path(@children.first),
+                        local: true,
+                        html: { multipart: true }) do |f| %>
             <div class="mb-3">
-              <%= f.label :time %>
+              <%= f.label :time, "時間" %>
               <%= f.time_field :time, class: "form-control" %>
             </div>
             <div class="mb-3">
-              <%= f.label :task %>
-              <%= f.text_field :task, class: "form-control" %>
+              <%= f.label :task, "記録の種類" %>
+              <%= f.select :task,
+                    Routine.tasks.map { |k, v| [v, k] },
+                    { prompt: "選択してください" },
+                    class: "form-select" %>
             </div>
             <div class="mb-3">
-              <%= f.label :category %>
-              <%= f.select :category, Routine.categories.map { |k,v| [v, k] }, {}, class: "form-select" %>
+              <%= f.label :category, "カテゴリ" %>
+              <%= f.select :category,
+                    Routine.categories.map { |k, v| [v, k] },
+                    { prompt: "選択してください" },
+                    class: "form-select" %>
             </div>
             <div class="mb-3">
-              <%= f.label :memo %>
-              <%= f.text_area :memo, class: "form-control" %>
+              <%= f.label :memo, "メモ（任意）" %>
+              <%= f.text_area :memo, class: "form-control", rows: 2 %>
             </div>
-            <%= f.submit "追加", class: "btn btn-success" %>
+            <div class="mb-3">
+              <%= f.label :photo, "写真（任意）" %>
+              <%= f.file_field :photo, class: "form-control" %>
+            </div>
+            <div class="text-end">
+              <%= f.submit "追加", class: "btn btn-success" %>
+            </div>
           <% end %>
         <% else %>
-          <p>子どもが登録されていません。</p>
+          <p class="text-muted">まず子どもを登録してください。</p>
         <% end %>
       </div>
     </div>
