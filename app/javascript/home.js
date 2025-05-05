@@ -126,3 +126,15 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("modalRoutineMemo").textContent = button.getAttribute("data-routine-memo");
   });
 });
+document.addEventListener("turbo:load", () => {
+  document.querySelectorAll('[data-bs-toggle="modal"]').forEach(button => {
+    button.addEventListener("click", (event) => {
+      const targetId = button.getAttribute("data-bs-target");
+      const modalElement = document.querySelector(targetId);
+      if (modalElement) {
+        const modal = new bootstrap.Modal(modalElement);
+        modal.show();
+      }
+    });
+  });
+});

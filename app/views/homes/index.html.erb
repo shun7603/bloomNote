@@ -102,7 +102,7 @@
         <% end %>
       </div>
       <div>
-        <%= link_to "編集", "#", class: "btn btn-sm btn-outline-secondary", data: { bs_toggle: "modal", bs_target: "#editRecordModal-#{record.id}" } %>
+<%= link_to "編集", "#", class: "btn btn-sm btn-outline-secondary", data: { bs_toggle: "modal", bs_target: "#editRecordModal-#{record.id}" } %>
         <%= button_to "削除", child_record_path(record.child, record), method: :delete, data: { confirm: "本当に削除しますか？" }, class: "btn btn-sm btn-outline-danger" %>
       </div>
     </li>

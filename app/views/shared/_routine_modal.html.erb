@@ -64,26 +64,38 @@
                     <div class="text-muted small">📝 <%= routine.memo %></div>
                   <% end %>
                 </div>
-<!-- 編集ボタンと削除ボタン -->
-<div class="text-end">
-  <%= link_to "編集", "#", class: "btn btn-sm btn-outline-secondary", data: { bs_toggle: "modal", bs_target: "#editRoutineModal-#{routine.id}" } %>
-  <%= button_to "削除", child_routine_path(routine.child_id, routine),
-      method: :delete,
-      data: { turbo_confirm: "本当に削除しますか？" },
-      class: "btn btn-sm btn-outline-danger",
-      form: { class: "d-inline" } %>
-</div>
 
-<!-- 編集モーダル -->
-<div class="modal fade" id="editRoutineModal-<%= routine.id %>" tabindex="-1" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-                    <%= form_with(model: routine,url: child_routine_path(routine.child_id, routine), method: :patch, local: true ) do |f| %>
+                <!-- 編集・削除ボタン -->
+                <div class="text-end">
+                  <%= link_to "編集", "#", class: "btn btn-sm btn-outline-secondary", data: { bs_toggle: "modal", bs_target: "#editRoutineModal-#{routine.id}" } %>
+                  <%= button_to "削除", child_routine_path(routine.child_id, routine),
+                      method: :delete,
+                      data: { turbo_confirm: "本当に削除しますか？" },
+                      class: "btn btn-sm btn-outline-danger",
+                      form: { class: "d-inline" } %>
+                </div>
+              </li>
+
+              <!-- 編集モーダル（個別に出力） -->
+              <div class="modal fade" id="editRoutineModal-<%= routine.id %>" tabindex="-1" aria-labelledby="editRoutineModalLabel-<%= routine.id %>" aria-hidden="true">
+                <div class="modal-dialog">
+                  <div class="modal-content">
+                    <%= form_with(model: routine, url: child_routine_path(routine.child_id, routine), method: :patch, local: true) do |f| %>
                       <div class="modal-header">
-                        <h5 class="modal-title">ルーティンを編集</h5>
+                        <h5 class="modal-title" id="editRoutineModalLabel-<%= routine.id %>">ルーティンを編集</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                       </div>
                       <div class="modal-body">
+                        <% if flash[:routine_errors] && flash[:open_modal] == "editRoutineModal-#{routine.id}" %>
+                          <div class="alert alert-danger">
+                            <ul>
+                              <% flash[:routine_errors].each do |msg| %>
+                                <li><%= msg %></li>
+                              <% end %>
+                            </ul>
+                          </div>
+                        <% end %>
+
                         <div class="mb-3">
                           <%= f.label :time, "時間" %>
                           <%= f.time_field :time, class: "form-control" %>
@@ -113,3 +125,4 @@
     </div>
   </div>
 </div>
+

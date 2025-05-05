@@ -41,14 +41,18 @@ class RoutinesController < ApplicationController
     end
   end
 
+  # app/controllers/routines_controller.rb
   def update
     @routine = @child.routines.find(params[:id])
     if @routine.update(routine_params)
       flash[:notice] = "ルーティンを更新しました"
+      redirect_to root_path
     else
-      flash[:alert] = "ルーティンの更新に失敗しました"
+      flash[:alert] = "更新に失敗しました"
+      flash[:routine_errors] = @routine.errors.full_messages
+      flash[:open_modal] = "editRoutineModal-#{@routine.id}"
+      redirect_to root_path
     end
-    redirect_to root_path
   end
 
   def destroy
