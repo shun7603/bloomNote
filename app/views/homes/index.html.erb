@@ -3,12 +3,19 @@
 <%= turbo_frame_tag "flash" do %>
   <%= render "shared/flash" %>
 <% end %>
-<!-- 今やるべき情報まとめ表示 -->
 <div class="text-center p-3 rounded mt-3 fw-bold" style="background-color: #fff3cd;">
-  <div>📝 今やるべきタスク：<%= @next_task || "未定" %></div>
-  <div class="mt-1">
-    ⏰ 今やるべきルーティン：<%= @next_routine_time %> <%= @next_routine_task %>
-    <button class="btn btn-sm btn-outline-primary ms-2" data-bs-toggle="modal" data-bs-target="#routineListModal">一覧</button>
+  <div>
+    📝 今やるべきタスク：
+<% if @next_routine.present? %>
+  <button class="btn btn-sm btn-warning"
+          data-bs-toggle="modal"
+          data-bs-target="#recordModal"
+          data-task="<%= @next_routine.task %>">
+    <%= @next_routine.task_label %>
+  </button>
+<% else %>
+  未定
+<% end %>
   </div>
 </div>
 
@@ -74,7 +81,6 @@
         <strong><%= record.recorded_at.strftime('%H:%M') %></strong>　
         <%= icon_for(record.record_type) %>
         <%= I18n.t("activerecord.attributes.record.record_type.#{record.record_type}") %>
-        （<%= I18n.t("activerecord.attributes.record.category.#{record.category}") %>）
         <%= record.quantity %>
         <% if record.memo.present? %>
           <span class="text-muted">- <%= record.memo %></span>
@@ -245,10 +251,7 @@
         { prompt: "選択してください" },
         class: "form-select" %>
 </div>
-            <div class="mb-3">
-              <%= f.label :category %>
-              <%= f.select :category, Routine.categories.map { |k,v| [v, k] }, {}, class: "form-select" %>
-            </div>
+
             <div class="mb-3">
               <%= f.label :memo %>
               <%= f.text_area :memo, class: "form-control" %>
@@ -290,10 +293,7 @@
               <%= f.label :record_type, "記録の種類" %>
               <%= f.select :record_type, Record.record_types.map { |k, _| [k.humanize, k] }, {}, class: "form-select" %>
             </div>
-            <div class="mb-3">
-              <%= f.label :category, "カテゴリ" %>
-              <%= f.select :category, Record.categories.map { |k, v| [v, k] }, {}, class: "form-select" %>
-            </div>
+
             <div class="mb-3">
               <%= f.label :quantity, "量や回数" %>
               <%= f.number_field :quantity, class: "form-control" %>
@@ -568,32 +568,36 @@
   </div>
 </div>
 <!-- ルーティン一覧モーダル -->
-<div class="modal fade" id="routineListModal" tabindex="-1" aria-labelledby="routineListModalLabel" aria-hidden="true">
+<div class="modal fade" id="routineModal" tabindex="-1" aria-labelledby="routineModalLabel" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="routineListModalLabel">登録ルーティン一覧</h5>
+        <h5 class="modal-title" id="routineModalLabel">ルーティンを追加</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
       <div class="modal-body">
-<% routines = @routines.select { |r| r.child_id == @children.first.id } %>
-<% if routines.any? %>
-  <table class="table table-sm">
-    <thead><tr><th>時刻</th><th>内容</th><th>カテゴリ</th><th>メモ</th></tr></thead>
-    <tbody>
-      <% routines.each do |routine| %>
-        <tr>
-          <td><%= routine.time.strftime("%H:%M") %></td>
-          <td><%= Routine.tasks[routine.task] rescue "-" %></td>
-          <td><%= Routine.categories[routine.category] %></td>
-          <td><%= routine.memo.presence || "-" %></td>
-        </tr>
-      <% end %>
-    </tbody>
-  </table>
-<% else %>
-  <p class="text-muted">この子どもに登録されたルーティンがありません。</p>
-<% end %>
+        <% if @children.present? %>
+          <%= form_with(model: [@children.first, Routine.new], url: child_routines_path(@children.first), local: true) do |f| %>
+            <div class="mb-3">
+              <%= f.label :time %>
+              <%= f.time_field :time, class: "form-control" %>
+            </div>
+            <div class="mb-3">
+              <%= f.label :task, "記録の種類" %>
+              <%= f.select :task,
+                    Routine.tasks.keys.map { |k| [Routine.new(task: k).task_label, k] },
+                    { prompt: "選択してください" },
+                    class: "form-select" %>
+            </div>
+            <div class="mb-3">
+              <%= f.label :memo %>
+              <%= f.text_area :memo, class: "form-control" %>
+            </div>
+            <%= f.submit "追加", class: "btn btn-success" %>
+          <% end %>
+        <% else %>
+          <p>子どもが登録されていません。</p>
+        <% end %>
       </div>
     </div>
   </div>

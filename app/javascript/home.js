@@ -68,3 +68,36 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 });
+
+document.addEventListener("DOMContentLoaded", () => {
+  const modal = document.getElementById('recordModal');
+  if (!modal) return;
+
+  modal.addEventListener('show.bs.modal', event => {
+    const button = event.relatedTarget;
+    if (!button) return;
+
+    const task = button.getAttribute('data-task');
+    const category = button.getAttribute('data-category');
+
+    if (task && category) {
+      document.querySelector('#record_record_type').value = task;
+      document.querySelector('#record_category').value = category;
+    }
+  });
+});
+
+document.addEventListener("turbo:load", () => {
+  const recordModal = document.getElementById("recordModal");
+  recordModal?.addEventListener("show.bs.modal", (event) => {
+    const button = event.relatedTarget;
+    const task = button?.getAttribute("data-task");
+
+    if (task) {
+      const select = recordModal.querySelector("#record_record_type");
+      if (select) {
+        select.value = task;
+      }
+    }
+  });
+});

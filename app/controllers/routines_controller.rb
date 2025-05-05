@@ -51,6 +51,6 @@ class RoutinesController < ApplicationController
   end
 
   def routine_params
-    params.require(:routine).permit(:time, :task, :category, :memo, :photo)
+    params.require(:routine).permit(:time, :task, :memo, :photo)
   end
 end

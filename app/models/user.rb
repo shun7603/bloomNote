@@ -1,16 +1,28 @@
+# app/models/user.rb
 class User < ApplicationRecord
-  # Deviseの設定
-  has_many :children
-  has_many :hospitals 
-  has_many :care_relationships_as_parent, class_name: 'CareRelationship', foreign_key: 'parent_id'
-  has_many :care_relationships_as_caregiver, class_name: 'CareRelationship', foreign_key: 'caregiver_id'
-
-
+  # Devise の設定
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :validatable
 
+  # バリデーション
   validates :nickname, presence: true
-  validates :role, presence: true
+  validates :role,     presence: true
 
+  # 子どもと病院
+  has_many :children, dependent: :destroy
+  has_many :hospitals, dependent: :destroy
+
+  # 親としてのケアリレーションシップ（親が追加したもの）
+  has_many :care_relationships,
+           class_name: 'CareRelationship',
+           foreign_key: 'parent_id',
+           dependent: :destroy
+
+  # 保育者として紐づくケアリレーションシップ（必要に応じて参照用に残す）
+  has_many :care_relationships_as_caregiver,
+           class_name: 'CareRelationship',
+           foreign_key: 'caregiver_id'
+
+  # enum（ユーザー権限）
   enum role: { role_parent: 0, role_caregiver: 1 }
 end

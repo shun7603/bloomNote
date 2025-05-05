@@ -21,18 +21,12 @@
             </div>
             <div class="mb-3">
               <%= f.label :task, "記録の種類" %>
-              <%= f.select :task,
-                    Routine.tasks.map { |k, v| [v, k] },
-                    { prompt: "選択してください" },
-                    class: "form-select" %>
+<%= f.select :task,
+      Routine.task_options_for_select,
+      { prompt: "選択してください" },
+      class: "form-select" %>
             </div>
-            <div class="mb-3">
-              <%= f.label :category, "カテゴリ" %>
-              <%= f.select :category,
-                    Routine.categories.map { |k, v| [v, k] },
-                    { prompt: "選択してください" },
-                    class: "form-select" %>
-            </div>
+
             <div class="mb-3">
               <%= f.label :memo, "メモ（任意）" %>
               <%= f.text_area :memo, class: "form-control", rows: 2 %>

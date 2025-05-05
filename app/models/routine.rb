@@ -1,29 +1,43 @@
-# app/models/routine.rb
 class Routine < ApplicationRecord
   belongs_to :child
   has_one_attached :photo
 
-  validates :time, :task, :category, presence: true
+  validates :time, :task, presence: true
 
-  # taskをrecord_typeと同じ種類でenum化
   enum task: {
-    milk: "ミルク",
-    sleep: "睡眠",
-    toilet: "排泄",
-    meal: "ごはん",
-    bath: "おふろ",
-    walk: "おさんぽ",
-    medicine: "薬",
-    hospital: "病院",
-    memo: "その他"
+    milk: 0,
+    sleep: 1,
+    toilet: 2,
+    meal: 3,
+    bath: 4,
+    walk: 5,
+    medicine: 6,
+    hospital: 7,
+    memo: 8
   }
 
-  enum category: {
-    nutrition: "栄養",
-    life: "生活",
-    health: "健康",
-    medical: "医療",
-    schedule: "スケジュール",
-    concern: "気になること"
-  }
+  # 一覧用ラベル（日本語）
+  def self.task_labels
+    {
+      "milk" => "ミルク",
+      "sleep" => "睡眠",
+      "toilet" => "排泄",
+      "meal" => "ごはん",
+      "bath" => "おふろ",
+      "walk" => "おさんぽ",
+      "medicine" => "薬",
+      "hospital" => "病院",
+      "memo" => "その他"
+    }
+  end
+
+  # セレクト用（[日本語, 英語キー]形式）
+  def self.task_options_for_select
+    task_labels.map { |k, v| [v, k] }
+  end
+
+  # インスタンス用
+  def task_label
+    Routine.task_labels[task]
+  end
 end
