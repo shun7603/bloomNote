@@ -4,25 +4,36 @@
   <%= render "shared/flash" %>
 <% end %>
 
+<%= render "shared/routine_modal" %> <!-- モーダル本体のパーシャル -->
+
 <div class="text-center p-3 rounded mt-3 fw-bold" style="background-color: #fff3cd;">
   <div>
-    
-📝 今やるべきタスク：
-<% if @next_routine.present? %>
-  <% task_value = @next_routine.task_before_type_cast.to_i %>
-  <% task_key = Routine.tasks.key(task_value) %>
-  <% task_label = Routine.task_labels[task_key] || "不明なタスク" %>
-  <button class="btn btn-sm btn-warning"
-          data-bs-toggle="modal"
-          data-bs-target="#recordModal"
-          data-task="<%= task_key %>">
-    <%= "#{task_label}：#{@next_routine.time.strftime('%H:%M')}" %>
-  </button>
-<% else %>
-  未定
-<% end %>
-</div>
+    📝 今やるべきタスク：
+    <% if @next_routine.present? %>
+      <% task_value = @next_routine.task_before_type_cast.to_i %>
+      <% task_key = Routine.tasks.key(task_value) %>
+      <% task_label = Routine.task_labels[task_key] || "不明なタスク" %>
+      <button class="btn btn-sm btn-warning"
+              data-bs-toggle="modal"
+              data-bs-target="#recordModal"
+              data-task="<%= task_key %>">
+        <%= "#{task_label}：#{@next_routine.time.strftime('%H:%M')}" %>
+      </button>
+    <% else %>
+      未定
+    <% end %>
+  </div>
 
+  <!-- 📋 常時表示の「ルーティンを表示」ボタン -->
+  <div class="mt-2">
+    <button class="btn btn-outline-info"
+            data-bs-toggle="modal"
+            data-bs-target="#routineDetailModal">
+      📋 ルーティンを表示
+    </button>
+  </div>
+</div>
+</div>
 <div class="container p-3" style="max-width: 420px; background-color: #fffefc; border-radius: 20px; border: 1px solid #ddd;">
   <!-- 🌟 ヘッダー─共通 -->
   <div class="d-flex justify-content-between align-items-center mb-3">
@@ -611,3 +622,5 @@
     </div>
   </div>
 </div>
+
+

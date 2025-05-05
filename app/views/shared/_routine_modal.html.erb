@@ -46,3 +46,76 @@
     </div>
   </div>
 </div>
+
+<!-- ルーティン詳細モーダル -->
+<div class="modal fade" id="routineDetailModal" tabindex="-1" aria-labelledby="routineDetailModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="routineDetailModalLabel">ルーティン一覧</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <% if @children.first && @children.first.routines.any? %>
+          <ul class="list-group">
+            <% @children.first.routines.order(:time).each do |routine| %>
+              <% label = I18n.t("activerecord.attributes.record.record_type.#{routine.task}") rescue "不明なタスク" %>
+              <li class="list-group-item">
+                <div class="d-flex justify-content-between align-items-center">
+                  <div>
+                    <strong><%= label %></strong>（<%= routine.time.strftime('%H:%M') %>）
+                    <% if routine.memo.present? %>
+                      <div class="text-muted small">📝 <%= routine.memo %></div>
+                    <% end %>
+                  </div>
+<div class="text-end">
+  <%= link_to "編集", "#", class: "btn btn-sm btn-outline-secondary", data: { bs_toggle: "modal", bs_target: "#editRoutineModal-#{routine.id}" } %>
+  <%= button_to "削除",
+      child_routine_path(routine.child, routine),
+      method: :delete,
+      data: { turbo_confirm: "本当に削除しますか？" },
+      class: "btn btn-sm btn-outline-danger",
+      form: { class: "d-inline" } %>
+</div>
+                </div>
+              </li>
+
+              <!-- 編集モーダル -->
+              <div class="modal fade" id="editRoutineModal-<%= routine.id %>" tabindex="-1" aria-hidden="true">
+                <div class="modal-dialog">
+                  <div class="modal-content">
+                    <%= form_with(model: [routine.child, routine], local: true) do |f| %>
+                      <div class="modal-header">
+                        <h5 class="modal-title">ルーティンを編集</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                      </div>
+                      <div class="modal-body">
+                        <div class="mb-3">
+                          <%= f.label :time, "時間" %>
+                          <%= f.time_field :time, class: "form-control" %>
+                        </div>
+                        <div class="mb-3">
+                          <%= f.label :task, "記録の種類" %>
+                          <%= f.select :task, Routine.tasks.map { |k, _| [I18n.t("activerecord.attributes.record.record_type.#{k}"), k] }, {}, class: "form-select" %>
+                        </div>
+                        <div class="mb-3">
+                          <%= f.label :memo, "メモ" %>
+                          <%= f.text_area :memo, class: "form-control", rows: 2 %>
+                        </div>
+                      </div>
+                      <div class="modal-footer">
+                        <%= f.submit "更新", class: "btn btn-primary" %>
+                      </div>
+                    <% end %>
+                  </div>
+                </div>
+              </div>
+            <% end %>
+          </ul>
+        <% else %>
+          <p class="text-muted">ルーティンは登録されていません。</p>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>

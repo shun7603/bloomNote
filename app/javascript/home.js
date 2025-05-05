@@ -114,3 +114,15 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 });
+
+document.addEventListener("DOMContentLoaded", () => {
+  const routineModal = document.getElementById("routineDetailModal");
+  if (!routineModal) return;
+
+  routineModal.addEventListener("show.bs.modal", (event) => {
+    const button = event.relatedTarget;
+    document.getElementById("modalRoutineTime").textContent = button.getAttribute("data-routine-time");
+    document.getElementById("modalRoutineTask").textContent = button.getAttribute("data-routine-task");
+    document.getElementById("modalRoutineMemo").textContent = button.getAttribute("data-routine-memo");
+  });
+});
