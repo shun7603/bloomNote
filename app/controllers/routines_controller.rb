@@ -5,14 +5,11 @@ class RoutinesController < ApplicationController
     @children = current_user.children.includes(:routines)
     @selected_date = params[:date]&.to_date || Date.current
     @records = Record.where(recorded_at: @selected_date.all_day)
-
     @care_relationships = current_user.care_relationships.includes(:child, :parent, :caregiver)
 
     # 今やるべきルーティンの表示用処理
     current_time = Time.current
     routines = @child.routines.order(:time)
-
-    # 今日のそのルーティンがすでに記録されているか確認
     recorded_types = Record.where(child_id: @child.id, recorded_at: current_time.all_day).pluck(:record_type)
 
     next_routine = routines.find do |routine|
@@ -42,6 +39,23 @@ class RoutinesController < ApplicationController
       flash[:open_modal] = "routineModal"
       redirect_to root_path
     end
+  end
+
+  def update
+    @routine = @child.routines.find(params[:id])
+    if @routine.update(routine_params)
+      flash[:notice] = "ルーティンを更新しました"
+    else
+      flash[:alert] = "ルーティンの更新に失敗しました"
+    end
+    redirect_to root_path
+  end
+
+  def destroy
+    @routine = @child.routines.find(params[:id])
+    @routine.destroy
+    flash[:notice] = "ルーティンを削除しました"
+    redirect_to root_path
   end
 
   private

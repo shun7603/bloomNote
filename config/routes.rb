@@ -8,7 +8,7 @@ Rails.application.routes.draw do
 
   resources :children, only: [:new, :create, :index, :show, :update] do
     resources :records, only: [:create, :update, :destroy]
-    resources :routines, only: [:create]
+    resources :routines
   end
 
   resources :hospitals, only: [:new, :create, :update]
