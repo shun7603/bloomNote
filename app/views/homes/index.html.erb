@@ -4,7 +4,6 @@
   <%= render "shared/flash" %>
 <% end %>
 
-<%= render "shared/routine_modal" %> <!-- モーダル本体のパーシャル -->
 
 <div class="text-center p-3 rounded mt-3 fw-bold" style="background-color: #fff3cd;">
   <div>
@@ -175,46 +174,7 @@
 <%= render "shared/routine_modal" %>
 <%= render "shared/record_modal" %>
 
-<!-- 子ども登録モーダル -->
-<div class="modal fade" id="childModal" tabindex="-1" aria-labelledby="childModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="childModalLabel">子どもを登録</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-      </div>
-      <div class="modal-body">
-<%= form_with(model: Child.new, url: children_path, local: true) do |f| %>
 
-  <% if f.object.errors.any? %>
-    <div class="alert alert-danger">
-      <ul class="mb-2">
-        <% f.object.errors.full_messages.each do |msg| %>
-          <li><%= msg %></li>
-        <% end %>
-      </ul>
-    </div>
-  <% end %>
-
-  <!-- この下に入力項目が続く -->
-  <div class="mb-3">
-    <%= f.label :name %>
-    <%= f.text_field :name, class: "form-control" %>
-  </div>
-          <div class="mb-3">
-            <%= f.label :birth_date %>
-            <%= f.date_field :birth_date, class: "form-control" %>
-          </div>
-          <div class="mb-3">
-            <%= f.label :gender %>
-            <%= f.select :gender, [["男の子", "boy"], ["女の子", "girl"]], {}, class: "form-select" %>
-          </div>
-          <%= f.submit "登録", class: "btn btn-primary" %>
-        <% end %>
-      </div>
-    </div>
-  </div>
-</div>
 
 <!-- 子ども編集モーダル -->
 <div class="modal fade" id="editChildModal" tabindex="-1" aria-labelledby="editChildModalLabel" aria-hidden="true">
@@ -225,28 +185,41 @@
         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
       <div class="modal-body">
-          <% if flash[:edit_child_error] %>
-    <div class="alert alert-danger">
-      <% @child.errors.full_messages.each do |message| %>
-        <p><%= message %></p>
-      <% end %>
-    </div>
-  <% end %>
-
         <% if @children.present? %>
           <%= form_with(model: @children.first, url: child_path(@children.first), method: :patch, local: true) do |f| %>
+
+            <% if flash[:child_errors] %>
+              <div class="alert alert-danger">
+                <ul class="mb-2">
+                  <% flash[:child_errors].each do |msg| %>
+                    <li><%= msg %></li>
+                  <% end %>
+                </ul>
+              </div>
+            <% end %>
+
             <div class="mb-3">
               <%= f.label :name %>
-              <%= f.text_field :name, class: "form-control" %>
+              <%= f.text_field :name,
+                    value: flash[:child_attributes]&.[]("name") || f.object.name,
+                    class: "form-control" %>
             </div>
+
             <div class="mb-3">
               <%= f.label :birth_date %>
-              <%= f.date_field :birth_date, class: "form-control" %>
+              <%= f.date_field :birth_date,
+                    value: flash[:child_attributes]&.[]("birth_date") || f.object.birth_date,
+                    class: "form-control" %>
             </div>
+
             <div class="mb-3">
               <%= f.label :gender %>
-              <%= f.select :gender, [["男の子", "boy"], ["女の子", "girl"]], {}, class: "form-select" %>
+              <%= f.select :gender,
+                    [["男の子", "boy"], ["女の子", "girl"]],
+                    { selected: flash[:child_attributes]&.[]("gender") || f.object.gender },
+                    class: "form-select" %>
             </div>
+
             <%= f.submit "更新", class: "btn btn-primary" %>
           <% end %>
         <% else %>
@@ -308,7 +281,8 @@
       </div>
       <div class="modal-body">
         <% if @children.present? %>
-<%= form_with(model: [@children.first, @record || Record.new], url: child_records_path(@children.first), local: true, data: { turbo: false }) do |f| %>            <div class="mb-3">
+<%= form_with(model: [@children.first, @record || Record.new], url: child_records_path(@children.first), local: true, data: { turbo: false }) do |f| %>       
+     <div class="mb-3">
   <% if f.object.errors.any? %>
   <div class="alert alert-danger">
     <ul class="mb-2">
@@ -523,14 +497,7 @@
     </div>
   </div>
 </div>
-<% if flash[:open_modal] %>
-  <script>
-    document.addEventListener("DOMContentLoaded", function() {
-      const modal = new bootstrap.Modal(document.getElementById("<%= flash[:open_modal] %>"));
-      modal.show();
-    });
-  </script>
-<% end %>
+
 <!-- 関係者一覧モーダル -->
 <div class="modal fade" id="careRelationshipListModal" tabindex="-1" aria-labelledby="careRelationshipListModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-lg">
@@ -646,3 +613,25 @@
     });
   </script>
 <% end %>
+
+
+
+<% if flash[:open_modal] %>
+  <script>
+    document.addEventListener("DOMContentLoaded", function() {
+      const modal = new bootstrap.Modal(document.getElementById("<%= flash[:open_modal] %>"));
+      modal.show();
+    });
+  </script>
+<% end %>
+
+<% if flash[:child_modal_error] %>
+  <script>
+    document.addEventListener("DOMContentLoaded", function() {
+      const modalId = "<%= flash[:child_modal_error] == 'new' ? 'childModal' : 'editChildModal' %>";
+      const modal = new bootstrap.Modal(document.getElementById(modalId));
+      modal.show();
+    });
+  </script>
+<% end %>
+

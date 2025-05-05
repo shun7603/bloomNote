@@ -1,4 +1,4 @@
-<% unless flash[:hospital_modal_error].present? %>
+<% unless flash.keys.any? { |k| k.to_s.ends_with?('_modal_error') || k.to_s.ends_with?('_errors') } %>
   <% flash.each do |type, message| %>
     <% css_class =
       case type.to_sym

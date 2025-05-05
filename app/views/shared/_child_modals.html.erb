@@ -6,8 +6,22 @@
         <h5 class="modal-title" id="childModalLabel">子どもを登録</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
+
       <div class="modal-body">
-        <%= form_with(model: Child.new, url: children_path, local: true) do |f| %>
+        <% child = @child || Child.new(flash[:child_attributes] || {}) %>
+
+        <%= form_with(model: child, url: children_path, local: true) do |f| %>
+
+          <% if flash[:child_errors] %>
+            <div class="alert alert-danger">
+              <ul>
+                <% flash[:child_errors].each do |msg| %>
+                  <li><%= msg %></li>
+                <% end %>
+              </ul>
+            </div>
+          <% end %>
+
           <div class="mb-3">
             <%= f.label :name %>
             <%= f.text_field :name, class: "form-control" %>
