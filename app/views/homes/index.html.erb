@@ -385,7 +385,7 @@
 
 <!-- 病院情報 編集モーダル -->
 <% current_user.hospitals.each do |hospital| %>
-  <% hospital = @hospital if flash[:hospital_modal_error].to_i == hospital.id %>
+  <% hospital_to_use = (flash[:hospital_modal_error].to_i == hospital.id && @hospital.present?) ? @hospital : hospital %>
   <div class="modal fade"
        id="editHospitalModal-<%= hospital.id %>"
        tabindex="-1"
@@ -438,24 +438,38 @@
 <% end %>
 
 <!-- 病院情報 新規追加モーダル -->
+<!-- 病院情報 新規追加モーダル -->
 <div class="modal fade" id="newHospitalModal" tabindex="-1" aria-labelledby="newHospitalModalLabel" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
-      <%= form_with(model: current_user.hospitals.build, local: true) do |f| %>
+      <%= form_with model: Hospital.new, url: hospitals_path, local: true do |f| %>
         <div class="modal-header">
-          <h5 class="modal-title" id="newHospitalModalLabel">緊急連絡名を追加</h5>
+          <h5 class="modal-title" id="newHospitalModalLabel">病院を追加</h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="閉じる"></button>
         </div>
+
         <div class="modal-body">
+          <% if flash[:hospital_errors] %>
+            <div class="alert alert-danger">
+              <ul class="mb-0">
+                <% flash[:hospital_errors].each do |msg| %>
+                  <li><%= msg %></li>
+                <% end %>
+              </ul>
+            </div>
+          <% end %>
+
           <div class="mb-3">
             <%= f.label :name, "病院名" %>
-            <%= f.text_field :name, class: "form-control" %>
+            <%= f.text_field :name, value: flash[:hospital_attributes]&.[]("name"), class: "form-control" %>
           </div>
+
           <div class="mb-3">
             <%= f.label :phone_number, "電話番号" %>
-            <%= f.telephone_field :phone_number, class: "form-control" %>
+            <%= f.telephone_field :phone_number, value: flash[:hospital_attributes]&.[]("phone_number"), class: "form-control" %>
           </div>
         </div>
+
         <div class="modal-footer">
           <%= f.submit "追加する", class: "btn btn-primary" %>
         </div>
@@ -624,3 +638,11 @@
 </div>
 
 
+<% if flash[:hospital_modal_error] == "new" %>
+  <script>
+    document.addEventListener("DOMContentLoaded", function() {
+      const modal = new bootstrap.Modal(document.getElementById("newHospitalModal"));
+      modal.show();
+    });
+  </script>
+<% end %>
