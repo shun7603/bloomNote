@@ -3,20 +3,24 @@
 <%= turbo_frame_tag "flash" do %>
   <%= render "shared/flash" %>
 <% end %>
+
 <div class="text-center p-3 rounded mt-3 fw-bold" style="background-color: #fff3cd;">
   <div>
-    📝 今やるべきタスク：
+    
+📝 今やるべきタスク：
 <% if @next_routine.present? %>
+  <% task_value = @next_routine.task_before_type_cast.to_i %>
+  <% task_key = Routine.tasks.key(task_value) %>
+  <% task_label = Routine.task_labels[task_key] || "不明なタスク" %>
   <button class="btn btn-sm btn-warning"
           data-bs-toggle="modal"
           data-bs-target="#recordModal"
-          data-task="<%= @next_routine.task %>">
-    <%= @next_routine.task_label %>
+          data-task="<%= task_key %>">
+    <%= "#{task_label}：#{@next_routine.time.strftime('%H:%M')}" %>
   </button>
 <% else %>
   未定
 <% end %>
-  </div>
 </div>
 
 <div class="container p-3" style="max-width: 420px; background-color: #fffefc; border-radius: 20px; border: 1px solid #ddd;">
@@ -101,7 +105,20 @@
             </div>
             <div class="modal-body">
               <%= f.label :record_type, "記録の種類" %>
-              <%= f.select :record_type, Record.record_types.keys.map { |k| [I18n.t("activerecord.attributes.record.record_type.#{k}"), k] }, {}, class: "form-select mb-2" %>
+              <% if @next_routine.present? %>
+  <%= f.select :record_type,
+    [[I18n.t("activerecord.attributes.record.record_type.#{@next_routine.task}"), @next_routine.task]],
+    {},
+    class: "form-select mb-2",
+    id: "record_record_type" %>
+<% else %>
+  <%= f.select :record_type,
+    [],
+    {},
+    class: "form-select mb-2",
+    id: "record_record_type" %>
+<% end %>
+
               <%= f.label :category, "カテゴリ" %>
               <%= f.select :category, Record.categories.keys.map { |k| [I18n.t("activerecord.attributes.record.category.#{k}"), k] }, {}, class: "form-select mb-2" %>
               <%= f.label :quantity, "量や回数" %>
@@ -291,7 +308,7 @@
   </div>
 <% end %>
               <%= f.label :record_type, "記録の種類" %>
-              <%= f.select :record_type, Record.record_types.map { |k, _| [k.humanize, k] }, {}, class: "form-select" %>
+             <%= f.select :record_type, Record.record_types.map { |k, _| [k.humanize, k] }, {}, class: "form-select", id: "record_record_type" %>
             </div>
 
             <div class="mb-3">
@@ -549,25 +566,15 @@
         <h5 class="modal-title" id="switchStatusModalLabel">保育ステータスを切り替え</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="閉じる"></button>
       </div>
-
-      <div class="modal-body">
-<!-- ステータス切り替えモーダル -->
-<div class="modal fade" id="switchStatusModal" tabindex="-1" aria-labelledby="switchStatusModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="switchStatusModalLabel">保育ステータスを切り替え</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="閉じる"></button>
-      </div>
       <div class="modal-body">
         <% @care_relationships.each do |cr| %>
-        <%= render partial: "shared/care_relationship", locals: { care_relationship: cr } %>          
+          <%= render partial: "shared/care_relationship", locals: { care_relationship: cr } %>          
         <% end %>
       </div>
     </div>
   </div>
 </div>
-<!-- ルーティン一覧モーダル -->
+<!-- ルーティン登録モーダル -->
 <div class="modal fade" id="routineModal" tabindex="-1" aria-labelledby="routineModalLabel" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
@@ -579,21 +586,23 @@
         <% if @children.present? %>
           <%= form_with(model: [@children.first, Routine.new], url: child_routines_path(@children.first), local: true) do |f| %>
             <div class="mb-3">
-              <%= f.label :time %>
+              <%= f.label :time, "時刻" %>
               <%= f.time_field :time, class: "form-control" %>
             </div>
             <div class="mb-3">
               <%= f.label :task, "記録の種類" %>
               <%= f.select :task,
-                    Routine.tasks.keys.map { |k| [Routine.new(task: k).task_label, k] },
+                    Routine.tasks.map { |key, label| [label, key] },
                     { prompt: "選択してください" },
                     class: "form-select" %>
             </div>
             <div class="mb-3">
-              <%= f.label :memo %>
-              <%= f.text_area :memo, class: "form-control" %>
+              <%= f.label :memo, "メモ" %>
+              <%= f.text_area :memo, class: "form-control", rows: 2 %>
             </div>
-            <%= f.submit "追加", class: "btn btn-success" %>
+            <div class="text-end">
+              <%= f.submit "追加", class: "btn btn-success" %>
+            </div>
           <% end %>
         <% else %>
           <p>子どもが登録されていません。</p>

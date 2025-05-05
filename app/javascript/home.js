@@ -101,3 +101,16 @@ document.addEventListener("turbo:load", () => {
     }
   });
 });
+document.addEventListener("DOMContentLoaded", () => {
+  const taskButton = document.querySelector('[data-task]');
+  const recordSelect = document.getElementById('record_record_type');
+
+  if (taskButton && recordSelect) {
+    taskButton.addEventListener('click', () => {
+      const task = taskButton.getAttribute('data-task');
+      if (task) {
+        recordSelect.value = task;
+      }
+    });
+  }
+});
