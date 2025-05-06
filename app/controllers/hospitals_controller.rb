@@ -13,7 +13,6 @@ class HospitalsController < ApplicationController
       flash[:hospital_modal_error] = "new" # newの合図
       flash[:hospital_errors] = @hospital.errors.full_messages
       flash[:hospital_attributes] = hospital_params
-
       redirect_to root_path
     end
   end

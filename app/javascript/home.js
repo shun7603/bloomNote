@@ -1,7 +1,8 @@
 console.log("✅ home.js 読み込まれました");
+
+// ルーティン表示切替
 window.showRoutine = function(childId, childName) {
   document.querySelectorAll(".child-routine-section").forEach(el => el.style.display = "none");
-
   const section = document.getElementById(`routine-${childId}`);
   if (section) section.style.display = "block";
 
@@ -32,108 +33,87 @@ window.showRoutine = function(childId, childName) {
   footer.textContent = `今やるべきタスク：${nextTask}`;
 };
 
+// フォーム表示切替
 window.toggleForm = function(childId) {
   const form = document.getElementById(`form-${childId}`);
-  if (form.style.display === "none" || form.style.display === "") {
-    form.style.display = "block";
-  } else {
-    form.style.display = "none";
-  }
+  form.style.display = (form.style.display === "none" || form.style.display === "") ? "block" : "none";
 };
-document.addEventListener("DOMContentLoaded", () => {
-  const errorAlert = document.querySelector("#recordModal .alert-danger");
-  if (errorAlert) {
-    const recordModal = new bootstrap.Modal(document.getElementById("recordModal"));
-    recordModal.show();
-  }
-});
 
-document.addEventListener("DOMContentLoaded", () => {
-  // エラーがあったときにモーダルを自動で開く
-  const editModalId = "<%= j flash.now[:edit_hospital_id] %>";
-  if (editModalId) {
-    const targetModal = document.getElementById(`editHospitalModal-${editModalId}`);
-    if (targetModal) {
-      const modal = new bootstrap.Modal(targetModal);
+// ✅ turbo:load を1回だけにまとめる！！
+document.addEventListener("turbo:load", () => {
+  // ✅ モーダルを開く（open_modal）
+  const modalId = document.body.dataset.openModal;
+  if (modalId) {
+    const modalEl = document.getElementById(modalId);
+    if (modalEl) {
+      const modal = new bootstrap.Modal(modalEl);
       modal.show();
+      document.body.dataset.openModal = ""; // ←これがないと再表示される！
     }
   }
 
-  // ✕ボタンで `/` に戻る処理を追加
+  // ✅ 病院編集モーダル
+  const editHospitalId = document.body.dataset.hospitalModalError;
+  if (editHospitalId) {
+    const modalEl = document.getElementById(`editHospitalModal-${editHospitalId}`);
+    if (modalEl) {
+      const modal = new bootstrap.Modal(modalEl);
+      modal.show();
+      document.body.dataset.hospitalModalError = "";
+    }
+  }
+
+  // ✅ 子どもモーダル（new/edit）
+  const childModalError = document.body.dataset.childModalError;
+  if (childModalError === "new") {
+    const modal = new bootstrap.Modal(document.getElementById("childModal"));
+    modal.show();
+    document.body.dataset.childModalError = "";
+  } else if (childModalError === "edit") {
+    const modal = new bootstrap.Modal(document.getElementById("editChildModal"));
+    modal.show();
+    document.body.dataset.childModalError = "";
+  }
+
+  // ✅ ルーティン追加モーダル（routineModalError）
+  const routineModalError = document.body.dataset.routineModalError;
+  if (routineModalError === "true") {
+    const modalEl = document.getElementById("routineModal");
+    if (modalEl) {
+      const modal = new bootstrap.Modal(modalEl);
+      modal.show();
+      document.body.dataset.routineModalError = "";
+    }
+
+    const errors = JSON.parse(document.body.dataset.routineErrors || "[]");
+    const attributes = JSON.parse(document.body.dataset.routineAttributes || "{}");
+    const form = modalEl?.querySelector("form");
+
+    if (form) {
+      form.querySelector("[name='routine[time]']").value = attributes.time || "";
+      form.querySelector("[name='routine[task]']").value = attributes.task || "";
+      form.querySelector("[name='routine[memo]']").value = attributes.memo || "";
+    }
+  }
+
+  // ✅ 記録モーダル：data-task を select に反映
+  const recordModal = document.getElementById("recordModal");
+  if (recordModal) {
+    recordModal.addEventListener("show.bs.modal", event => {
+      const button = event.relatedTarget;
+      const task = button?.getAttribute("data-task");
+      if (task) {
+        const select = recordModal.querySelector("#record_record_type");
+        if (select) select.value = task;
+      }
+    });
+  }
+
+  // ✅ 病院モーダルで編集中は ×ボタンでトップへ戻す
   document.querySelectorAll(".modal .btn-close").forEach(btn => {
     btn.addEventListener("click", () => {
       if (location.pathname.match(/^\/hospitals\/\d+$/)) {
         window.location.href = "/";
-      }
-    });
-  });
-});
-
-document.addEventListener("DOMContentLoaded", () => {
-  const modal = document.getElementById('recordModal');
-  if (!modal) return;
-
-  modal.addEventListener('show.bs.modal', event => {
-    const button = event.relatedTarget;
-    if (!button) return;
-
-    const task = button.getAttribute('data-task');
-    const category = button.getAttribute('data-category');
-
-    if (task && category) {
-      document.querySelector('#record_record_type').value = task;
-      document.querySelector('#record_category').value = category;
-    }
-  });
-});
-
-document.addEventListener("turbo:load", () => {
-  const recordModal = document.getElementById("recordModal");
-  recordModal?.addEventListener("show.bs.modal", (event) => {
-    const button = event.relatedTarget;
-    const task = button?.getAttribute("data-task");
-
-    if (task) {
-      const select = recordModal.querySelector("#record_record_type");
-      if (select) {
-        select.value = task;
-      }
-    }
-  });
-});
-document.addEventListener("DOMContentLoaded", () => {
-  const taskButton = document.querySelector('[data-task]');
-  const recordSelect = document.getElementById('record_record_type');
-
-  if (taskButton && recordSelect) {
-    taskButton.addEventListener('click', () => {
-      const task = taskButton.getAttribute('data-task');
-      if (task) {
-        recordSelect.value = task;
-      }
-    });
-  }
-});
-
-document.addEventListener("DOMContentLoaded", () => {
-  const routineModal = document.getElementById("routineDetailModal");
-  if (!routineModal) return;
-
-  routineModal.addEventListener("show.bs.modal", (event) => {
-    const button = event.relatedTarget;
-    document.getElementById("modalRoutineTime").textContent = button.getAttribute("data-routine-time");
-    document.getElementById("modalRoutineTask").textContent = button.getAttribute("data-routine-task");
-    document.getElementById("modalRoutineMemo").textContent = button.getAttribute("data-routine-memo");
-  });
-});
-document.addEventListener("turbo:load", () => {
-  document.querySelectorAll('[data-bs-toggle="modal"]').forEach(button => {
-    button.addEventListener("click", (event) => {
-      const targetId = button.getAttribute("data-bs-target");
-      const modalElement = document.querySelector(targetId);
-      if (modalElement) {
-        const modal = new bootstrap.Modal(modalElement);
-        modal.show();
       }
     });
   });

@@ -16,6 +16,13 @@ class RecordsController < ApplicationController
     end
   end
 
+  def destroy
+    @child = current_user.children.find(params[:child_id])
+    @record = @child.records.find(params[:id])
+    @record.destroy
+    redirect_to root_path, notice: "記録を削除しました"
+  end
+
   private
 
   def set_child

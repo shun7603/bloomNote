@@ -8,11 +8,17 @@
       </div>
       <div class="modal-body">
         <% if flash[:routine_errors] %>
-          <div class="alert alert-danger"><ul><% flash[:routine_errors].each do |msg| %><li><%= msg %></li><% end %></ul></div>
+          <div class="alert alert-danger">
+            <ul class="mb-2">
+              <% flash[:routine_errors].each do |msg| %>
+                <li><%= msg %></li>
+              <% end %>
+            </ul>
+          </div>
         <% end %>
 
         <% if @children.present? %>
-          <%= form_with(model: [@children.first, Routine.new], url: child_routines_path(@children.first), local: true, html: { multipart: true }) do |f| %>
+<%= form_with(model: [@children.first, Routine.new(flash[:routine_attributes] || {})], url: child_routines_path(@children.first), local: true, html: { multipart: true }) do |f| %>
             <div class="mb-3">
               <%= f.label :time, "時間" %>
               <%= f.time_field :time, class: "form-control" %>
@@ -67,7 +73,7 @@
 
                 <!-- 編集・削除ボタン -->
                 <div class="text-end">
-                  <%= link_to "編集", "#", class: "btn btn-sm btn-outline-secondary", data: { bs_toggle: "modal", bs_target: "#editRoutineModal-#{routine.id}" } %>
+<%= link_to "編集", "#", class: "btn btn-sm btn-outline-secondary", data: { bs_toggle: "modal", bs_target: "#editRoutineModal-#{routine.id}", turbo: false } %>
                   <%= button_to "削除", child_routine_path(routine.child_id, routine),
                       method: :delete,
                       data: { turbo_confirm: "本当に削除しますか？" },
@@ -126,3 +132,15 @@
   </div>
 </div>
 
+<% if flash[:open_modal] %>
+  <script>
+    document.addEventListener("turbo:load", () => {
+      const modalId = "<%= flash[:open_modal] %>";
+      const modalElement = document.getElementById(modalId);
+      if (modalElement) {
+        const modal = new bootstrap.Modal(modalElement);
+        modal.show();
+      }
+    });
+  </script>
+<% end %>

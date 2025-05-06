@@ -1,4 +1,4 @@
-// Configure your import map in config/importmap.rb. Read more: https://github.com/rails/importmap-rails
+// app/javascript/home.js (こちらを使っている場合)
 import "@hotwired/turbo-rails"
-import "./controllers/select_task_controller";
-import "home";
+import "bootstrap"
+import "./home"

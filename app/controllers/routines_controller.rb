@@ -32,13 +32,13 @@ class RoutinesController < ApplicationController
     @routine = @child.routines.build(routine_params)
     if @routine.save
       flash[:notice] = "ルーティンを登録しました"
-      redirect_to root_path
     else
       flash[:alert] = "ルーティン登録に失敗しました"
       flash[:routine_errors] = @routine.errors.full_messages
-      flash[:open_modal] = "routineModal"
-      redirect_to root_path
+      flash[:routine_attributes] = routine_params.to_h
+      flash[:routine_modal_error] = true # ← モーダル再表示用
     end
+    redirect_to root_path
   end
 
   # app/controllers/routines_controller.rb

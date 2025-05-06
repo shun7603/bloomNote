@@ -559,79 +559,14 @@
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="閉じる"></button>
       </div>
       <div class="modal-body">
-        <% @care_relationships.each do |cr| %>
-          <%= render partial: "shared/care_relationship", locals: { care_relationship: cr } %>          
-        <% end %>
+<% if defined?(@care_relationships) && @care_relationships.present? %>
+  <% @care_relationships.each do |cr| %>
+    <%= render partial: "shared/care_relationship", locals: { care_relationship: cr } %>          
+  <% end %>
+<% else %>
+  <p class="text-muted">関係者情報が取得できませんでした。</p>
+<% end %>
       </div>
     </div>
   </div>
 </div>
-<!-- ルーティン登録モーダル -->
-<div class="modal fade" id="routineModal" tabindex="-1" aria-labelledby="routineModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="routineModalLabel">ルーティンを追加</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-      </div>
-      <div class="modal-body">
-        <% if @children.present? %>
-          <%= form_with(model: [@children.first, Routine.new], url: child_routines_path(@children.first), local: true) do |f| %>
-            <div class="mb-3">
-              <%= f.label :time, "時刻" %>
-              <%= f.time_field :time, class: "form-control" %>
-            </div>
-            <div class="mb-3">
-              <%= f.label :task, "記録の種類" %>
-              <%= f.select :task,
-                    Routine.tasks.map { |key, label| [label, key] },
-                    { prompt: "選択してください" },
-                    class: "form-select" %>
-            </div>
-            <div class="mb-3">
-              <%= f.label :memo, "メモ" %>
-              <%= f.text_area :memo, class: "form-control", rows: 2 %>
-            </div>
-            <div class="text-end">
-              <%= f.submit "追加", class: "btn btn-success" %>
-            </div>
-          <% end %>
-        <% else %>
-          <p>子どもが登録されていません。</p>
-        <% end %>
-      </div>
-    </div>
-  </div>
-</div>
-
-
-<% if flash[:hospital_modal_error] == "new" %>
-  <script>
-    document.addEventListener("DOMContentLoaded", function() {
-      const modal = new bootstrap.Modal(document.getElementById("newHospitalModal"));
-      modal.show();
-    });
-  </script>
-<% end %>
-
-
-
-<% if flash[:open_modal] %>
-  <script>
-    document.addEventListener("DOMContentLoaded", function() {
-      const modal = new bootstrap.Modal(document.getElementById("<%= flash[:open_modal] %>"));
-      modal.show();
-    });
-  </script>
-<% end %>
-
-<% if flash[:child_modal_error] %>
-  <script>
-    document.addEventListener("DOMContentLoaded", function() {
-      const modalId = "<%= flash[:child_modal_error] == 'new' ? 'childModal' : 'editChildModal' %>";
-      const modal = new bootstrap.Modal(document.getElementById(modalId));
-      modal.show();
-    });
-  </script>
-<% end %>
-
