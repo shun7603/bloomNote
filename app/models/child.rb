@@ -3,6 +3,7 @@ class Child < ApplicationRecord
   has_many :routines, dependent: :destroy
   has_many :records, dependent: :destroy
   has_many :care_relationships, dependent: :destroy
+  has_many :hospitals, dependent: :destroy # ← ✅ 複数形に修正
 
   validates :name, presence: true
   validates :birth_date, presence: true
@@ -10,12 +11,10 @@ class Child < ApplicationRecord
 
   enum gender: { unspecified: 0, boy: 1, girl: 2 }
 
-  # ✅ この子が指定ユーザーに共有されているか？
   def shared_with?(user)
     care_relationships.exists?(caregiver_id: user.id, status: CareRelationship.statuses[:ongoing])
   end
 
-  # ✅ 閲覧可能な子ども一覧スコープ（親 or 保育者 with ongoing）
   scope :accessible_by, lambda { |user|
     left_joins(:care_relationships)
       .where(

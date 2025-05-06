@@ -7,7 +7,7 @@
       </div>
       <div class="modal-body">
         <% if @children.present? %>
-<%= form_with(model: [@children.first, @record || Record.new], url: child_records_path(@children.first), local: true) do |f| %>
+<%= form_with(model: [@current_child, @record || Record.new], url: child_records_path(@current_child), local: true) do |f| %>
   <% if flash[:record_errors] %>
     <div class="alert alert-danger">
       <ul class="mb-0">

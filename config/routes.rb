@@ -13,9 +13,8 @@ Rails.application.routes.draw do
   resources :children, only: [:new, :create, :index, :show, :update] do
     resources :records, only: [:create, :update, :destroy]
     resources :routines
+    resources :hospitals, only: [:new, :create, :update]
   end
-
-  resources :hospitals, only: [:new, :create, :update]
 
   resources :care_relationships, only: [:create, :update, :destroy]
 end

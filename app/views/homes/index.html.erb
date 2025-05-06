@@ -202,7 +202,7 @@
       </div>
       <div class="modal-body">
         <% if @children.present? %>
-          <%= form_with(model: @children.first, url: child_path(@children.first), method: :patch, local: true) do |f| %>
+          <%= form_with(model: @current_child, url: child_path(@current_child), method: :patch, local: true) do |f| %>
 
             <% if flash[:child_errors] %>
               <div class="alert alert-danger">
@@ -256,7 +256,7 @@
       </div>
       <div class="modal-body">
         <% if @children.present? %>
-          <%= form_with(model: [@children.first, Routine.new], url: child_routines_path(@children.first), local: true) do |f| %>
+          <%= form_with(model: [@current_child, Routine.new], url: child_routines_path(@current_child), local: true) do |f| %>
             <div class="mb-3">
               <%= f.label :time %>
               <%= f.time_field :time, class: "form-control" %>
@@ -302,8 +302,8 @@
 
       <!-- モーダルボディ -->
       <div class="modal-body">
-        <% if current_user.hospitals.any? %>
-          <% current_user.hospitals.each do |hospital| %>
+<% if @current_child&.hospitals&.any? %>
+  <% @current_child.hospitals.each do |hospital| %>
             <div class="border rounded p-2 mb-3">
               <p>
                 <strong><%= hospital.name %></strong><br>
@@ -336,7 +336,7 @@
        aria-hidden="true">
     <div class="modal-dialog">
       <div class="modal-content">
-        <%= form_with(model: hospital, url: hospital_path(hospital), method: :patch, local: true) do |f| %>
+<%= form_with(model: [hospital.child, hospital], url: child_hospital_path(hospital.child, hospital), method: :patch, local: true) do |f| %>
         <% if flash[:hospital_errors] && flash[:hospital_modal_error].to_i == hospital.id %>
           <div class="alert alert-danger">
             <ul>
@@ -381,11 +381,10 @@
 <% end %>
 
 <!-- 病院情報 新規追加モーダル -->
-<!-- 病院情報 新規追加モーダル -->
 <div class="modal fade" id="newHospitalModal" tabindex="-1" aria-labelledby="newHospitalModalLabel" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
-      <%= form_with model: Hospital.new, url: hospitals_path, local: true do |f| %>
+      <%= form_with(model: [@current_child, Hospital.new], url: child_hospitals_path(@current_child), local: true) do |f| %>
         <div class="modal-header">
           <h5 class="modal-title" id="newHospitalModalLabel">病院を追加</h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="閉じる"></button>
@@ -402,14 +401,17 @@
             </div>
           <% end %>
 
+          <!-- 🔒 child_id を hidden_field で明示 -->
+          <%= f.hidden_field :child_id, value: @current_child&.id %>
+
           <div class="mb-3">
             <%= f.label :name, "病院名" %>
-            <%= f.text_field :name, value: flash[:hospital_attributes]&.[]("name"), class: "form-control" %>
+            <%= f.text_field :name, value: flash[:hospital_attributes]&.[]("name"), class: "form-control", id: "hospital_name" %>
           </div>
 
           <div class="mb-3">
             <%= f.label :phone_number, "電話番号" %>
-            <%= f.telephone_field :phone_number, value: flash[:hospital_attributes]&.[]("phone_number"), class: "form-control" %>
+            <%= f.telephone_field :phone_number, value: flash[:hospital_attributes]&.[]("phone_number"), class: "form-control", id: "hospital_phone_number" %>
           </div>
         </div>
 

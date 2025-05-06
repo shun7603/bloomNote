@@ -5,7 +5,7 @@ class HospitalsController < ApplicationController
 
   def create
     @hospital = current_user.hospitals.build(hospital_params)
-
+    @hospital.user = current_user
     if @hospital.save
       redirect_to root_path, notice: "病院を登録しました"
     else
@@ -32,6 +32,6 @@ class HospitalsController < ApplicationController
   private
 
   def hospital_params
-    params.require(:hospital).permit(:name, :phone_number)
+    params.require(:hospital).permit(:name, :phone_number, :child_id)
   end
 end
