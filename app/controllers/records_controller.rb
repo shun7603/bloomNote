@@ -3,16 +3,28 @@ class RecordsController < ApplicationController
   before_action :authenticate_user!
   before_action :set_child
 
+  # records_controller.rb
   def create
-    @child = Child.find(params[:child_id])
-    @record = @child.records.build(record_params)
-  
+    @record = current_user.children.find(params[:child_id]).records.build(record_params)
     if @record.save
-      redirect_to root_path, notice: "記録が追加されました"
+      redirect_to root_path, notice: "記録を追加しました"
     else
-      @children = current_user.children
-      @records = @child.records.where(recorded_at: Time.zone.today.all_day)
-      render "homes/index"  # ←ここでrenderを使うのがポイント！
+      flash[:record_errors] = @record.errors.full_messages
+      flash[:record_attributes] = record_params.to_h
+      flash[:record_modal_error] = "true"
+      redirect_to root_path
+    end
+  end  
+
+  # app/controllers/records_controller.rb
+  def update
+    @record = current_user.children.find(params[:child_id]).records.find(params[:id])
+    if @record.update(record_params)
+      redirect_to root_path, notice: "記録を更新しました"
+    else
+      flash[:record_errors] = @record.errors.full_messages
+      flash[:open_modal] = "editRecordModal-#{@record.id}"  # ←ここ重要！
+      redirect_to root_path
     end
   end
 

@@ -7,18 +7,19 @@
         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
       <div class="modal-body">
-        <% if flash[:routine_errors] %>
-          <div class="alert alert-danger">
-            <ul class="mb-2">
-              <% flash[:routine_errors].each do |msg| %>
-                <li><%= msg %></li>
-              <% end %>
-            </ul>
-          </div>
-        <% end %>
+<% if flash[:routine_errors] %>
+  <div class="alert alert-danger">
+    <ul class="mb-2">
+      <% flash[:routine_errors].each do |msg| %>
+        <li><%= msg %></li>
+      <% end %>
+    </ul>
+  </div>
+<% end %>
 
         <% if @children.present? %>
 <%= form_with(model: [@children.first, Routine.new(flash[:routine_attributes] || {})], url: child_routines_path(@children.first), local: true, html: { multipart: true }) do |f| %>
+
             <div class="mb-3">
               <%= f.label :time, "時間" %>
               <%= f.time_field :time, class: "form-control" %>

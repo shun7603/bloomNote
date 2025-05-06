@@ -7,17 +7,6 @@
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="閉じる"></button>
         </div>
 
-        <div class="modal-body">
-          <% if @hospital&.errors&.any? %>
-            <div class="alert alert-danger">
-              <ul>
-                <% @hospital.errors.full_messages.each do |message| %>
-                  <li><%= message %></li>
-                <% end %>
-              </ul>
-            </div>
-          <% end %>
-
           <div class="mb-3">
             <%= f.label :name, "病院名" %>
             <%= f.text_field :name, class: "form-control" %>

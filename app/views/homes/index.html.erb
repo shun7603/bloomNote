@@ -114,20 +114,21 @@
               <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
-              <%= f.label :record_type, "記録の種類" %>
-              <% if @next_routine.present? %>
-  <%= f.select :record_type,
-    [[I18n.t("activerecord.attributes.record.record_type.#{@next_routine.task}"), @next_routine.task]],
-    {},
-    class: "form-select mb-2",
-    id: "record_record_type" %>
-<% else %>
-  <%= f.select :record_type,
-    [],
-    {},
-    class: "form-select mb-2",
-    id: "record_record_type" %>
+<% if flash[:open_modal] == "editRecordModal-#{record.id}" && flash[:record_errors] %>
+  <div class="alert alert-danger">
+    <ul class="mb-0">
+      <% flash[:record_errors].each do |msg| %>
+        <li><%= msg %></li>
+      <% end %>
+    </ul>
+  </div>
 <% end %>
+<%= f.label :record_type, "記録の種類" %>
+<%= f.select :record_type,
+  Record.record_types.keys.map { |key| [I18n.t("activerecord.attributes.record.record_type.#{key}", default: key), key] },
+  {},
+  class: "form-select mb-2",
+  id: "record_record_type" %>
 
               <%= f.label :category, "カテゴリ" %>
               <%= f.select :category, Record.categories.keys.map { |k| [I18n.t("activerecord.attributes.record.category.#{k}"), k] }, {}, class: "form-select mb-2" %>
@@ -271,53 +272,6 @@
   <button class="btn btn-outline-warning rounded-pill px-4" data-bs-toggle="modal" data-bs-target="#recordModal">＋ 育児記録</button>
 </div>
 
-<!-- 育児記録登録モーダル -->
-<div class="modal fade" id="recordModal" tabindex="-1" aria-labelledby="recordModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="recordModalLabel">育児記録を追加</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-      </div>
-      <div class="modal-body">
-        <% if @children.present? %>
-<%= form_with(model: [@children.first, @record || Record.new], url: child_records_path(@children.first), local: true, data: { turbo: false }) do |f| %>       
-     <div class="mb-3">
-  <% if f.object.errors.any? %>
-  <div class="alert alert-danger">
-    <ul class="mb-2">
-      <% f.object.errors.full_messages.each do |msg| %>
-        <li><%= msg %></li>
-      <% end %>
-    </ul>
-  </div>
-<% end %>
-              <%= f.label :record_type, "記録の種類" %>
-             <%= f.select :record_type, Record.record_types.map { |k, _| [k.humanize, k] }, {}, class: "form-select", id: "record_record_type" %>
-            </div>
-
-            <div class="mb-3">
-              <%= f.label :quantity, "量や回数" %>
-              <%= f.number_field :quantity, class: "form-control" %>
-            </div>
-            <div class="mb-3">
-              <%= f.label :recorded_at, "記録日時" %>
-              <%= f.datetime_local_field :recorded_at, value: Time.current.strftime("%Y-%m-%dT%H:%M"), class: "form-control" %>            </div>
-            <div class="mb-3">
-              <%= f.label :memo, "メモ" %>
-              <%= f.text_area :memo, class: "form-control", rows: 2 %>
-            </div>
-            <div class="text-end">
-              <%= f.submit "記録する", class: "btn btn-primary" %>
-            </div>
-          <% end %>
-        <% else %>
-          <p>まず子どもを登録してください。</p>
-        <% end %>
-      </div>
-    </div>
-  </div>
-</div>
 
 
 <!-- 緊急連絡モーダル -->

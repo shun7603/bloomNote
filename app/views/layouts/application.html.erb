@@ -18,10 +18,15 @@
 <body
   data-open-modal="<%= flash[:open_modal] %>"
   data-hospital-modal-error="<%= flash[:hospital_modal_error] %>"
+  data-hospital-errors="<%= (flash[:hospital_errors] || []).to_json %>"           
+  data-hospital-attributes="<%= (flash[:hospital_attributes] || {}).to_json %>"    
   data-child-modal-error="<%= flash[:child_modal_error] %>"
   data-routine-modal-error="<%= flash[:routine_modal_error] %>"
   data-routine-errors="<%= (flash[:routine_errors] || []).to_json %>"
-  data-routine-attributes="<%= (flash[:routine_attributes] || {}).to_json %>">
+  data-routine-attributes="<%= (flash[:routine_attributes] || {}).to_json %>"
+  data-record-errors="<%= (flash[:record_errors] || []).to_json %>"
+  data-record-attributes="<%= (flash[:record_attributes] || {}).to_json %>"
+  data-record-modal-error="<%= flash[:record_modal_error] %>">
     <main>
       <%= yield %>
     </main>
