@@ -2,9 +2,10 @@ class HomesController < ApplicationController
   before_action :authenticate_user!
 
   def index
-    @children      = current_user.children.includes(:records, :routines)
+    @children      = Child.accessible_by(current_user) # 👈 閲覧可能な子ども全体（親＋共有）
     @selected_date = parse_date(params[:date])
     @record        = Record.new
+    @current_child = current_child 
 
     if (child = @children.first)
       # 📋 今日の記録一覧（最新順）

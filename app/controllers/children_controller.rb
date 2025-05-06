@@ -2,8 +2,18 @@ class ChildrenController < ApplicationController
   before_action :authenticate_user!
 
   def index
-    @children = current_user.children.includes(:routines)
+    # 自分が親の子ども + 自分が保育者で関係が「共有中」の子ども
+    @children = Child
+                .left_joins(:care_relationships)
+                .where(
+                  "children.user_id = :user_id OR care_relationships.caregiver_id = :user_id AND care_relationships.status = :ongoing",
+                  user_id: current_user.id,
+                  ongoing: CareRelationship.statuses[:ongoing]
+                )
+                .distinct
+                .includes(:routines)
 
+    # 仮ルーティン（後でDBから取得する場合は不要）
     @routine = [
       { time: '08:00', task: 'ミルク' },
       { time: '09:00', task: '睡眠' },
@@ -13,11 +23,24 @@ class ChildrenController < ApplicationController
 
   def show
     @child = current_user.children.find(params[:id])
+
     @routine = [
       { time: '08:00', task: 'ミルク' },
       { time: '09:00', task: '睡眠' },
       { time: '11:00', task: '排泄' }
     ]
+  end
+
+  def select
+    child = Child.find(params[:id])
+
+    if current_user.can_access?(child)
+      session[:current_child_id] = child.id
+      flash[:notice] = "#{child.name} を選択しました"
+    else
+      flash[:alert] = "アクセスできません"
+    end
+    redirect_to root_path
   end
 
   def create
