@@ -8,15 +8,16 @@
       <div class="modal-body">
         <% if @children.present? %>
 <%= form_with(model: [@children.first, @record || Record.new], url: child_records_path(@children.first), local: true) do |f| %>
-<% if f.object.errors.any? %>
-  <div class="alert alert-danger">
-    <ul class="mb-0">
-      <% f.object.errors.full_messages.each do |msg| %>
-        <li><%= msg %></li>
-      <% end %>
-    </ul>
-  </div>
-<% end %>
+  <% if flash[:record_errors] %>
+    <div class="alert alert-danger">
+      <ul class="mb-0">
+        <% flash[:record_errors].each do |msg| %>
+          <li><%= msg %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
 
       <div class="mb-3">
         <%= f.label :record_type, "記録の種類" %>

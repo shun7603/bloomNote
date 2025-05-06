@@ -1,0 +1,27 @@
+<div class="modal fade" id="newHospitalModal" tabindex="-1" aria-labelledby="newHospitalModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <%= form_with model: @hospital || current_user.hospitals.build, url: hospitals_path, data: { turbo_frame: "_top" }, method: :post do |f| %>
+        <div class="modal-header">
+          <h5 class="modal-title" id="newHospitalModalLabel">病院を追加</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="閉じる"></button>
+        </div>
+
+          <div class="mb-3">
+            <%= f.label :name, "病院名" %>
+            <%= f.text_field :name, class: "form-control" %>
+          </div>
+
+          <div class="mb-3">
+            <%= f.label :phone_number, "電話番号" %>
+            <%= f.telephone_field :phone_number, class: "form-control" %>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <%= f.submit "追加する", class: "btn btn-primary" %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>

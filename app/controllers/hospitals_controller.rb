@@ -5,21 +5,27 @@ class HospitalsController < ApplicationController
 
   def create
     @hospital = current_user.hospitals.build(hospital_params)
+
     if @hospital.save
-      redirect_to root_path, notice: '病院を登録しました'
+      redirect_to root_path, notice: "病院を登録しました"
     else
-      render 'new', status: :unprocessable_entity
+      # flashを使ってエラー内容と入力値を一時的に保持
+      flash[:hospital_modal_error] = "new" # newの合図
+      flash[:hospital_errors] = @hospital.errors.full_messages
+      flash[:hospital_attributes] = hospital_params
+      redirect_to root_path
     end
   end
 
+  # hospitals_controller.rb
   def update
     @hospital = Hospital.find(params[:id])
     if @hospital.update(hospital_params)
-      redirect_to root_path, notice: '病院情報を更新しました'
+      redirect_to root_path, notice: "更新しました"
     else
-      flash.now[:hospital_modal_error] = @hospital.id
-      @hospitals = current_user.hospitals
-      render 'homes/index', status: :unprocessable_entity
+      flash[:hospital_modal_error] = @hospital.id
+      flash[:hospital_errors] = @hospital.errors.full_messages
+      redirect_to root_path # @hospitalは渡らないので、必要ならsessionなど使う
     end
   end
 

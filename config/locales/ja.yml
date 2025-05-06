@@ -34,12 +34,7 @@ ja:
       hospital:
         name: ""
         phone_number: ""
-        
-      care_relationship:         # ← 👈ここが追加ポイント！
-        parent: "親"
-        caregiver: "保育者"
-        child: "子ども"
-        status: "ステータス"
+
       care_relationship:
         parent: "親"
         caregiver: "保育者"
@@ -55,3 +50,18 @@ ja:
   errors:
     messages:
       blank: "を入力してください"
+      not_a_number: "は数値で入力してください"
+      greater_than: "は1以上を入力してください"  # ✅ %{attribute} を削除
+
+    models:
+      record:
+        attributes:
+          record_type:
+            blank: "記録の種類を入力してください"
+          category:
+            blank: "カテゴリを選択してください"
+          quantity:
+            blank: "を入力してください"
+            greater_than: "は1以上を入力してください"  # ✅ 個別でも同様に調整
+          recorded_at:
+            blank: "記録日時を入力してください"

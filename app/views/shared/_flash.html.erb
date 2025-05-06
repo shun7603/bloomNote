@@ -1,12 +1,14 @@
-<% flash.each do |type, message| %>
-  <% css_class =
-    case type.to_sym
-    when :notice then "alert alert-success"
-    when :alert then "alert alert-danger"
-    else "alert alert-info"
-    end
-  %>
-  <div class="<%= css_class %>" role="alert" data-controller="flash" data-flash-target="message">
-    <%= message %>
-  </div>
+<% unless flash.keys.any? { |k| k.to_s.ends_with?('_modal_error') || k.to_s.ends_with?('_errors') } %>
+  <% flash.each do |type, message| %>
+    <% css_class =
+      case type.to_sym
+      when :notice then "alert alert-success"
+      when :alert  then "alert alert-danger"
+      else              "alert alert-info"
+      end
+    %>
+    <div class="<%= css_class %>" role="alert" data-controller="flash" data-flash-target="message">
+      <%= message %>
+    </div>
+  <% end %>
 <% end %>

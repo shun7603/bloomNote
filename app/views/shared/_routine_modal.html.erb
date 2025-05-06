@@ -1,3 +1,4 @@
+<!-- ルーティン追加モーダル -->
 <div class="modal fade" id="routineModal" tabindex="-1" aria-labelledby="routineModalLabel" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
@@ -6,30 +7,141 @@
         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
       <div class="modal-body">
+<% if flash[:routine_errors] %>
+  <div class="alert alert-danger">
+    <ul class="mb-2">
+      <% flash[:routine_errors].each do |msg| %>
+        <li><%= msg %></li>
+      <% end %>
+    </ul>
+  </div>
+<% end %>
+
         <% if @children.present? %>
-          <%= form_with(model: [@children.first, Routine.new], url: child_routines_path(@children.first), local: true) do |f| %>
+<%= form_with(model: [@children.first, Routine.new(flash[:routine_attributes] || {})], url: child_routines_path(@children.first), local: true, html: { multipart: true }) do |f| %>
+
             <div class="mb-3">
-              <%= f.label :time %>
+              <%= f.label :time, "時間" %>
               <%= f.time_field :time, class: "form-control" %>
             </div>
             <div class="mb-3">
-              <%= f.label :task %>
-              <%= f.text_field :task, class: "form-control" %>
+              <%= f.label :task, "記録の種類" %>
+              <%= f.select :task, Routine.task_options_for_select, { prompt: "選択してください" }, class: "form-select" %>
             </div>
             <div class="mb-3">
-              <%= f.label :category %>
-              <%= f.select :category, Routine.categories.map { |k,v| [v, k] }, {}, class: "form-select" %>
+              <%= f.label :memo, "メモ（任意）" %>
+              <%= f.text_area :memo, class: "form-control", rows: 2 %>
             </div>
             <div class="mb-3">
-              <%= f.label :memo %>
-              <%= f.text_area :memo, class: "form-control" %>
+              <%= f.label :photo, "写真（任意）" %>
+              <%= f.file_field :photo, class: "form-control" %>
             </div>
-            <%= f.submit "追加", class: "btn btn-success" %>
+            <div class="text-end">
+              <%= f.submit "追加", class: "btn btn-success" %>
+            </div>
           <% end %>
         <% else %>
-          <p>子どもが登録されていません。</p>
+          <p class="text-muted">まず子どもを登録してください。</p>
         <% end %>
       </div>
     </div>
   </div>
 </div>
+
+<!-- ルーティン詳細モーダル -->
+<div class="modal fade" id="routineDetailModal" tabindex="-1" aria-labelledby="routineDetailModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="routineDetailModalLabel">ルーティン一覧</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <% if @children.first && @children.first.routines.any? %>
+          <ul class="list-group">
+            <% @children.first.routines.order(:time).each do |routine| %>
+              <% task_value = routine.task_before_type_cast.to_i %>
+              <% task_key = Routine.tasks.key(task_value) %>
+              <% task_label = Routine.task_labels[task_key] || "不明なタスク" %>
+              <li class="list-group-item d-flex justify-content-between align-items-start">
+                <div>
+                  <strong><%= task_label %></strong>
+                  <div class="text-muted small">🕒 <%= routine.time.strftime('%H:%M') %></div>
+                  <% if routine.memo.present? %>
+                    <div class="text-muted small">📝 <%= routine.memo %></div>
+                  <% end %>
+                </div>
+
+                <!-- 編集・削除ボタン -->
+                <div class="text-end">
+<%= link_to "編集", "#", class: "btn btn-sm btn-outline-secondary", data: { bs_toggle: "modal", bs_target: "#editRoutineModal-#{routine.id}", turbo: false } %>
+                  <%= button_to "削除", child_routine_path(routine.child_id, routine),
+                      method: :delete,
+                      data: { turbo_confirm: "本当に削除しますか？" },
+                      class: "btn btn-sm btn-outline-danger",
+                      form: { class: "d-inline" } %>
+                </div>
+              </li>
+
+              <!-- 編集モーダル（個別に出力） -->
+              <div class="modal fade" id="editRoutineModal-<%= routine.id %>" tabindex="-1" aria-labelledby="editRoutineModalLabel-<%= routine.id %>" aria-hidden="true">
+                <div class="modal-dialog">
+                  <div class="modal-content">
+                    <%= form_with(model: routine, url: child_routine_path(routine.child_id, routine), method: :patch, local: true) do |f| %>
+                      <div class="modal-header">
+                        <h5 class="modal-title" id="editRoutineModalLabel-<%= routine.id %>">ルーティンを編集</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                      </div>
+                      <div class="modal-body">
+                        <% if flash[:routine_errors] && flash[:open_modal] == "editRoutineModal-#{routine.id}" %>
+                          <div class="alert alert-danger">
+                            <ul>
+                              <% flash[:routine_errors].each do |msg| %>
+                                <li><%= msg %></li>
+                              <% end %>
+                            </ul>
+                          </div>
+                        <% end %>
+
+                        <div class="mb-3">
+                          <%= f.label :time, "時間" %>
+                          <%= f.time_field :time, class: "form-control" %>
+                        </div>
+                        <div class="mb-3">
+                          <%= f.label :task, "記録の種類" %>
+                          <%= f.select :task, Routine.task_options_for_select, {}, class: "form-select" %>
+                        </div>
+                        <div class="mb-3">
+                          <%= f.label :memo, "メモ" %>
+                          <%= f.text_area :memo, class: "form-control", rows: 2 %>
+                        </div>
+                      </div>
+                      <div class="modal-footer">
+                        <%= f.submit "更新", class: "btn btn-primary" %>
+                      </div>
+                    <% end %>
+                  </div>
+                </div>
+              </div>
+            <% end %>
+          </ul>
+        <% else %>
+          <p class="text-muted">ルーティンは登録されていません。</p>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>
+
+<% if flash[:open_modal] %>
+  <script>
+    document.addEventListener("turbo:load", () => {
+      const modalId = "<%= flash[:open_modal] %>";
+      const modalElement = document.getElementById(modalId);
+      if (modalElement) {
+        const modal = new bootstrap.Modal(modalElement);
+        modal.show();
+      }
+    });
+  </script>
+<% end %>

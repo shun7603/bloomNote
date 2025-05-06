@@ -1,21 +1,43 @@
 class Routine < ApplicationRecord
   belongs_to :child
-
-  # ActiveStorage（写真つけたい場合）
   has_one_attached :photo
 
-  # 必須項目
-  validates :time, presence: true
-  validates :task, presence: true
-  validates :category, presence: true
+  validates :time, :task, presence: true
 
-  # カテゴリ（enumで定義するとフォームで使いやすい）
-  enum category: {
-    nutrition: "栄養",      # 🍼 ミルク・離乳食など
-    life: "生活",           # 😴 睡眠・昼寝
-    health: "健康",         # 💩 排泄・体温
-    medical: "医療",        # 💊 服薬・通院
-    schedule: "スケジュール", # 📆 お風呂・外出・行事
-    concern: "気になること"  # 😣 気になる体調・様子
+  enum task: {
+    milk: 0,
+    sleep: 1,
+    toilet: 2,
+    meal: 3,
+    bath: 4,
+    walk: 5,
+    medicine: 6,
+    hospital: 7,
+    memo: 8
   }
+
+  # 一覧用ラベル（日本語）
+  def self.task_labels
+    {
+      "milk" => "ミルク",
+      "sleep" => "睡眠",
+      "toilet" => "排泄",
+      "meal" => "ごはん",
+      "bath" => "おふろ",
+      "walk" => "おさんぽ",
+      "medicine" => "薬",
+      "hospital" => "病院",
+      "memo" => "その他"
+    }
+  end
+
+  # セレクト用（[日本語, 英語キー]形式）
+  def self.task_options_for_select
+    task_labels.map { |k, v| [v, k] }
+  end
+
+  # インスタンス用
+  def task_label
+    I18n.t("activerecord.attributes.record.record_type.#{task}")
+  end
 end

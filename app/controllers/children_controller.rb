@@ -3,6 +3,7 @@ class ChildrenController < ApplicationController
 
   def index
     @children = current_user.children.includes(:routines)
+
     @routine = [
       { time: '08:00', task: 'ミルク' },
       { time: '09:00', task: '睡眠' },
@@ -21,21 +22,26 @@ class ChildrenController < ApplicationController
 
   def create
     @child = current_user.children.build(child_params)
+
     if @child.save
       redirect_to root_path, notice: '子どもを登録しました'
     else
-      render :new
+      flash[:child_errors] = @child.errors.full_messages
+      flash[:child_attributes] = child_params
+      flash[:child_modal_error] = "new"
+      redirect_to root_path
     end
   end
 
   def update
     @child = Child.find(params[:id])
+
     if @child.update(child_params)
       redirect_to root_path, notice: '子ども情報を更新しました'
     else
-      flash[:edit_child_error] = true
       flash[:child_errors] = @child.errors.full_messages
-      flash[:child_id] = @child.id
+      flash[:child_modal_error] = "edit"
+      flash[:child_attributes] = child_params
       redirect_to root_path
     end
   end
