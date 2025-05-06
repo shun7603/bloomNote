@@ -11,7 +11,7 @@ class User < ApplicationRecord
   # 子どもと病院
   has_many :children, dependent: :destroy
   has_many :hospitals, dependent: :destroy
-
+  has_many :records
   # 親としてのケアリレーションシップ（親が追加したもの）
   has_many :care_relationships,
            class_name: 'CareRelationship',

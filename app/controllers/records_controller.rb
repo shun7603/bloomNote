@@ -5,16 +5,18 @@ class RecordsController < ApplicationController
 
   # records_controller.rb
   def create
-    @record = current_user.children.find(params[:child_id]).records.build(record_params)
+    redirect_to root_path, alert: "子どもが選択されていません" and return unless current_child
+  
+    @record = current_child.records.build(record_params.merge(user_id: current_user.id))
     if @record.save
       redirect_to root_path, notice: "記録を追加しました"
     else
-      flash[:record_errors] = @record.errors.full_messages
+      flash[:record_errors]     = @record.errors.full_messages
       flash[:record_attributes] = record_params.to_h
       flash[:record_modal_error] = "true"
       redirect_to root_path
     end
-  end  
+  end
 
   # app/controllers/records_controller.rb
   def update

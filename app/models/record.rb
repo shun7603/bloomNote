@@ -1,5 +1,6 @@
 class Record < ApplicationRecord
   belongs_to :child
+  belongs_to :user
 
   enum record_type: {
     milk: 0,        # 🍼 ミルク
