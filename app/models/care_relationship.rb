@@ -4,7 +4,9 @@ class CareRelationship < ApplicationRecord
   belongs_to :child
 
   enum status: { ongoing: 0, ended: 1 }
-
+  def status_i18n
+    I18n.t("enums.care_relationship.status.#{status}")
+  end
   validates :parent, presence: { message: "を入力してください" }
   validates :caregiver, presence: { message: "を入力してください" }
   validates :child, presence: { message: "を入力してください" }

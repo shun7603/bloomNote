@@ -1,6 +1,7 @@
 # app/models/hospital.rb
 class Hospital < ApplicationRecord
   belongs_to :user
+  belongs_to :child
 
   validates :name, presence: { message: '緊急連絡名を入力してください' }
   validates :phone_number, presence: { message: '電話番号を入力してください' }

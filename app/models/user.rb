@@ -11,7 +11,7 @@ class User < ApplicationRecord
   # 子どもと病院
   has_many :children, dependent: :destroy
   has_many :hospitals, dependent: :destroy
-
+  has_many :records
   # 親としてのケアリレーションシップ（親が追加したもの）
   has_many :care_relationships,
            class_name: 'CareRelationship',
@@ -25,4 +25,14 @@ class User < ApplicationRecord
 
   # enum（ユーザー権限）
   enum role: { role_parent: 0, role_caregiver: 1 }
+  def can_access?(child)
+    return true if child.user_id == id # 親ならアクセス可能
+
+    # 保育者で「共有中」の関係があるか
+    CareRelationship.exists?(
+      child_id: child.id,
+      caregiver_id: id,
+      status: :ongoing
+    )
+  end
 end

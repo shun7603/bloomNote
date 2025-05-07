@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_05_05_090359) do
+ActiveRecord::Schema[7.1].define(version: 2025_05_06_135433) do
   create_table "active_storage_attachments", charset: "utf8mb3", force: :cascade do |t|
     t.string "name", null: false
     t.string "record_type", null: false
@@ -67,6 +67,8 @@ ActiveRecord::Schema[7.1].define(version: 2025_05_05_090359) do
     t.string "phone_number"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.bigint "child_id", null: false
+    t.index ["child_id"], name: "index_hospitals_on_child_id"
     t.index ["user_id"], name: "index_hospitals_on_user_id"
   end
 
@@ -79,6 +81,7 @@ ActiveRecord::Schema[7.1].define(version: 2025_05_05_090359) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "category"
+    t.bigint "user_id"
     t.index ["child_id"], name: "index_records_on_child_id"
   end
 
@@ -120,6 +123,7 @@ ActiveRecord::Schema[7.1].define(version: 2025_05_05_090359) do
   add_foreign_key "care_relationships", "users", column: "caregiver_id"
   add_foreign_key "care_relationships", "users", column: "parent_id"
   add_foreign_key "children", "users"
+  add_foreign_key "hospitals", "children"
   add_foreign_key "hospitals", "users"
   add_foreign_key "records", "children"
   add_foreign_key "routines", "children"

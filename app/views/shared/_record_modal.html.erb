@@ -6,48 +6,53 @@
         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
       <div class="modal-body">
-        <% if @children.present? %>
-<%= form_with(model: [@children.first, @record || Record.new], url: child_records_path(@children.first), local: true) do |f| %>
-  <% if flash[:record_errors] %>
-    <div class="alert alert-danger">
-      <ul class="mb-0">
-        <% flash[:record_errors].each do |msg| %>
-          <li><%= msg %></li>
-        <% end %>
-      </ul>
-    </div>
-  <% end %>
+        <% if @children.present? && @current_child.present? && (!@is_shared_child || @is_shared_child) %>
+          <%= form_with(model: [@current_child, @record || Record.new], url: child_records_path(@current_child), local: true) do |f| %>
+            <% if flash[:record_errors] %>
+              <div class="alert alert-danger">
+                <ul class="mb-0">
+                  <% flash[:record_errors].each do |msg| %>
+                    <li><%= msg %></li>
+                  <% end %>
+                </ul>
+              </div>
+            <% end %>
 
-
-      <div class="mb-3">
-        <%= f.label :record_type, "記録の種類" %>
-    <%= f.select :record_type,
-      Record.record_types.keys.map { |key| [I18n.t("activerecord.attributes.record.record_type.#{key}"), key] },
-      {}, class: "form-select" %>
-      </div>
-      <div class="mb-3">
-        <%= f.label :category, "カテゴリ" %>
-    <%= f.select :category,
-      Record.categories.keys.map { |key| [I18n.t("activerecord.attributes.record.category.#{key}"), key] },
-      {}, class: "form-select" %>
-      </div>
             <div class="mb-3">
-              <%= f.label :quantity, "量や回数" %>
-              <%= f.number_field :quantity, class: "form-control" %>
+              <%= f.label :record_type, "記録の種類" %>
+              <%= f.select :record_type,
+                  Record.record_types.keys.map { |key| [I18n.t("activerecord.attributes.record.record_type.#{key}"), key] },
+                  {}, class: "form-select" %>
             </div>
+
+            <div class="mb-3">
+              <%= f.label :category, "カテゴリ" %>
+              <%= f.select :category,
+                  Record.categories.keys.map { |key| [I18n.t("activerecord.attributes.record.category.#{key}"), key] },
+                  {}, class: "form-select" %>
+            </div>
+
+            <div class="mb-3">
+  <%= f.label :quantity, "量や回数" %>
+<%= f.number_field :quantity, class: "form-control", value: f.object.quantity || 1 %>
+            </div>
+
             <div class="mb-3">
               <%= f.label :recorded_at, "記録日時" %>
-    <%= f.datetime_local_field :recorded_at, value: Time.current.strftime("%Y-%m-%dT%H:%M"), class: "form-control" %>            </div>
+              <%= f.datetime_local_field :recorded_at, value: Time.current.strftime("%Y-%m-%dT%H:%M"), class: "form-control" %>
+            </div>
+
             <div class="mb-3">
               <%= f.label :memo, "メモ" %>
               <%= f.text_area :memo, class: "form-control", rows: 2 %>
             </div>
+
             <div class="text-end">
               <%= f.submit "記録する", class: "btn btn-primary" %>
             </div>
           <% end %>
         <% else %>
-          <p>まず子どもを登録してください。</p>
+          <p class="text-muted">まず子どもを登録してください。</p>
         <% end %>
       </div>
     </div>

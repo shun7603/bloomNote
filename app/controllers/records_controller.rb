@@ -1,35 +1,35 @@
-# app/controllers/records_controller.rb
 class RecordsController < ApplicationController
   before_action :authenticate_user!
   before_action :set_child
+  before_action :check_caregiver_permissions, only: [:update, :destroy]
 
-  # records_controller.rb
   def create
-    @record = current_user.children.find(params[:child_id]).records.build(record_params)
+    redirect_to root_path, alert: "子どもが見つかりません" and return unless @child
+
+    @record = @child.records.build(record_params.merge(user_id: current_user.id))
+
     if @record.save
       redirect_to root_path, notice: "記録を追加しました"
     else
-      flash[:record_errors] = @record.errors.full_messages
+      flash[:record_errors]     = @record.errors.full_messages
       flash[:record_attributes] = record_params.to_h
       flash[:record_modal_error] = "true"
       redirect_to root_path
     end
-  end  
+  end
 
-  # app/controllers/records_controller.rb
   def update
-    @record = current_user.children.find(params[:child_id]).records.find(params[:id])
+    @record = @child.records.find(params[:id])
     if @record.update(record_params)
       redirect_to root_path, notice: "記録を更新しました"
     else
       flash[:record_errors] = @record.errors.full_messages
-      flash[:open_modal] = "editRecordModal-#{@record.id}"  # ←ここ重要！
+      flash[:open_modal] = "editRecordModal-#{@record.id}"
       redirect_to root_path
     end
   end
 
   def destroy
-    @child = current_user.children.find(params[:child_id])
     @record = @child.records.find(params[:id])
     @record.destroy
     redirect_to root_path, notice: "記録を削除しました"
@@ -38,10 +38,25 @@ class RecordsController < ApplicationController
   private
 
   def set_child
-    @child = current_user.children.find(params[:child_id])
+    @child = Child
+             .left_joins(:care_relationships)
+             .where(id: params[:child_id])
+             .where("children.user_id = :uid OR care_relationships.caregiver_id = :uid", uid: current_user.id)
+             .where("care_relationships.status IS NULL OR care_relationships.status = ?", CareRelationship.statuses[:ongoing])
+             .distinct
+             .first
+  
+    puts "🧪 child found? => #{@child.present?}"
   end
 
   def record_params
     params.require(:record).permit(:record_type, :category, :quantity, :recorded_at, :memo)
+  end
+
+  def check_caregiver_permissions
+    return unless current_user.role_caregiver?
+
+    redirect_to root_path, alert: "編集・削除はできません" and return
+    
   end
 end

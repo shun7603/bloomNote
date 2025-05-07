@@ -17,9 +17,8 @@
   </div>
 <% end %>
 
-        <% if @children.present? %>
-<%= form_with(model: [@children.first, Routine.new(flash[:routine_attributes] || {})], url: child_routines_path(@children.first), local: true, html: { multipart: true }) do |f| %>
-
+        <% if @current_child.present? %>
+<%= form_with(model: [@current_child, Routine.new(flash[:routine_attributes] || {})], url: child_routines_path(@current_child), local: true) do |f| %>
             <div class="mb-3">
               <%= f.label :time, "時間" %>
               <%= f.time_field :time, class: "form-control" %>
@@ -56,32 +55,35 @@
         <h5 class="modal-title" id="routineDetailModalLabel">ルーティン一覧</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
-      <div class="modal-body">
-        <% if @children.first && @children.first.routines.any? %>
-          <ul class="list-group">
-            <% @children.first.routines.order(:time).each do |routine| %>
-              <% task_value = routine.task_before_type_cast.to_i %>
-              <% task_key = Routine.tasks.key(task_value) %>
-              <% task_label = Routine.task_labels[task_key] || "不明なタスク" %>
-              <li class="list-group-item d-flex justify-content-between align-items-start">
-                <div>
-                  <strong><%= task_label %></strong>
-                  <div class="text-muted small">🕒 <%= routine.time.strftime('%H:%M') %></div>
-                  <% if routine.memo.present? %>
-                    <div class="text-muted small">📝 <%= routine.memo %></div>
-                  <% end %>
-                </div>
+<div class="modal-body">
+  <% if @current_child && @current_child.routines.any? %>
+    <ul class="list-group">
+      <% @current_child.routines.order(:time).each do |routine| %>
+        <% task_value = routine.task_before_type_cast.to_i %>
+        <% task_key = Routine.tasks.key(task_value) %>
+        <% task_label = Routine.task_labels[task_key] || "不明なタスク" %>
+        <li class="list-group-item d-flex justify-content-between align-items-start">
+          <div>
+            <strong><%= task_label %></strong>
+            <div class="text-muted small">🕒 <%= routine.time.strftime('%H:%M') %></div>
+            <% if routine.memo.present? %>
+              <div class="text-muted small">📝 <%= routine.memo %></div>
+            <% end %>
+          </div>
 
-                <!-- 編集・削除ボタン -->
-                <div class="text-end">
-<%= link_to "編集", "#", class: "btn btn-sm btn-outline-secondary", data: { bs_toggle: "modal", bs_target: "#editRoutineModal-#{routine.id}", turbo: false } %>
-                  <%= button_to "削除", child_routine_path(routine.child_id, routine),
-                      method: :delete,
-                      data: { turbo_confirm: "本当に削除しますか？" },
-                      class: "btn btn-sm btn-outline-danger",
-                      form: { class: "d-inline" } %>
-                </div>
-              </li>
+  <!-- 編集・削除ボタン -->
+<% if current_user.id == routine.child.user_id %>
+  <div class="text-end">
+    <%= link_to "編集", "#", class: "btn btn-sm btn-outline-secondary",
+                data: { bs_toggle: "modal", bs_target: "#editRoutineModal-#{routine.id}", turbo: false } %>
+
+    <%= button_to "削除", child_routine_path(routine.child_id, routine),
+        method: :delete,
+        data: { turbo_confirm: "本当に削除しますか？" },
+        class: "btn btn-sm btn-outline-danger",
+        form: { class: "d-inline" } %>
+  </div>
+<% end %>
 
               <!-- 編集モーダル（個別に出力） -->
               <div class="modal fade" id="editRoutineModal-<%= routine.id %>" tabindex="-1" aria-labelledby="editRoutineModalLabel-<%= routine.id %>" aria-hidden="true">
