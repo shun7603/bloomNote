@@ -42,11 +42,8 @@ class RecordsController < ApplicationController
              .left_joins(:care_relationships)
              .where(id: params[:child_id])
              .where("children.user_id = :uid OR care_relationships.caregiver_id = :uid", uid: current_user.id)
-             .where("care_relationships.status IS NULL OR care_relationships.status = ?", CareRelationship.statuses[:ongoing])
              .distinct
              .first
-  
-    puts "🧪 child found? => #{@child.present?}"
   end
 
   def record_params

@@ -108,51 +108,66 @@ h4, h5 {
 
 // 8. 記録リスト
 .record-list {
+  max-width: 100%;
   padding-left: 0;
-  margin-top: 16px;
 }
+
 .record-item {
-  background-color: #fdfdfd;
-  border: 1px solid #eee;
+  border: none;
   border-radius: 12px;
   margin-bottom: 12px;
-  padding: 12px 16px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
-}
-.record-meta {
-  font-size: 0.95rem;
-}
-.record-memo {
-  color: #777;
-  font-size: 0.85rem;
-}
-.record-user {
-  color: #aaa;
-  font-size: 0.75rem;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+  padding: 16px;
 }
 
-// 9. 緊急連絡
-.emergency-button {
+.record-time-type {
+  font-size: 1rem;
   display: flex;
   align-items: center;
-  justify-content: center;
-  background-color: #e3f2fd; // 優しいブルー系
-  color: #0d47a1;
-  padding: 6px 12px;
-  font-size: 0.9rem;
-  border-radius: 999px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-  cursor: pointer;
-  width: fit-content;
-  margin: 16px auto;
+  gap: 0.5rem;
+}
 
-  .emergency-icon {
-    font-size: 1rem;
-    margin-right: 6px;
+.record-time {
+  font-weight: bold;
+  color: #333;
+}
+
+.record-quantity {
+  font-size: 0.8rem;
+}
+
+.record-memo {
+  font-size: 0.85rem;
+  margin-top: 4px;
+}
+
+.record-user {
+  font-size: 0.75rem;
+}
+// 9. 緊急連絡
+.emergency-button {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 1020;
+  background-color: #fef5e6; // 優しめの色（例）
+  color: #333;
+  padding: 0.75rem 1rem;
+  text-align: center;
+  font-weight: bold;
+  border-top: 1px solid #ddd;
+  cursor: pointer;
+  font-size: 1rem;
+
+  i.emergency-icon {
+    margin-right: 0.5rem;
+    font-size: 1.2rem;
+    vertical-align: middle;
   }
+
   &:hover {
-    background-color: #bbdefb;
-    color: #0b3c91;
+    background-color: #fbeed9;
   }
 }
 
@@ -330,4 +345,15 @@ h4, h5 {
       background-color: darken(#3178c6, 5%);
     }
   }
+}
+.app-header {
+  position: sticky;
+  top: 0;
+  z-index: 1030; // Bootstrapのナビバーと同じくらいの高さ
+  background-color: #ffffff; // 必要なら背景色を固定
+  border-bottom: 1px solid #e0e0e0;
+  padding: 0.5rem 1rem;
+
+  // モバイル対応の影や余白も任意で
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
 }

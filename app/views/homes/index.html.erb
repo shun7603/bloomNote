@@ -80,14 +80,25 @@
 </div>
 
   <!-- 登録ボタン群 -->
-  <div class="d-flex flex-wrap justify-content-center gap-2 mb-3">
-    <button class="btn btn-outline-warning" data-bs-toggle="modal" data-bs-target="#recordModal">＋ 育児記録</button>
-    <button class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#childModal">＋ 子ども登録</button>
-    <% if current_user.role_parent? && @current_child && (@current_child.user_id == current_user.id) %>
-      <button class="btn btn-outline-success" data-bs-toggle="modal" data-bs-target="#routineModal">＋ ルーティン追加</button>
-      <button class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#editChildModal">⚙ 子ども編集</button>
-    <% end %>
-  </div>
+<div class="d-flex flex-wrap justify-content-center gap-2 mb-3">
+  <button class="btn btn-outline-warning" data-bs-toggle="modal" data-bs-target="#recordModal">
+    ＋ 育児記録
+  </button>
+
+  <button class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#childModal">
+    ＋ 子ども登録
+  </button>
+
+  <% if current_user.role_parent? && @current_child && (@current_child.user_id == current_user.id) %>
+    <button class="btn btn-outline-success" data-bs-toggle="modal" data-bs-target="#routineModal">
+      ＋ ルーティン追加
+    </button>
+
+    <button class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#editChildModal">
+      ⚙ 子ども編集
+    </button>
+  <% end %>
+</div>
 
   <!-- 日付選択 -->
   <%= form_with url: root_path, method: :get, local: true, class: "mb-3" do %>
@@ -99,26 +110,37 @@
   <% end %>
 
   <!-- 記録一覧 -->
-  <h5 class="fw-bold mb-2">記録一覧（<%= @selected_date&.strftime('%Y年%m月%d日') || "日付不明" %>）</h5>
-  <ul class="list-group">
-    <% @records.order(recorded_at: :desc).each do |record| %>
-      <li class="list-group-item d-flex justify-content-between align-items-start">
-        <div>
-          <strong><%= record.recorded_at.strftime('%H:%M') %></strong>　
+<h5 class="record-title fw-bold mb-3">記録一覧（<%= @selected_date&.strftime('%Y年%m月%d日') || "日付不明" %>）</h5>
+
+<ul class="list-group record-list">
+  <% @records.order(recorded_at: :desc).each do |record| %>
+    <li class="list-group-item record-item d-flex justify-content-between align-items-start">
+      <div class="record-meta">
+        <div class="record-time-type mb-1">
+          <strong class="record-time"><%= record.recorded_at.strftime('%H:%M') %></strong>
           <%= icon_for(record.record_type) %>
           <%= I18n.t("activerecord.attributes.record.record_type.#{record.record_type}") %>
-          <%= record.quantity %>
-          <% if record.memo.present? %>
-            <span class="text-muted">- <%= record.memo %></span>
-          <% end %>
-          <br>
-          <span class="text-muted mt-1">記録者：<%= record.user.nickname %></span>
+          <span class="record-quantity badge bg-light text-dark ms-2"><%= record.quantity %></span>
         </div>
-        <div>
-          <%= link_to "編集", "#", class: "btn btn-sm btn-outline-secondary", data: { bs_toggle: "modal", bs_target: "#editRecordModal-#{record.id}" } %>
-          <%= button_to "削除", child_record_path(record.child, record), method: :delete, data: { confirm: "本当に削除しますか？" }, class: "btn btn-sm btn-outline-danger" %>
-        </div>
-      </li>
+
+        <% if record.memo.present? %>
+          <div class="record-memo text-muted small">💬 <%= record.memo %></div>
+        <% end %>
+
+        <div class="record-user text-muted small mt-1">👤 記録者：<%= record.user.nickname %></div>
+      </div>
+
+      <div class="record-actions text-nowrap">
+        <%= link_to "編集", "#",
+                    class: "btn btn-sm btn-outline-secondary me-2",
+                    data: { bs_toggle: "modal", bs_target: "#editRecordModal-#{record.id}" } %>
+
+        <%= button_to "削除", child_record_path(record.child, record),
+                      method: :delete,
+                      data: { confirm: "本当に削除しますか？" },
+                      class: "btn btn-sm btn-outline-danger" %>
+      </div>
+    </li>
       <!-- 編集モーダル -->
       <div class="modal fade" id="editRecordModal-<%= record.id %>" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog">
@@ -163,7 +185,7 @@
 <!-- フッター固定：緊急連絡 -->
 <div class="emergency-button" role="button" data-bs-toggle="modal" data-bs-target="#emergencyModal">
   <i class="bi bi-telephone-fill emergency-icon"></i>
-  <span>緊急連絡</span>
+  <span>緊急連絡先</span>
 </div>
 
 
@@ -191,15 +213,15 @@
         <% if @current_child.present? %>
           <%= form_with(model: @current_child, url: child_path(@current_child), method: :patch, local: true) do |f| %>
 
-            <% if flash[:child_errors] %>
-              <div class="alert alert-danger">
-                <ul class="mb-2">
-                  <% flash[:child_errors].each do |msg| %>
-                    <li><%= msg %></li>
-                  <% end %>
-                </ul>
-              </div>
-            <% end %>
+<% if flash[:child_edit_errors] %>
+  <div class="alert alert-danger">
+    <ul>
+      <% flash[:child_edit_errors].each do |msg| %>
+        <li><%= msg %></li>
+      <% end %>
+    </ul>
+  </div>
+<% end %>
 
             <div class="mb-3">
               <%= f.label :name, "名前" %>

@@ -48,7 +48,7 @@ class ChildrenController < ApplicationController
     if @child.save
       redirect_to root_path, notice: '子どもを登録しました'
     else
-      flash[:child_errors] = @child.errors.full_messages
+      flash[:child_new_errors] = @child.errors.full_messages
       flash[:child_attributes] = child_params
       flash[:child_modal_error] = "new"
       redirect_to root_path
@@ -63,7 +63,7 @@ class ChildrenController < ApplicationController
     if @child.update(child_params)
       redirect_to root_path, notice: '子ども情報を更新しました'
     else
-      flash[:child_errors] = @child.errors.full_messages
+      flash[:child_edit_errors] = @child.errors.full_messages
       flash[:child_modal_error] = "edit"
       flash[:child_attributes] = child_params
       redirect_to root_path

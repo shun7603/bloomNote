@@ -210,3 +210,31 @@ if (editModalId && editModalId.startsWith("editRecordModal-")) {
   }
 }
 });
+
+document.addEventListener("turbo:load", () => {
+  const editChildModal = document.getElementById("editChildModal");
+  if (editChildModal) {
+    editChildModal.addEventListener("hidden.bs.modal", () => {
+      const errorBox = document.getElementById("edit-child-error");
+      if (errorBox) errorBox.remove();
+    });
+  }
+});
+
+document.addEventListener("turbo:load", () => {
+  const newChildModal = document.getElementById("childModal");
+  if (newChildModal) {
+    newChildModal.addEventListener("hidden.bs.modal", () => {
+      const errorBox = document.getElementById("new-child-error");
+      if (errorBox) errorBox.remove();
+    });
+  }
+
+  const editChildModal = document.getElementById("editChildModal");
+  if (editChildModal) {
+    editChildModal.addEventListener("hidden.bs.modal", () => {
+      const errorBox = document.getElementById("edit-child-error");
+      if (errorBox) errorBox.remove();
+    });
+  }
+});
