@@ -60,7 +60,7 @@ class HomesController < ApplicationController
         routine_time > current_time
       end
     else
-      @records = []
+      @records = Record.none
       @routines = []
       @next_routine = nil
     end
