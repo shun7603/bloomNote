@@ -81,11 +81,14 @@
     </div>
   <% else %>
     <!-- 🟢 子ども登録済み時 -->
-    <div class="text-center my-3">
-      <button class="btn btn-outline-primary rounded-pill px-4" data-bs-toggle="modal" data-bs-target="#childModal">＋ 子ども登録</button>
-      <button class="btn btn-outline-success rounded-pill px-4" data-bs-toggle="modal" data-bs-target="#routineModal">＋ ルーティン追加</button>
-      <button class="btn btn-outline-secondary rounded-pill px-4" data-bs-toggle="modal" data-bs-target="#editChildModal">⚙ 子ども編集</button>
-    </div>
+<div class="text-center my-3">
+  <button class="btn btn-outline-primary rounded-pill px-4" data-bs-toggle="modal" data-bs-target="#childModal">＋ 子ども登録</button>
+  <% if current_user.role_parent? && (@current_child.user_id == current_user.id) %>
+  <button class="btn btn-outline-success rounded-pill px-4" data-bs-toggle="modal" data-bs-target="#routineModal">＋ ルーティン追加</button>
+  <button class="btn btn-outline-secondary rounded-pill px-4" data-bs-toggle="modal" data-bs-target="#editChildModal">⚙ 子ども編集</button>
+<% end %>
+  <button class="btn btn-outline-warning rounded-pill px-4" data-bs-toggle="modal" data-bs-target="#recordModal">＋ 育児記録</button>
+</div>
 
     <!-- 📆 日付切替えフォーム -->
     <%= form_with url: root_path, method: :get, local: true, class: "mb-3" do %>
@@ -197,6 +200,7 @@
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
+
         <h5 class="modal-title" id="editChildModalLabel">子ども情報を編集</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
@@ -296,26 +300,30 @@
       <!-- モーダルヘッダー -->
       <div class="modal-header">
         <h5 class="modal-title" id="emergencyModalLabel">緊急連絡先</h5>
-        <button class="btn btn-sm btn-outline-primary ms-3" data-bs-toggle="modal" data-bs-target="#newHospitalModal">＋病院を追加</button>
+        <% if current_user.id == @current_child.user_id %>
+          <button class="btn btn-sm btn-outline-primary ms-3" data-bs-toggle="modal" data-bs-target="#newHospitalModal">＋病院を追加</button>
+        <% end %>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="閉じる"></button>
       </div>
 
       <!-- モーダルボディ -->
       <div class="modal-body">
-<% if @current_child&.hospitals&.any? %>
-  <% @current_child.hospitals.each do |hospital| %>
+        <% if @current_child&.hospitals&.any? %>
+          <% @current_child.hospitals.each do |hospital| %>
             <div class="border rounded p-2 mb-3">
               <p>
                 <strong><%= hospital.name %></strong><br>
                 <%= link_to hospital.phone_number, "tel:#{hospital.phone_number}", class: "btn btn-outline-danger btn-sm mt-1" %>
               </p>
-              <!-- 編集ボタン -->
-              <button class="btn btn-sm btn-outline-secondary"
-                      data-bs-dismiss="modal"
-                      data-bs-toggle="modal"
-                      data-bs-target="#editHospitalModal-<%= hospital.id %>">
-                編集
-              </button>
+              <% if current_user.id == @current_child.user_id %>
+                <!-- 編集ボタン（親ユーザーのみ表示） -->
+                <button class="btn btn-sm btn-outline-secondary"
+                        data-bs-dismiss="modal"
+                        data-bs-toggle="modal"
+                        data-bs-target="#editHospitalModal-<%= hospital.id %>">
+                  編集
+                </button>
+              <% end %>
             </div>
           <% end %>
         <% else %>
@@ -380,48 +388,6 @@
   </div>
 <% end %>
 
-<!-- 病院情報 新規追加モーダル -->
-<div class="modal fade" id="newHospitalModal" tabindex="-1" aria-labelledby="newHospitalModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <%= form_with(model: [@current_child, Hospital.new], url: child_hospitals_path(@current_child), local: true) do |f| %>
-        <div class="modal-header">
-          <h5 class="modal-title" id="newHospitalModalLabel">病院を追加</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="閉じる"></button>
-        </div>
-
-        <div class="modal-body">
-          <% if flash[:hospital_errors] %>
-            <div class="alert alert-danger">
-              <ul class="mb-0">
-                <% flash[:hospital_errors].each do |msg| %>
-                  <li><%= msg %></li>
-                <% end %>
-              </ul>
-            </div>
-          <% end %>
-
-          <!-- 🔒 child_id を hidden_field で明示 -->
-          <%= f.hidden_field :child_id, value: @current_child&.id %>
-
-          <div class="mb-3">
-            <%= f.label :name, "病院名" %>
-            <%= f.text_field :name, value: flash[:hospital_attributes]&.[]("name"), class: "form-control", id: "hospital_name" %>
-          </div>
-
-          <div class="mb-3">
-            <%= f.label :phone_number, "電話番号" %>
-            <%= f.telephone_field :phone_number, value: flash[:hospital_attributes]&.[]("phone_number"), class: "form-control", id: "hospital_phone_number" %>
-          </div>
-        </div>
-
-        <div class="modal-footer">
-          <%= f.submit "追加する", class: "btn btn-primary" %>
-        </div>
-      <% end %>
-    </div>
-  </div>
-</div>
 
 <!-- エラー発生時に対象の編集モーダルを自動で開く -->
 <% if flash[:hospital_modal_error] %>
@@ -435,7 +401,7 @@
 <div class="modal fade" id="addCareRelationshipModal" tabindex="-1" aria-labelledby="addCareRelationshipModalLabel" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
-<%= form_with model: CareRelationship.new, url: care_relationships_path, local: true do |f| %>
+<%= form_with model: CareRelationship.new, url: care_relationships_path, local: false do |f| %>
         <div class="modal-header">
           <h5 class="modal-title" id="addCareRelationshipModalLabel">保育者を追加</h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="閉じる"></button>

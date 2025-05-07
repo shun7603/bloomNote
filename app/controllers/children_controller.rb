@@ -32,14 +32,15 @@ class ChildrenController < ApplicationController
   end
 
   def select
-    child = Child.find(params[:id])
+    child = Child.find_by(id: params[:id])
 
-    if current_user.can_access?(child)
-      session[:current_child_id] = child.id
+    if child && current_user.can_access?(child)
+      session[:selected_child_id] = child.id
       flash[:notice] = "#{child.name} を選択しました"
     else
-      flash[:alert] = "アクセスできません"
+      flash[:alert] = "その子どもにはアクセスできません"
     end
+
     redirect_to root_path
   end
 
@@ -58,6 +59,7 @@ class ChildrenController < ApplicationController
 
   def update
     @child = Child.find(params[:id])
+    redirect_to root_path, alert: '更新権限がありません' and return unless @child
 
     if @child.update(child_params)
       redirect_to root_path, notice: '子ども情報を更新しました'

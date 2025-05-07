@@ -2,7 +2,8 @@
 class RecordsController < ApplicationController
   before_action :authenticate_user!
   before_action :set_child
-
+  before_action :check_caregiver_permissions, only: [:edit, :update, :destroy]
+  
   # records_controller.rb
   def create
     redirect_to root_path, alert: "子どもが選択されていません" and return unless current_child
@@ -46,4 +47,11 @@ class RecordsController < ApplicationController
   def record_params
     params.require(:record).permit(:record_type, :category, :quantity, :recorded_at, :memo)
   end
+end
+
+def check_caregiver_permissions
+  return unless current_user.caregiver? && @child.shared_with?(current_user)
+
+  redirect_to root_path, alert: "編集権限がありません"
+  
 end

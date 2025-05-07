@@ -6,6 +6,19 @@ class CareRelationshipsController < ApplicationController
     child = Child.find_by(id: care_relationship_params[:child_id])
 
     if caregiver && child
+      # すでに同じ関係が存在するか確認
+      existing = CareRelationship.find_by(
+        parent: current_user,
+        caregiver: caregiver,
+        child: child
+      )
+
+      if existing
+        flash[:care_relationship_errors] = ["この保育者とはすでに関係が登録されています"]
+        flash[:open_modal] = "addCareRelationshipModal"
+        redirect_to root_path and return
+      end
+
       care_relationship = CareRelationship.new(
         parent: current_user,
         caregiver: caregiver,
@@ -15,23 +28,22 @@ class CareRelationshipsController < ApplicationController
 
       if care_relationship.save
         @care_relationship = care_relationship
-        flash.now[:notice] = "保育者を追加しました"
 
         respond_to do |format|
           format.turbo_stream
-          format.html { redirect_to root_path, notice: flash[:notice] }
+          redirect_to root_path, notice: "保育者を追加しました"
         end
       else
-        flash.now[:care_relationship_errors] = care_relationship.errors.full_messages
-        flash.now[:open_modal] = 'addCareRelationshipModal'
-        render 'homes/index', status: :unprocessable_entity
+        flash[:care_relationship_errors] = care_relationship.errors.full_messages
+        flash[:open_modal] = "addCareRelationshipModal"
+        redirect_to root_path
       end
     else
-      flash.now[:care_relationship_errors] = []
-      flash.now[:care_relationship_errors] << "そのメールアドレスのユーザーは存在しません" if caregiver.nil?
-      flash.now[:care_relationship_errors] << "子どもが見つかりません" if child.nil?
-      flash.now[:open_modal] = 'addCareRelationshipModal'
-      render 'homes/index', status: :unprocessable_entity
+      flash[:care_relationship_errors] = []
+      flash[:care_relationship_errors] << "そのメールアドレスのユーザーは存在しません" if caregiver.nil?
+      flash[:care_relationship_errors] << "子どもが見つかりません" if child.nil?
+      flash[:open_modal] = "addCareRelationshipModal"
+      redirect_to root_path
     end
   end
 
@@ -58,19 +70,9 @@ class CareRelationshipsController < ApplicationController
   def destroy
     @care_relationship = CareRelationship.find(params[:id])
     if @care_relationship.destroy
-      flash.now[:notice] = "関係を削除しました"
-      respond_to do |format|
-        format.turbo_stream
-        format.html { redirect_to root_path, notice: "関係を削除しました" }
-      end
+      redirect_to root_path, notice: "関係を削除しました"
     else
-      flash.now[:alert] = "削除できませんでした"
-      respond_to do |format|
-        format.turbo_stream do
-          render turbo_stream: turbo_stream.replace("flash", partial: "shared/flash")
-        end
-        format.html { redirect_to root_path, alert: "削除できませんでした" }
-      end
+      redirect_to root_path, alert: "削除できませんでした"
     end
   end
 

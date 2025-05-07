@@ -71,16 +71,19 @@
             <% end %>
           </div>
 
-                <!-- 編集・削除ボタン -->
-                <div class="text-end">
-<%= link_to "編集", "#", class: "btn btn-sm btn-outline-secondary", data: { bs_toggle: "modal", bs_target: "#editRoutineModal-#{routine.id}", turbo: false } %>
-                  <%= button_to "削除", child_routine_path(routine.child_id, routine),
-                      method: :delete,
-                      data: { turbo_confirm: "本当に削除しますか？" },
-                      class: "btn btn-sm btn-outline-danger",
-                      form: { class: "d-inline" } %>
-                </div>
-              </li>
+  <!-- 編集・削除ボタン -->
+<% if current_user.id == routine.child.user_id %>
+  <div class="text-end">
+    <%= link_to "編集", "#", class: "btn btn-sm btn-outline-secondary",
+                data: { bs_toggle: "modal", bs_target: "#editRoutineModal-#{routine.id}", turbo: false } %>
+
+    <%= button_to "削除", child_routine_path(routine.child_id, routine),
+        method: :delete,
+        data: { turbo_confirm: "本当に削除しますか？" },
+        class: "btn btn-sm btn-outline-danger",
+        form: { class: "d-inline" } %>
+  </div>
+<% end %>
 
               <!-- 編集モーダル（個別に出力） -->
               <div class="modal fade" id="editRoutineModal-<%= routine.id %>" tabindex="-1" aria-labelledby="editRoutineModalLabel-<%= routine.id %>" aria-hidden="true">

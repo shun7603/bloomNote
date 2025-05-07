@@ -1,11 +1,12 @@
 <div class="modal fade" id="newHospitalModal" tabindex="-1" aria-labelledby="newHospitalModalLabel" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
-      <%= form_with model: (@hospital || Hospital.new), url: child_hospitals_path(@current_child), method: :post, local: true do |f| %>
-        <div class="modal-header">
-          <h5 class="modal-title" id="newHospitalModalLabel">病院を追加</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="閉じる"></button>
-        </div>
+      <% if @current_child.present? %>
+        <%= form_with(model: [@current_child, @hospital], url: child_hospitals_path(@current_child), local: true) do |f| %>
+          <div class="modal-header">
+            <h5 class="modal-title" id="newHospitalModalLabel">病院を追加</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="閉じる"></button>
+          </div>
 
         <div class="modal-body">
           <% if flash[:hospital_errors] %>
@@ -34,6 +35,10 @@
 
         <div class="modal-footer">
           <%= f.submit "追加する", class: "btn btn-primary" %>
+          <% end %>
+      <% else %>
+        <div class="alert alert-warning m-3">
+          先に子どもを登録してください。
         </div>
       <% end %>
     </div>
