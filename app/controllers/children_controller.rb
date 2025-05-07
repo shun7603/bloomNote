@@ -2,18 +2,16 @@ class ChildrenController < ApplicationController
   before_action :authenticate_user!
 
   def index
-    # 自分が親の子ども + 自分が保育者で関係が「共有中」の子ども
     @children = Child
                 .left_joins(:care_relationships)
                 .where(
-                  "children.user_id = :user_id OR care_relationships.caregiver_id = :user_id AND care_relationships.status = :ongoing",
+                  "children.user_id = :user_id OR (care_relationships.caregiver_id = :user_id AND care_relationships.status = :ongoing)",
                   user_id: current_user.id,
                   ongoing: CareRelationship.statuses[:ongoing]
                 )
                 .distinct
                 .includes(:routines)
 
-    # 仮ルーティン（後でDBから取得する場合は不要）
     @routine = [
       { time: '08:00', task: 'ミルク' },
       { time: '09:00', task: '睡眠' },
@@ -58,7 +56,8 @@ class ChildrenController < ApplicationController
   end
 
   def update
-    @child = Child.find(params[:id])
+    @child = current_user.children.find_by(id: params[:id])
+
     redirect_to root_path, alert: '更新権限がありません' and return unless @child
 
     if @child.update(child_params)
@@ -68,6 +67,17 @@ class ChildrenController < ApplicationController
       flash[:child_modal_error] = "edit"
       flash[:child_attributes] = child_params
       redirect_to root_path
+    end
+  end
+
+  def destroy
+    @child = current_user.children.find_by(id: params[:id])
+
+    if @child&.destroy
+      session.delete(:selected_child_id) if session[:selected_child_id] == @child.id
+      redirect_to root_path, notice: "#{@child.name} の情報を削除しました"
+    else
+      redirect_to root_path, alert: "子どもの削除に失敗しました"
     end
   end
 

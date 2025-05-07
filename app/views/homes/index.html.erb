@@ -35,8 +35,17 @@
 </div>
 <div class="container p-3" style="max-width: 420px; background-color: #fffefc; border-radius: 20px; border: 1px solid #ddd;">
   <!-- 🌟 ヘッダー─共通 -->
-  <div class="d-flex justify-content-between align-items-center mb-3">
-   <h3 class="fw-bold"><%= @current_child&.name || "BloomNote" %></h3>
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h3 class="fw-bold">
+    <% if @current_child.present? %>
+      <%= @current_child.name %>
+      <% if @is_shared_child %>
+        <span class="text-muted fs-6">（預かり中）</span>
+      <% end %>
+    <% else %>
+      BloomNote
+    <% end %>
+  </h3>
 
 <div class="dropdown">
   <button class="btn" type="button" id="settingsDropdown" data-bs-toggle="dropdown" aria-expanded="false">
@@ -60,7 +69,6 @@
       <!-- 既存項目 -->
       <li><button class="dropdown-item" data-bs-toggle="modal" data-bs-target="#addCareRelationshipModal">保育者を追加</button></li>
       <li><button class="dropdown-item" data-bs-toggle="modal" data-bs-target="#careRelationshipListModal">関係者一覧</button></li>
-      <li><button class="dropdown-item" data-bs-toggle="modal" data-bs-target="#switchStatusModal">ステータス切替</button></li>
       <li><hr class="dropdown-divider"></li>
       <li>
         <%= button_to "ログアウト", destroy_user_session_path, method: :delete, data: { turbo: true }, form: { class: "d-inline" }, class: "dropdown-item text-danger" %>
@@ -83,7 +91,7 @@
     <!-- 🟢 子ども登録済み時 -->
 <div class="text-center my-3">
   <button class="btn btn-outline-primary rounded-pill px-4" data-bs-toggle="modal" data-bs-target="#childModal">＋ 子ども登録</button>
-  <% if current_user.role_parent? && (@current_child.user_id == current_user.id) %>
+<% if current_user.role_parent? && @current_child && (@current_child.user_id == current_user.id) %>
   <button class="btn btn-outline-success rounded-pill px-4" data-bs-toggle="modal" data-bs-target="#routineModal">＋ ルーティン追加</button>
   <button class="btn btn-outline-secondary rounded-pill px-4" data-bs-toggle="modal" data-bs-target="#editChildModal">⚙ 子ども編集</button>
 <% end %>
@@ -107,7 +115,7 @@
 </h5>
 
 <ul class="list-group">
-  <% @records.each do |record| %>
+  <% @records.order(recorded_at: :desc).each do |record| %>
     <li class="list-group-item d-flex justify-content-between align-items-start">
       <div>
         <strong><%= record.recorded_at.strftime('%H:%M') %></strong>　
@@ -117,12 +125,24 @@
         <% if record.memo.present? %>
           <span class="text-muted">- <%= record.memo %></span>
         <% end %>
+        <br>
+<span class="text-muted mt-1">
+  記録者：<%= record.user.nickname %>
+</span>
       </div>
       <div>
-<%= link_to "編集", "#", class: "btn btn-sm btn-outline-secondary", data: { bs_toggle: "modal", bs_target: "#editRecordModal-#{record.id}" } %>
-        <%= button_to "削除", child_record_path(record.child, record), method: :delete, data: { confirm: "本当に削除しますか？" }, class: "btn btn-sm btn-outline-danger" %>
+        <%= link_to "編集", "#",
+              class: "btn btn-sm btn-outline-secondary",
+              data: { bs_toggle: "modal", bs_target: "#editRecordModal-#{record.id}" } %>
+        <%= button_to "削除",
+              child_record_path(record.child, record),
+              method: :delete,
+              data: { confirm: "本当に削除しますか？" },
+              class: "btn btn-sm btn-outline-danger" %>
       </div>
     </li>
+
+    <!-- 編集モーダル -->
     <div class="modal fade" id="editRecordModal-<%= record.id %>" tabindex="-1" aria-hidden="true">
       <div class="modal-dialog">
         <div class="modal-content">
@@ -132,28 +152,32 @@
               <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
-<% if flash[:open_modal] == "editRecordModal-#{record.id}" && flash[:record_errors] %>
-  <div class="alert alert-danger">
-    <ul class="mb-0">
-      <% flash[:record_errors].each do |msg| %>
-        <li><%= msg %></li>
-      <% end %>
-    </ul>
-  </div>
-<% end %>
-<%= f.label :record_type, "記録の種類" %>
-<%= f.select :record_type,
-  Record.record_types.keys.map { |key| [I18n.t("activerecord.attributes.record.record_type.#{key}", default: key), key] },
-  {},
-  class: "form-select mb-2",
-  id: "record_record_type" %>
+              <% if flash[:open_modal] == "editRecordModal-#{record.id}" && flash[:record_errors] %>
+                <div class="alert alert-danger">
+                  <ul class="mb-0">
+                    <% flash[:record_errors].each do |msg| %>
+                      <li><%= msg %></li>
+                    <% end %>
+                  </ul>
+                </div>
+              <% end %>
+
+              <%= f.label :record_type, "記録の種類" %>
+              <%= f.select :record_type,
+                    Record.record_types.keys.map { |key| [I18n.t("activerecord.attributes.record.record_type.#{key}"), key] },
+                    {}, class: "form-select mb-2" %>
 
               <%= f.label :category, "カテゴリ" %>
-              <%= f.select :category, Record.categories.keys.map { |k| [I18n.t("activerecord.attributes.record.category.#{k}"), k] }, {}, class: "form-select mb-2" %>
+              <%= f.select :category,
+                    Record.categories.keys.map { |key| [I18n.t("activerecord.attributes.record.category.#{key}"), key] },
+                    {}, class: "form-select mb-2" %>
+
               <%= f.label :quantity, "量や回数" %>
               <%= f.number_field :quantity, class: "form-control mb-2" %>
+
               <%= f.label :recorded_at, "日時" %>
               <%= f.datetime_local_field :recorded_at, class: "form-control mb-2" %>
+
               <%= f.label :memo, "メモ" %>
               <%= f.text_area :memo, class: "form-control", rows: 2 %>
             </div>
@@ -192,7 +216,7 @@
 <%= render "shared/child_modals" %>
 <%= render "shared/routine_modal" %>
 <%= render "shared/record_modal" %>
-
+<%= render "shared/hospital_form_modal" %>
 
 
 <!-- 子ども編集モーダル -->
@@ -200,12 +224,12 @@
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
-
         <h5 class="modal-title" id="editChildModalLabel">子ども情報を編集</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
+
       <div class="modal-body">
-        <% if @children.present? %>
+        <% if @current_child.present? %>
           <%= form_with(model: @current_child, url: child_path(@current_child), method: :patch, local: true) do |f| %>
 
             <% if flash[:child_errors] %>
@@ -219,28 +243,36 @@
             <% end %>
 
             <div class="mb-3">
-              <%= f.label :name %>
+              <%= f.label :name, "名前" %>
               <%= f.text_field :name,
                     value: flash[:child_attributes]&.[]("name") || f.object.name,
                     class: "form-control" %>
             </div>
 
             <div class="mb-3">
-              <%= f.label :birth_date %>
+              <%= f.label :birth_date, "生年月日" %>
               <%= f.date_field :birth_date,
                     value: flash[:child_attributes]&.[]("birth_date") || f.object.birth_date,
                     class: "form-control" %>
             </div>
 
             <div class="mb-3">
-              <%= f.label :gender %>
+              <%= f.label :gender, "性別" %>
               <%= f.select :gender,
                     [["男の子", "boy"], ["女の子", "girl"]],
                     { selected: flash[:child_attributes]&.[]("gender") || f.object.gender },
                     class: "form-select" %>
             </div>
 
-            <%= f.submit "更新", class: "btn btn-primary" %>
+            <div class="d-flex justify-content-between">
+              <%= f.submit "更新", class: "btn btn-primary" %>
+
+<%= button_to "削除", child_path(@current_child),
+      method: :delete,
+      data: { turbo: false, confirm: "本当に削除しますか？" },
+      class: "btn btn-danger mt-3" %>
+            </div>
+
           <% end %>
         <% else %>
           <p>編集できる子どもがいません。</p>
@@ -259,9 +291,10 @@
         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
       <div class="modal-body">
-        <% if @children.present? %>
-          <%= form_with(model: [@current_child, Routine.new], url: child_routines_path(@current_child), local: true) do |f| %>
-            <div class="mb-3">
+<% if @current_child.present? %>
+  <%= form_with(model: [@current_child, Routine.new], url: child_routines_path(@current_child), local: true) do |f| %>
+  
+                <div class="mb-3">
               <%= f.label :time %>
               <%= f.time_field :time, class: "form-control" %>
             </div>
@@ -297,11 +330,16 @@
 <div class="modal fade" id="emergencyModal" tabindex="-1" aria-labelledby="emergencyModalLabel" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
-      <!-- モーダルヘッダー -->
       <div class="modal-header">
         <h5 class="modal-title" id="emergencyModalLabel">緊急連絡先</h5>
-        <% if current_user.id == @current_child.user_id %>
-          <button class="btn btn-sm btn-outline-primary ms-3" data-bs-toggle="modal" data-bs-target="#newHospitalModal">＋病院を追加</button>
+       <% if @current_child && current_user.id == @current_child.user_id %>
+<button type="button"
+        class="btn btn-sm btn-outline-primary"
+        data-bs-dismiss="modal"
+        data-bs-toggle="modal"
+        data-bs-target="#newHospitalModal">
+  ＋病院を追加
+</button>
         <% end %>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="閉じる"></button>
       </div>
@@ -445,65 +483,14 @@
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="閉じる"></button>
       </div>
 
-      <!-- モーダルボディ -->
-      <div class="modal-body">
-        <% if @care_relationships.present? && @care_relationships.any? %>
-          <table class="table table-hover table-bordered align-middle">
-            <thead class="table-light">
-              <tr>
-                <th>子ども</th>
-                <th>親</th>
-                <th>保育者</th>
-                <th class="text-center">ステータス</th>
-              </tr>
-            </thead>
-            <tbody>
-              <% @care_relationships.each do |rel| %>
-                <tr>
-                  <td><%= rel.child.name %></td>
-                  <td><%= rel.parent.nickname %></td>
-                  <td><%= rel.caregiver.nickname %></td>
-                  <td class="text-center">
-                    <% if rel.ongoing? %>
-                      <span class="badge bg-success">預かり中</span>
-                    <% else %>
-                      <span class="badge bg-secondary">終了</span>
-                    <% end %>
-                      <% if rel.parent == current_user %>
-    <%= button_to "削除", care_relationship_path(rel),
-        method: :delete,
-        data: { turbo_confirm: "本当に削除しますか？" },
-        class: "btn btn-sm btn-outline-danger mt-2" %>
-  <% end %>
-                  </td>
-                </tr>
-              <% end %>
-            </tbody>
-          </table>
-        <% else %>
-          <p class="text-muted">関係者が登録されていません。</p>
-        <% end %>
-      </div>
+<div class="modal-body">
+  <% if @care_relationships.present? %>
+    <div class="d-flex flex-column gap-2">
+      <% @care_relationships.each do |care_relationship| %>
+        <%= render "shared/care_relationship", care_relationship: care_relationship %>
+      <% end %>
     </div>
-  </div>
-</div>
-<!-- ステータス切り替えモーダル -->
-<div class="modal fade" id="switchStatusModal" tabindex="-1" aria-labelledby="switchStatusModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="switchStatusModalLabel">保育ステータスを切り替え</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="閉じる"></button>
-      </div>
-      <div class="modal-body">
-<% if defined?(@care_relationships) && @care_relationships.present? %>
-  <% @care_relationships.each do |cr| %>
-    <%= render partial: "shared/care_relationship", locals: { care_relationship: cr } %>          
+  <% else %>
+    <p class="text-muted">関係者が登録されていません。</p>
   <% end %>
-<% else %>
-  <p class="text-muted">関係者情報が取得できませんでした。</p>
-<% end %>
-      </div>
-    </div>
-  </div>
 </div>

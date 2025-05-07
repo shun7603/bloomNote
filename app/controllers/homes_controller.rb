@@ -2,32 +2,34 @@ class HomesController < ApplicationController
   before_action :authenticate_user!
 
   def index
-    # 子ども一覧（親として or 保育者として預かっている子ども）
+    # 自分が親 or 保育者として関わっている子ども（保育者は ongoing のみ）
     @children = Child
-                .left_joins(:care_relationships)
+                .left_outer_joins(:care_relationships)
                 .where(
-                  "children.user_id = :uid OR care_relationships.caregiver_id = :uid",
-                  uid: current_user.id
+                  "children.user_id = :user_id OR (care_relationships.caregiver_id = :user_id AND care_relationships.status = :ongoing)",
+                  user_id: current_user.id,
+                  ongoing: CareRelationship.statuses[:ongoing]
                 )
-                .where("care_relationships.status IS NULL OR care_relationships.status = ?", CareRelationship.statuses[:ongoing])
                 .distinct
 
-    # 現在選択中の子ども（セッションから取得 or 一番上の子）
-    @current_child = if session[:selected_child_id]
-                       @children.find_by(id: session[:selected_child_id])
-                     else
-                       @children.first
-                     end
+    # セッションに保存された子どもIDがあれば使用、なければ自分が親の子を優先的に選択
+    @current_child = @children.find_by(id: session[:selected_child_id])
+    unless @current_child
+      session.delete(:selected_child_id)
+      @current_child = @children.find { |child| child.user_id == current_user.id } || @children.first
+    end
 
-    @is_shared_child = @current_child.present? && @current_child.shared_with?(current_user)
-    # モデルインスタンスの準備（モーダル用）
-    @record    = Record.new
-    @hospital  = Hospital.new
-    @routine   = Routine.new
-    @child     = Child.new
+    # 保育者が共有中の子どもかどうか（ビュー制御用）
+    @is_shared_child = @current_child&.shared_with?(current_user)
+
+    # モーダル用新規インスタンス
+    @record            = Record.new
+    @hospital          = flash[:hospital_attributes].present? ? Hospital.new(flash[:hospital_attributes]) : Hospital.new
+    @routine           = Routine.new
+    @child             = Child.new
     @care_relationship = CareRelationship.new
 
-    # CareRelationship一覧（関係者モーダルに使用）
+    # 保育関係（親または保育者として）
     @care_relationships =
       if current_user.role_parent?
         CareRelationship.includes(:child, :parent, :caregiver)
@@ -37,24 +39,25 @@ class HomesController < ApplicationController
                         .where(caregiver_id: current_user.id)
       end
 
-    # 日付選択
+    # 表示する日付（指定がなければ今日）
     @selected_date = parse_date(params[:date])
 
+    # 子どもが選択されている場合のみ、関連情報を取得
     if @current_child.present?
-      # 育児記録
       @records = @current_child.records
                                .where(recorded_at: @selected_date.all_day)
                                .order(recorded_at: :desc)
 
-      # ルーティン一覧
       @routines = @current_child.routines.order(:time)
 
-      # 今やるべきルーティン（時間が現在より先のものを1件）
+      # 今から次のルーティンを取得
       current_time = Time.zone.now
       @next_routine = @routines.find do |routine|
-        today_time = Time.zone.local(current_time.year, current_time.month, current_time.day,
-                                     routine.time.hour, routine.time.min, routine.time.sec)
-        today_time > current_time
+        routine_time = Time.zone.local(
+          current_time.year, current_time.month, current_time.day,
+          routine.time.hour, routine.time.min, routine.time.sec
+        )
+        routine_time > current_time
       end
     else
       @records = []

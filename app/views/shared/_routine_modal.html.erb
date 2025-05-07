@@ -17,7 +17,7 @@
   </div>
 <% end %>
 
-        <% if @children.present? %>
+        <% if @current_child.present? %>
 <%= form_with(model: [@current_child, Routine.new(flash[:routine_attributes] || {})], url: child_routines_path(@current_child), local: true) do |f| %>
             <div class="mb-3">
               <%= f.label :time, "時間" %>

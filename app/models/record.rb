@@ -9,7 +9,7 @@ class Record < ApplicationRecord
     water: 3,       # 💧 水分補給
     sleep: 4,       # 🛌 睡眠
     nap: 5,         # 😴 昼寝
-    toilet: 6,      # 💩 排泄
+    toilet: 6,      # 🧻 排泄
     temperature: 7, # 🌡️ 体温
     medicine: 8,    # 💊 服薬
     hospital: 9,    # 🏥 通院・予防接種
