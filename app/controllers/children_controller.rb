@@ -29,6 +29,10 @@ class ChildrenController < ApplicationController
     ]
   end
 
+  def new
+    @child = Child.new
+  end
+
   def select
     child = Child.find_by(id: params[:id])
 

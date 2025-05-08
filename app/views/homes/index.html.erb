@@ -109,8 +109,10 @@
     </div>
   <% end %>
 
-  <!-- 記録一覧 -->
-<h5 class="record-title fw-bold mb-3">記録一覧（<%= @selected_date&.strftime('%Y年%m月%d日') || "日付不明" %>）</h5>
+<!-- 記録一覧 -->
+<h5 class="record-title fw-bold mb-3">
+  記録一覧（<%= @selected_date&.strftime('%Y年%m月%d日') || "日付不明" %>）
+</h5>
 
 <ul class="list-group record-list">
   <% @records.order(recorded_at: :desc).each do |record| %>
@@ -119,15 +121,22 @@
         <div class="record-time-type mb-1">
           <strong class="record-time"><%= record.recorded_at.strftime('%H:%M') %></strong>
           <%= icon_for(record.record_type) %>
-          <%= I18n.t("activerecord.attributes.record.record_type.#{record.record_type}") %>
+          <%= I18n.t("enums.record.record_type.#{record.record_type}") %>
           <span class="record-quantity badge bg-light text-dark ms-2"><%= record.quantity %></span>
+        </div>
+
+        <!-- ✅ カテゴリ表示 -->
+        <div class="record-category text-muted small">
+          🗂️ ：<%= I18n.t("enums.record.category.#{record.category}") %>
         </div>
 
         <% if record.memo.present? %>
           <div class="record-memo text-muted small">💬 <%= record.memo %></div>
         <% end %>
 
-        <div class="record-user text-muted small mt-1">👤 記録者：<%= record.user.nickname %></div>
+        <div class="record-user text-muted small mt-1">
+          👤 記録者：<%= record.user.nickname %>
+        </div>
       </div>
 
       <div class="record-actions text-nowrap">
@@ -141,43 +150,52 @@
                       class: "btn btn-sm btn-outline-danger" %>
       </div>
     </li>
-      <!-- 編集モーダル -->
-      <div class="modal fade" id="editRecordModal-<%= record.id %>" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog">
-          <div class="modal-content">
-            <%= form_with(model: [record.child, record], local: true) do |f| %>
-              <div class="modal-header">
-                <h5 class="modal-title">記録を編集</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-              </div>
-              <div class="modal-body">
-                <% if flash[:open_modal] == "editRecordModal-#{record.id}" && flash[:record_errors] %>
-                  <div class="alert alert-danger">
-                    <ul class="mb-0">
-                      <% flash[:record_errors].each do |msg| %>
-                        <li><%= msg %></li>
-                      <% end %>
-                    </ul>
-                  </div>
-                <% end %>
-                <%= f.label :record_type, "記録の種類" %>
-                <%= f.select :record_type, Record.record_types.keys.map { |key| [I18n.t("activerecord.attributes.record.record_type.#{key}"), key] }, {}, class: "form-select mb-2" %>
-                <%= f.label :category, "カテゴリ" %>
-                <%= f.select :category, Record.categories.keys.map { |key| [I18n.t("activerecord.attributes.record.category.#{key}"), key] }, {}, class: "form-select mb-2" %>
-                <%= f.label :quantity, "量や回数" %>
-                <%= f.number_field :quantity, class: "form-control mb-2" %>
-                <%= f.label :recorded_at, "日時" %>
-                <%= f.datetime_local_field :recorded_at, class: "form-control mb-2" %>
-                <%= f.label :memo, "メモ" %>
-                <%= f.text_area :memo, class: "form-control", rows: 2 %>
-              </div>
-              <div class="modal-footer">
-                <%= f.submit "更新", class: "btn btn-primary" %>
-              </div>
-            <% end %>
-          </div>
+<!-- 編集モーダル -->
+<div class="modal fade" id="editRecordModal-<%= record.id %>" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <%= form_with(model: [record.child, record], local: true) do |f| %>
+        <div class="modal-header">
+          <h5 class="modal-title">記録を編集</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
         </div>
-      </div>
+        <div class="modal-body">
+          <% if flash[:open_modal] == "editRecordModal-#{record.id}" && flash[:record_errors] %>
+            <div class="alert alert-danger">
+              <ul class="mb-0">
+                <% flash[:record_errors].each do |msg| %>
+                  <li><%= msg %></li>
+                <% end %>
+              </ul>
+            </div>
+          <% end %>
+
+          <%= f.label :record_type, "記録の種類" %>
+          <%= f.select :record_type,
+              Record.record_types.keys.map { |key| [I18n.t("enums.record.record_type.#{key}"), key] },
+              {}, class: "form-select mb-2" %>
+
+          <%= f.label :category, "カテゴリ" %>
+          <%= f.select :category,
+              Record.categories.keys.map { |key| [I18n.t("enums.record.category.#{key}"), key] },
+              {}, class: "form-select mb-2" %>
+
+          <%= f.label :quantity, "量や回数" %>
+          <%= f.number_field :quantity, class: "form-control mb-2" %>
+
+          <%= f.label :recorded_at, "日時" %>
+          <%= f.datetime_local_field :recorded_at, class: "form-control mb-2" %>
+
+          <%= f.label :memo, "メモ" %>
+          <%= f.text_area :memo, class: "form-control", rows: 2 %>
+        </div>
+        <div class="modal-footer">
+          <%= f.submit "更新", class: "btn btn-primary" %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>
     <% end %>
   </ul>
 </div>

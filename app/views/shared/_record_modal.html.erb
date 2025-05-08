@@ -21,20 +21,20 @@
             <div class="mb-3">
               <%= f.label :record_type, "記録の種類" %>
               <%= f.select :record_type,
-                  Record.record_types.keys.map { |key| [I18n.t("activerecord.attributes.record.record_type.#{key}"), key] },
+                  Record.record_types.keys.map { |key| [I18n.t("enums.record.record_type.#{key}"), key] },
                   {}, class: "form-select" %>
             </div>
 
             <div class="mb-3">
               <%= f.label :category, "カテゴリ" %>
               <%= f.select :category,
-                  Record.categories.keys.map { |key| [I18n.t("activerecord.attributes.record.category.#{key}"), key] },
+                  Record.categories.keys.map { |key| [I18n.t("enums.record.category.#{key}"), key] },
                   {}, class: "form-select" %>
             </div>
 
             <div class="mb-3">
-  <%= f.label :quantity, "量や回数" %>
-<%= f.number_field :quantity, class: "form-control", value: f.object.quantity || 1 %>
+              <%= f.label :quantity, "量や回数" %>
+              <%= f.number_field :quantity, class: "form-control", value: f.object.quantity || 1 %>
             </div>
 
             <div class="mb-3">

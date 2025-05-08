@@ -74,7 +74,6 @@
   <!-- 編集・削除ボタン -->
 <% if current_user.id == routine.child.user_id %>
   <div class="text-end">
-<button type="button" class="btn btn-sm btn-outline-secondary" data-open-next-modal="editRoutineModal-<%= routine.id %>">編集</button>
  <%= button_to "削除", child_routine_path(routine.child_id, routine),
         method: :delete,
         data: { turbo_confirm: "本当に削除しますか？" },
