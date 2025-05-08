@@ -45,12 +45,11 @@ class RoutinesController < ApplicationController
   def update
     @routine = @child.routines.find(params[:id])
     if @routine.update(routine_params)
-      flash[:notice] = "ルーティンを更新しました"
-      redirect_to root_path
+      redirect_to root_path, notice: "ルーティンを更新しました"
     else
-      flash[:alert] = "更新に失敗しました"
       flash[:routine_errors] = @routine.errors.full_messages
-      flash[:open_modal] = "editRoutineModal-#{@routine.id}"
+      flash[:routine_attributes] = routine_params.to_h
+      flash[:routine_modal_error] = @routine.id # ← ここを追加
       redirect_to root_path
     end
   end

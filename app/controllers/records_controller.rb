@@ -11,9 +11,10 @@ class RecordsController < ApplicationController
     if @record.save
       redirect_to root_path, notice: "記録を追加しました"
     else
+      flash[:record_modal_error] = "new"
       flash[:record_errors]     = @record.errors.full_messages
       flash[:record_attributes] = record_params.to_h
-      flash[:record_modal_error] = "true"
+      
       redirect_to root_path
     end
   end

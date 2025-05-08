@@ -74,10 +74,8 @@
   <!-- 編集・削除ボタン -->
 <% if current_user.id == routine.child.user_id %>
   <div class="text-end">
-    <%= link_to "編集", "#", class: "btn btn-sm btn-outline-secondary",
-                data: { bs_toggle: "modal", bs_target: "#editRoutineModal-#{routine.id}", turbo: false } %>
-
-    <%= button_to "削除", child_routine_path(routine.child_id, routine),
+<button type="button" class="btn btn-sm btn-outline-secondary" data-open-next-modal="editRoutineModal-<%= routine.id %>">編集</button>
+ <%= button_to "削除", child_routine_path(routine.child_id, routine),
         method: :delete,
         data: { turbo_confirm: "本当に削除しますか？" },
         class: "btn btn-sm btn-outline-danger",
@@ -135,14 +133,23 @@
   </div>
 </div>
 
-<% if flash[:open_modal] %>
-  <script>
-    document.addEventListener("turbo:load", () => {
-      const modalId = "<%= flash[:open_modal] %>";
-      const modalElement = document.getElementById(modalId);
-      if (modalElement) {
-        const modal = new bootstrap.Modal(modalElement);
-        modal.show();
+
+<% if flash[:routine_modal_error].present? %>
+  <script type="text/javascript">
+    document.addEventListener("turbo:load", function() {
+      const modalId = "editRoutineModal-<%= flash[:routine_modal_error] %>";
+      const modalEl = document.getElementById(modalId);
+      if (modalEl) {
+        const openedModal = document.querySelector(".modal.show");
+        if (openedModal) {
+          const openedInstance = bootstrap.Modal.getInstance(openedModal);
+          openedModal.addEventListener("hidden.bs.modal", () => {
+            bootstrap.Modal.getOrCreateInstance(modalEl).show();
+          }, { once: true });
+          openedInstance.hide();
+        } else {
+          bootstrap.Modal.getOrCreateInstance(modalEl).show();
+        }
       }
     });
   </script>

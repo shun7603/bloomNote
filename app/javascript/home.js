@@ -238,3 +238,41 @@ document.addEventListener("turbo:load", () => {
     });
   }
 });
+
+document.addEventListener("turbo:load", () => {
+  // モーダルを安全に連続表示するための関数
+  function openModalSafely(targetId) {
+    const openedModal = document.querySelector(".modal.show");
+    const targetModal = document.getElementById(targetId);
+    if (!targetModal) return;
+
+    if (openedModal) {
+      const openedInstance = bootstrap.Modal.getInstance(openedModal);
+      openedModal.addEventListener("hidden.bs.modal", () => {
+        const newModal = new bootstrap.Modal(targetModal);
+        newModal.show();
+      }, { once: true });
+      openedInstance.hide();
+    } else {
+      const modal = new bootstrap.Modal(targetModal);
+      modal.show();
+    }
+  }
+
+  // ✅ 推奨：data-open-next-modal による制御（編集ボタンなど）
+  document.querySelectorAll("[data-open-next-modal]").forEach(button => {
+    button.addEventListener("click", event => {
+      event.preventDefault();
+      const nextModalId = button.dataset.openNextModal;
+      openModalSafely(nextModalId);
+    });
+  });
+
+  // ✅ 補足：従来の data-bs-toggle="modal" による対応（必要なら残す）
+  document.querySelectorAll("[data-bs-toggle='modal'][data-bs-target^='#editRoutineModal-']").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const modalId = btn.getAttribute("data-bs-target").replace("#", "");
+      openModalSafely(modalId);
+    });
+  });
+});
