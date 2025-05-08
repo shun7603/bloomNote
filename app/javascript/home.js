@@ -18,8 +18,9 @@ window.showRoutine = function(childId, childName) {
   const nowMinutes = now.getHours() * 60 + now.getMinutes();
 
   function timeToMinutes(timeStr) {
+    if (!timeStr) return Infinity;
     const [hour, minute] = timeStr.split(":").map(Number);
-    return hour * 60 + minute;
+    return (hour || 0) * 60 + (minute || 0);
   }
 
   let nextTask = "なし";
