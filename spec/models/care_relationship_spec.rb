@@ -1,44 +1,64 @@
 require 'rails_helper'
 
 RSpec.describe CareRelationship, type: :model do
-  let(:parent) { FactoryBot.create(:user) }
+  let(:parent)    { FactoryBot.create(:user) }
   let(:caregiver) { FactoryBot.create(:user) }
-  let(:child) { FactoryBot.create(:child, user: parent) }
+  let(:child)     { FactoryBot.create(:child, user: parent) }
+
+  subject do
+    described_class.new(
+      parent: parent,
+      caregiver: caregiver,
+      child: child,
+      status: "ongoing"
+    )
+  end
 
   describe 'バリデーション' do
-    it 'すべての値が存在すれば保存できること' do
-      relationship = CareRelationship.new(parent: parent, caregiver: caregiver, child: child, status: :ongoing)
-      expect(relationship).to be_valid
+    it '有効な場合は保存できる' do
+      expect(subject).to be_valid
     end
 
-    it 'parentが空だと無効' do
-      relationship = CareRelationship.new(parent: nil, caregiver: caregiver, child: child, status: :ongoing)
-      expect(relationship).to be_invalid
-      expect(relationship.errors[:parent]).to include("を入力してください")
+    it '親が存在しないと無効' do
+      subject.parent = nil
+      expect(subject).to be_invalid
+      expect(subject.errors[:parent]).to include("を入力してください")
     end
 
-    it 'caregiverが空だと無効' do
-      relationship = CareRelationship.new(parent: parent, caregiver: nil, child: child, status: :ongoing)
-      expect(relationship).to be_invalid
-      expect(relationship.errors[:caregiver]).to include("を入力してください")
+    it '保育者が存在しないと無効' do
+      subject.caregiver = nil
+      expect(subject).to be_invalid
+      expect(subject.errors[:caregiver]).to include("を入力してください")
     end
 
-    it 'childが空だと無効' do
-      relationship = CareRelationship.new(parent: parent, caregiver: caregiver, child: nil, status: :ongoing)
-      expect(relationship).to be_invalid
-      expect(relationship.errors[:child]).to include("を入力してください")
+    it '子どもが存在しないと無効' do
+      subject.child = nil
+      expect(subject).to be_invalid
+      expect(subject.errors[:child]).to include("を入力してください")
     end
 
-    it 'statusが空だと無効' do
-      relationship = CareRelationship.new(parent: parent, caregiver: caregiver, child: child, status: nil)
-      expect(relationship).to be_invalid
-      expect(relationship.errors[:status]).to include("を入力してください")
+    it 'ステータスが空だと無効' do
+      subject.status = nil
+      expect(subject).to be_invalid
+      expect(subject.errors[:status]).to include("を入力してください")
+    end
+
+    it '親と保育者が同一人物だと無効' do
+      subject.caregiver = subject.parent
+      expect(subject).to be_invalid
+      expect(subject.errors[:caregiver_id]).to include("に自分自身は指定できません")
     end
   end
 
-  describe 'enum' do
-    it 'statusがongoingかendedであること' do
-      expect(CareRelationship.statuses.keys).to include('ongoing', 'ended')
+  describe '#status_i18n' do
+    it '日本語のステータス名を返す（ongoing）' do
+      subject.status = "ongoing"
+      expect(subject.status_i18n).to eq("預かり中")
+    end
+
+    it '日本語のステータス名を返す（ended）' do
+      subject.status = "ended"
+      expect(subject.status_i18n).to eq("終了")
     end
   end
 end

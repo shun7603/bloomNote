@@ -3,6 +3,7 @@ FactoryBot.define do
     association :parent, factory: :user
     association :caregiver, factory: :user
     association :child
+
     status { :ongoing }
   end
 end
