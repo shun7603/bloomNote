@@ -84,3 +84,5 @@ gem "bootstrap", "~> 5.3"
 gem 'dartsass-sprockets'
 gem 'mini_magick'
 gem 'image_processing', '~> 1.2'
+gem 'webpush'
+gem 'dotenv-rails'

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_05_06_135433) do
+ActiveRecord::Schema[7.1].define(version: 2025_05_08_142053) do
   create_table "active_storage_attachments", charset: "utf8mb3", force: :cascade do |t|
     t.string "name", null: false
     t.string "record_type", null: false
@@ -72,6 +72,17 @@ ActiveRecord::Schema[7.1].define(version: 2025_05_06_135433) do
     t.index ["user_id"], name: "index_hospitals_on_user_id"
   end
 
+  create_table "notifications", charset: "utf8mb3", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.bigint "routine_id", null: false
+    t.string "message", null: false
+    t.boolean "read", default: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["routine_id"], name: "index_notifications_on_routine_id"
+    t.index ["user_id"], name: "index_notifications_on_user_id"
+  end
+
   create_table "records", charset: "utf8mb3", force: :cascade do |t|
     t.bigint "child_id", null: false
     t.integer "record_type"
@@ -103,6 +114,17 @@ ActiveRecord::Schema[7.1].define(version: 2025_05_06_135433) do
     t.index ["child_id"], name: "index_routines_on_child_id"
   end
 
+  create_table "subscriptions", charset: "utf8mb3", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.string "endpoint", null: false
+    t.string "p256dh_key", null: false
+    t.string "auth_key", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["endpoint"], name: "index_subscriptions_on_endpoint", unique: true
+    t.index ["user_id"], name: "index_subscriptions_on_user_id"
+  end
+
   create_table "users", charset: "utf8mb3", force: :cascade do |t|
     t.string "email", default: "", null: false
     t.string "encrypted_password", default: "", null: false
@@ -125,6 +147,9 @@ ActiveRecord::Schema[7.1].define(version: 2025_05_06_135433) do
   add_foreign_key "children", "users"
   add_foreign_key "hospitals", "children"
   add_foreign_key "hospitals", "users"
+  add_foreign_key "notifications", "routines"
+  add_foreign_key "notifications", "users"
   add_foreign_key "records", "children"
   add_foreign_key "routines", "children"
+  add_foreign_key "subscriptions", "users"
 end

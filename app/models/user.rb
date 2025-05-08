@@ -9,6 +9,7 @@ class User < ApplicationRecord
   validates :role,     presence: true
 
   # 子どもと病院
+  has_many :subscriptions, dependent: :destroy
   has_many :children, dependent: :destroy
   has_many :hospitals, dependent: :destroy
   has_many :records
