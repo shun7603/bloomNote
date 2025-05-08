@@ -1,109 +1,359 @@
-
 @import "bootstrap";
-
 @import "custom";
 
+// 1. ベース全体
 body {
-  background-color: #f5f5f5;
-  font-family: "Helvetica Neue", "Yu Gothic UI", sans-serif;
+  background-color: #fdfaf6;
+  font-family: "M PLUS Rounded 1c", "Yu Gothic UI", sans-serif;
+  color: #444;
+  font-size: 15px;
+  line-height: 1.7;
+}
+
+// 2. コンテナ全体
+.container,
+.home-container {
+  background-color: #ffffff;
+  border: 1px solid #eee;
+  border-radius: 24px;
+  padding: 24px;
+  max-width: 440px;
+  margin: 40px auto;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.04);
+}
+
+// 3. ヘッダーとタイトル
+h3.fw-bold {
+  font-size: 1.6rem;
   color: #333;
 }
-
-// コンテナ全体
-.container {
-  background-color: #fffefc;
-  border: 1px solid #ddd;
-  border-radius: 20px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-  padding: 24px;
-  max-width: 420px;
-  margin: 40px auto;
-}
-
-// ヘッダー
-h3.fw-bold {
-  font-size: 1.4rem;
-  color: #222;
-  margin-bottom: 0;
-}
-
-// 小見出し
 h4, h5 {
   font-weight: bold;
-  color: #333;
+  color: #444;
   margin-top: 20px;
 }
 
-// タイムライン
-.bg-light {
-  background-color: #fafafa !important;
-  border-radius: 12px;
-}
-
-// タイムラインアイテム
-.bg-light .text-center {
-  flex: 1;
-  font-size: 0.85rem;
-}
-
-// モーダルヘッダー
+// 4. モーダルのタイトル
 .modal-title {
+  font-size: 1.2rem;
   font-weight: bold;
   color: #333;
 }
 
-// ボタン
-.btn {
-  border-radius: 999px;
+// 5. タスクバナー
+.task-banner {
+  background-color: #fff4e5;
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 20px;
   font-weight: bold;
+  color: #6b4f23;
 }
 
+// 6. 各ボタン共通
+.btn {
+  border-radius: 999px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  padding: 8px 16px;
+}
+
+// 7. ボタンバリエーション（優しい色調）
 .btn-outline-primary {
-  color: #3178c6;
-  border-color: #3178c6;
+  color: #4682b4;
+  border-color: #4682b4;
 }
 .btn-outline-primary:hover {
-  background-color: #3178c6;
+  background-color: #4682b4;
   color: #fff;
 }
 
 .btn-outline-success {
-  color: #37966f;
-  border-color: #37966f;
+  color: #6ba292;
+  border-color: #6ba292;
 }
 .btn-outline-success:hover {
-  background-color: #37966f;
+  background-color: #6ba292;
   color: #fff;
 }
 
 .btn-outline-secondary {
-  color: #555;
-  border-color: #aaa;
+  color: #808080;
+  border-color: #ccc;
 }
 .btn-outline-secondary:hover {
-  background-color: #aaa;
+  background-color: #ccc;
   color: #fff;
 }
 
-// 緊急連絡
-.bg-light strong {
-  font-size: 1rem;
-  color: #c0392b;
+.btn-outline-warning {
+  color: #e19a37;
+  border-color: #e19a37;
+}
+.btn-outline-warning:hover {
+  background-color: #e19a37;
+  color: #fff;
 }
 
-// 今やるべきタスク
-#task-footer, [id^="task-footer"] {
-  background-color: #fff3cd;
-  color: #856404;
-  border-radius: 10px;
+.btn-edit-record {
+  @extend .btn;
+  @extend .btn-outline-secondary;
+  margin-right: 6px;
+}
+
+.btn-delete-record {
+  @extend .btn;
+  @extend .btn-outline-danger;
+}
+
+// 8. 記録リスト
+.record-list {
+  max-width: 100%;
+  padding-left: 0;
+}
+
+.record-item {
+  border: none;
+  border-radius: 12px;
+  margin-bottom: 12px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+  padding: 16px;
+}
+
+.record-time-type {
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.record-time {
+  font-weight: bold;
+  color: #333;
+}
+
+.record-quantity {
+  font-size: 0.8rem;
+}
+
+.record-memo {
+  font-size: 0.85rem;
+  margin-top: 4px;
+}
+
+.record-user {
+  font-size: 0.75rem;
+}
+// 9. 緊急連絡
+.emergency-button {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 1020;
+  background-color: #fef5e6; // 優しめの色（例）
+  color: #333;
+  padding: 0.75rem 1rem;
+  text-align: center;
+  font-weight: bold;
+  border-top: 1px solid #ddd;
+  cursor: pointer;
+  font-size: 1rem;
+
+  i.emergency-icon {
+    margin-right: 0.5rem;
+    font-size: 1.2rem;
+    vertical-align: middle;
+  }
+
+  &:hover {
+    background-color: #fbeed9;
+  }
+}
+
+// 10. アイコン表示
+.icon-selection {
+  display: flex;
+  justify-content: space-around;
+  margin-top: 12px;
+}
+.icon-image {
+  height: 28px;
+  margin-bottom: 4px;
+}
+.icon-selection .text-center {
+  font-size: 0.8rem;
+  color: #666;
+}
+
+// 11. フォーム：日付切り替え
+.form-date-switcher {
+  margin-top: 24px;
+}
+.date-switcher-inner {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.date-field {
+  width: auto;
+}
+.label-date {
+  font-weight: 600;
+}
+.date-submit {
+  @extend .btn;
+  @extend .btn-outline-primary;
+}
+
+.app-header {
+  background-color: #ffffff;
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid #ddd;
+}
+
+.header-center {
+  flex-grow: 1;
+  text-align: center;
+}
+
+.task-info {
+  margin: 0 auto;
+}
+
+.task-label {
+  font-size: 0.85rem;
+  font-weight: bold;
+  color: #333;
+}
+
+.btn-task {
+  background-color: #f0ad4e;
+  color: #fff;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  padding: 0.25rem 0.75rem;
+  margin-left: 0.5rem;
+  border: none;
+}
+
+.btn-show-routine {
+  background-color: transparent;
+  color: #666;
+  font-size: 0.75rem;
+  border: 1px solid #bbb;
+  border-radius: 999px;
+  margin-top: 0.3rem;
+  padding: 0.25rem 0.75rem;
+}
+
+.header-menu .btn-menu {
+  background: none;
+  border: none;
+}
+
+.login-container {
+  display: flex;
+  justify-content: center;
+}
+
+.login-card {
+  max-width: 400px;
+  width: 100%;
+  margin: 0 auto;
+  background-color: #ffffff;
+  border: 1px solid #e2e2e2;
+}
+
+.login-title {
+  font-weight: bold;
+  color: #3178c6;
+  font-family: "M PLUS Rounded 1c", sans-serif;
+}
+
+.signup-container {
+  max-width: 480px;
+  margin: 0 auto;
+}
+
+.signup-card {
+  background-color: #fffefc;
+  border: 1px solid #ddd;
+  border-radius: 20px;
+}
+
+.signup-title {
+  font-size: 1.5rem;
+  color: #3178c6;
   font-weight: bold;
 }
-
-@keyframes highlight {
-  0%   { background-color: #fff3cd; }
-  100% { background-color: transparent; }
+.error-messages {
+  border-radius: 12px;
+  background-color: #fff5f5;
+  color: #c0392b;
+  border: 1px solid #f1c0c0;
+  font-size: 0.95rem;
+  ul {
+    margin-top: 0.5rem;
+    li {
+      margin-bottom: 0.25rem;
+    }
+  }
 }
 
-.highlight {
-  animation: highlight 2s ease-out;
+
+.account-edit-container {
+  max-width: 480px;
+  margin: auto;
+
+  .form-text {
+    color: #888;
+  }
+
+  .text-danger {
+    font-weight: bold;
+  }
+
+  .btn-outline-danger {
+    color: #c0392b;
+    border-color: #c0392b;
+    &:hover {
+      background-color: #c0392b;
+      color: #fff;
+    }
+  }
+}
+
+.password-reset-container {
+  max-width: 480px;
+  margin: auto;
+
+  .card {
+    background-color: #fffefc;
+  }
+
+  .form-label {
+    font-weight: 600;
+    color: #333;
+  }
+
+  .btn-primary {
+    background-color: #3178c6;
+    border-color: #3178c6;
+
+    &:hover {
+      background-color: darken(#3178c6, 5%);
+    }
+  }
+}
+.app-header {
+  position: sticky;
+  top: 0;
+  z-index: 1030; // Bootstrapのナビバーと同じくらいの高さ
+  background-color: #ffffff; // 必要なら背景色を固定
+  border-bottom: 1px solid #e0e0e0;
+  padding: 0.5rem 1rem;
+
+  // モバイル対応の影や余白も任意で
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
 }

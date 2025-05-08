@@ -12,26 +12,26 @@
 
         <%= form_with(model: child, url: children_path, local: true) do |f| %>
 
-          <% if flash[:child_errors] %>
-            <div class="alert alert-danger">
-              <ul>
-                <% flash[:child_errors].each do |msg| %>
-                  <li><%= msg %></li>
-                <% end %>
-              </ul>
-            </div>
-          <% end %>
+<% if flash[:child_new_errors] %>
+  <div class="alert alert-danger">
+    <ul>
+      <% flash[:child_new_errors].each do |msg| %>
+        <li><%= msg %></li>
+      <% end %>
+    </ul>
+  </div>
+<% end %>
 
           <div class="mb-3">
-            <%= f.label :name %>
+            <%= f.label :name, "名前" %>
             <%= f.text_field :name, class: "form-control" %>
           </div>
           <div class="mb-3">
-            <%= f.label :birth_date %>
+            <%= f.label :birth_date, "青年月日" %>
             <%= f.date_field :birth_date, class: "form-control" %>
           </div>
           <div class="mb-3">
-            <%= f.label :gender %>
+            <%= f.label :gender, "性別" %>
             <%= f.select :gender, [["男の子", "boy"], ["女の子", "girl"]], {}, class: "form-select" %>
           </div>
           <%= f.submit "登録", class: "btn btn-primary" %>

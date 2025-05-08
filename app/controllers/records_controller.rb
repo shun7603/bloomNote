@@ -11,9 +11,10 @@ class RecordsController < ApplicationController
     if @record.save
       redirect_to root_path, notice: "記録を追加しました"
     else
+      flash[:record_modal_error] = "new"
       flash[:record_errors]     = @record.errors.full_messages
       flash[:record_attributes] = record_params.to_h
-      flash[:record_modal_error] = "true"
+      
       redirect_to root_path
     end
   end
@@ -42,11 +43,8 @@ class RecordsController < ApplicationController
              .left_joins(:care_relationships)
              .where(id: params[:child_id])
              .where("children.user_id = :uid OR care_relationships.caregiver_id = :uid", uid: current_user.id)
-             .where("care_relationships.status IS NULL OR care_relationships.status = ?", CareRelationship.statuses[:ongoing])
              .distinct
              .first
-  
-    puts "🧪 child found? => #{@child.present?}"
   end
 
   def record_params
