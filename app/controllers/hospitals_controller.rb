@@ -9,8 +9,7 @@ class HospitalsController < ApplicationController
     if @hospital.save
       redirect_to root_path, notice: "病院を登録しました"
     else
-      # flashを使ってエラー内容と入力値を一時的に保持
-      flash[:hospital_modal_error] = "new" # newの合図
+      flash[:hospital_modal_error] = "new"
       flash[:hospital_errors] = @hospital.errors.full_messages
       flash[:hospital_attributes] = hospital_params
       redirect_to root_path
@@ -25,7 +24,7 @@ class HospitalsController < ApplicationController
     else
       flash[:hospital_modal_error] = @hospital.id
       flash[:hospital_errors] = @hospital.errors.full_messages
-      redirect_to root_path # @hospitalは渡らないので、必要ならsessionなど使う
+      redirect_to root_path
     end
   end
 

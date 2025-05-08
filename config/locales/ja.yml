@@ -40,7 +40,16 @@ ja:
         caregiver: "保育者"
         child: "子ども"
         status: "ステータス"
+        caregiver_id: "預け先"
 
+      child:
+        name: "名前"
+        birth_date: "生年月日"
+
+      routine:
+        task: "記録の種類"        # 英語「Task」を日本語表示に
+        time: "時間"
+        
   enums:
     care_relationship:
       status:
@@ -65,3 +74,4 @@ ja:
             greater_than: "は1以上を入力してください"  # ✅ 個別でも同様に調整
           recorded_at:
             blank: "記録日時を入力してください"
+    care_relationship:

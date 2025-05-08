@@ -276,3 +276,12 @@ document.addEventListener("turbo:load", () => {
     });
   });
 });
+
+document.addEventListener("turbo:load", () => {
+  // 緊急連絡先モーダルが閉じられたら、エラーメッセージを削除する
+  document.querySelectorAll("[id^='editHospitalModal-'], #newHospitalModal").forEach(modalEl => {
+    modalEl.addEventListener("hidden.bs.modal", () => {
+      modalEl.querySelectorAll(".alert").forEach(alert => alert.remove());
+    });
+  });
+});
