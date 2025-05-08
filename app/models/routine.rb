@@ -38,6 +38,6 @@ class Routine < ApplicationRecord
 
   # インスタンス用
   def task_label
-    I18n.t("activerecord.attributes.record.record_type.#{task}")
+    I18n.t("enums.record.record_type.#{task}")
   end
 end

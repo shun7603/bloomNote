@@ -18,8 +18,9 @@ window.showRoutine = function(childId, childName) {
   const nowMinutes = now.getHours() * 60 + now.getMinutes();
 
   function timeToMinutes(timeStr) {
+    if (!timeStr) return Infinity;
     const [hour, minute] = timeStr.split(":").map(Number);
-    return hour * 60 + minute;
+    return (hour || 0) * 60 + (minute || 0);
   }
 
   let nextTask = "なし";
@@ -59,16 +60,35 @@ document.addEventListener("turbo:load", () => {
     }
   }
 
-  // ✅ 病院編集モーダル
-  const editHospitalId = document.body.dataset.hospitalModalError;
-  if (editHospitalId) {
-    const modalEl = document.getElementById(`editHospitalModal-${editHospitalId}`);
-    if (modalEl) {
-      const modal = new bootstrap.Modal(modalEl);
-      modal.show();
-      document.body.dataset.hospitalModalError = "";
+// ✅ 病院モーダル再表示（新規 or 編集）
+const hospitalModalError = document.body.dataset.hospitalModalError;
+
+if (hospitalModalError) {
+  const modalId = hospitalModalError === "new"
+    ? "newHospitalModal"
+    : `editHospitalModal-${hospitalModalError}`;
+  const modalEl = document.getElementById(modalId);
+
+  if (modalEl) {
+    // 既にモーダルが開いていたら閉じてから再表示
+    const opened = document.querySelector(".modal.show");
+    if (opened && opened.id !== modalId) {
+      const openedInstance = bootstrap.Modal.getInstance(opened);
+      if (openedInstance) {
+        opened.addEventListener("hidden.bs.modal", () => {
+          new bootstrap.Modal(modalEl).show();
+        }, { once: true });
+        openedInstance.hide();
+      } else {
+        new bootstrap.Modal(modalEl).show();
+      }
+    } else {
+      new bootstrap.Modal(modalEl).show();
     }
+
+    document.body.dataset.hospitalModalError = "";
   }
+}
 
   // ✅ 子どもモーダル（new/edit）
   const childModalError = document.body.dataset.childModalError;
@@ -273,6 +293,15 @@ document.addEventListener("turbo:load", () => {
     btn.addEventListener("click", () => {
       const modalId = btn.getAttribute("data-bs-target").replace("#", "");
       openModalSafely(modalId);
+    });
+  });
+});
+
+document.addEventListener("turbo:load", () => {
+  // 緊急連絡先モーダルが閉じられたら、エラーメッセージを削除する
+  document.querySelectorAll("[id^='editHospitalModal-'], #newHospitalModal").forEach(modalEl => {
+    modalEl.addEventListener("hidden.bs.modal", () => {
+      modalEl.querySelectorAll(".alert").forEach(alert => alert.remove());
     });
   });
 });

@@ -7,15 +7,15 @@
       </div>
 
       <div class="modal-body">
-        <% if flash[:hospital_errors] %>
-          <div class="alert alert-danger">
-            <ul>
-              <% flash[:hospital_errors].each do |msg| %>
-                <li><%= msg %></li>
-              <% end %>
-            </ul>
-          </div>
-        <% end %>
+<% if flash[:hospital_errors] && flash[:hospital_modal_error] == "new" %>
+  <div class="alert alert-danger">
+    <ul>
+      <% flash[:hospital_errors].each do |msg| %>
+        <li><%= msg %></li>
+      <% end %>
+    </ul>
+  </div>
+<% end %>
 
         <% if @current_child.present? %>
           <%= form_with(model: [@current_child, @hospital], url: child_hospitals_path(@current_child), local: true) do |f| %>

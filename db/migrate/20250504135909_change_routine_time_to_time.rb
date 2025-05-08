@@ -1,6 +1,13 @@
-# db/migrate/xxxxxx_change_routine_time_to_time.rb
 class ChangeRoutineTimeToTime < ActiveRecord::Migration[7.1]
-  def change
-    change_column :routines, :time, :time
+  def up
+    if ActiveRecord::Base.connection.adapter_name == "PostgreSQL"
+      change_column :routines, :time, 'time USING time::time'
+    else
+      change_column :routines, :time, :time
+    end
+  end
+
+  def down
+    change_column :routines, :time, :datetime
   end
 end

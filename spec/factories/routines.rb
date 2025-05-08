@@ -1,7 +1,7 @@
 FactoryBot.define do
   factory :routine do
-    child { nil }
-    time { "MyString" }
-    task { "MyString" }
+    association :child
+    time { "09:00" }
+    task { :milk }
   end
 end

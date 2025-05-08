@@ -6,28 +6,6 @@ ja:
 
     attributes:
       record:
-        record_type:
-          milk: "ミルク"
-          breast_milk: "母乳"
-          baby_food: "離乳食"
-          water: "水分補給"
-          sleep: "睡眠"
-          nap: "昼寝"
-          toilet: "排泄"
-          temperature: "体温"
-          medicine: "服薬"
-          hospital: "通院・予防接種"
-          bath: "お風呂"
-          outing: "外出"
-          event: "行事"
-          concern: "気になる様子"
-        category:
-          nutrition: "栄養"
-          life: "生活"
-          health: "健康"
-          medical: "医療"
-          schedule: "スケジュール"
-          concern_note: "気になること"
         quantity: "回数"
         recorded_at: "記録日時"
 
@@ -40,8 +18,42 @@ ja:
         caregiver: "保育者"
         child: "子ども"
         status: "ステータス"
+        caregiver_id: "預け先"
+
+      child:
+        name: "名前"
+        birth_date: "生年月日"
+
+      routine:
+        task: "記録の種類"
+        time: "時間"
 
   enums:
+    record:
+      record_type:
+        milk: "ミルク"
+        breast_milk: "母乳"
+        baby_food: "離乳食"
+        water: "水分補給"
+        sleep: "睡眠"
+        nap: "昼寝"
+        toilet: "排泄"
+        temperature: "体温"
+        medicine: "服薬"
+        hospital: "通院・予防接種"
+        bath: "お風呂"
+        outing: "外出"
+        event: "行事"
+        concern: "気になる様子"
+
+      category:
+        nutrition: "栄養"
+        life: "生活"
+        health: "健康"
+        medical: "医療"
+        schedule: "スケジュール"
+        concern_note: "気になること"
+
     care_relationship:
       status:
         ongoing: "預かり中"
@@ -51,7 +63,7 @@ ja:
     messages:
       blank: "を入力してください"
       not_a_number: "は数値で入力してください"
-      greater_than: "は1以上を入力してください"  # ✅ %{attribute} を削除
+      greater_than: "は1以上を入力してください"
 
     models:
       record:
@@ -62,6 +74,6 @@ ja:
             blank: "カテゴリを選択してください"
           quantity:
             blank: "を入力してください"
-            greater_than: "は1以上を入力してください"  # ✅ 個別でも同様に調整
+            greater_than: "は1以上を入力してください"
           recorded_at:
             blank: "記録日時を入力してください"
