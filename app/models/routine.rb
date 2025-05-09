@@ -31,10 +31,6 @@ class Routine < ApplicationRecord
     }
   end
 
-  def task_label
-    I18n.t("activerecord.attributes.record.record_type.#{record_type}", default: task)
-  end
-
   # セレクト用（[日本語, 英語キー]形式）
   def self.task_options_for_select
     task_labels.map { |k, v| [v, k] }
