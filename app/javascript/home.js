@@ -305,3 +305,38 @@ document.addEventListener("turbo:load", () => {
     });
   });
 });
+
+document.addEventListener("turbo:load", () => {
+  if ("serviceWorker" in navigator && "PushManager" in window) {
+    navigator.serviceWorker.ready.then(async (registration) => {
+      const permission = await Notification.requestPermission();
+      if (permission !== "granted") return;
+
+      const publicKey = "<%= ENV['VAPID_PUBLIC_KEY'] %>"; // 後ほどERBで埋め込む
+      const convertedKey = urlBase64ToUint8Array(publicKey);
+
+      const subscription = await registration.pushManager.subscribe({
+        userVisibleOnly: true,
+        applicationServerKey: convertedKey
+      });
+
+      // サーバーに送信（すでに登録されている場合は無視）
+      await fetch("/subscriptions", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRF-Token": document.querySelector("meta[name='csrf-token']").content
+        },
+        body: JSON.stringify(subscription.toJSON())
+      });
+    });
+  }
+});
+
+// VAPID鍵用デコード関数
+function urlBase64ToUint8Array(base64String) {
+  const padding = "=".repeat((4 - base64String.length % 4) % 4);
+  const base64 = (base64String + padding).replace(/\-/g, "+").replace(/_/g, "/");
+  const raw = atob(base64);
+  return new Uint8Array([...raw].map(c => c.charCodeAt(0)));
+}

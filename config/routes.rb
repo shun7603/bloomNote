@@ -9,7 +9,7 @@ Rails.application.routes.draw do
   patch 'select_child/:id', to: 'children#select', as: :select_child
 
   resources :homes, only: [:index]
-
+  resources :subscriptions, only: [:create]
   resources :children do
     resources :records, only: [:create, :update, :destroy]
     resources :routines
