@@ -4,13 +4,13 @@
 // 1. ベース全体
 body {
   background-color: #fdfaf6;
-  font-family: "M PLUS Rounded 1c", "Yu Gothic UI", sans-serif;
+  font-family: "Kiwi Maru", "M PLUS Rounded 1c", "Yu Gothic UI", sans-serif;
   color: #444;
   font-size: 15px;
   line-height: 1.7;
 }
 
-// 2. コンテナ全体
+// 2. コンテナ全体（育児記録枠など）
 .container,
 .home-container {
   background-color: #ffffff;
@@ -20,6 +20,26 @@ body {
   max-width: 440px;
   margin: 40px auto;
   box-shadow: 0 8px 16px rgba(0, 0, 0, 0.04);
+}
+
+// 4. 状況ラベル（例：預かり中）
+.home-container .text-muted {
+  font-size: 0.9rem;
+  color: #888 !important;
+}
+
+// 5. その他テキスト（未選択時など）
+.home-container p.text-muted {
+  font-style: italic;
+}
+
+.home-container h2,
+.record-title {
+  font-weight: 700;
+  font-size: 1.2rem;
+  color: #333;
+  margin-bottom: 1rem;
+  text-align: center;
 }
 
 // 3. ヘッダーとタイトル
