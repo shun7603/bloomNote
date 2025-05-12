@@ -3,6 +3,7 @@ ja:
     models:
       record: "育児記録"
       hospital: "病院"
+      user: "ユーザー" # ← 追記
 
     attributes:
       record:
@@ -27,6 +28,12 @@ ja:
       routine:
         task: "記録の種類"
         time: "時間"
+
+      user: # ← 追記
+        email: "メールアドレス"
+        password: "パスワード"
+        password_confirmation: "パスワード（確認）"
+        nickname: "ニックネーム"
 
   enums:
     record:
@@ -60,10 +67,15 @@ ja:
         ended: "終了"
 
   errors:
+    format: "%{attribute}%{message}" # ← メッセージ表示形式を統一
     messages:
       blank: "を入力してください"
       not_a_number: "は数値で入力してください"
       greater_than: "は1以上を入力してください"
+      invalid: "が正しくありません"
+      taken: "は既に使用されています"
+      too_short: "は%{count}文字以上入力してください"
+      confirmation: "と一致しません"
 
     models:
       record:
