@@ -340,3 +340,13 @@ function urlBase64ToUint8Array(base64String) {
   const raw = atob(base64);
   return new Uint8Array([...raw].map(c => c.charCodeAt(0)));
 }
+
+// careRelationshipListModalが閉じられたときにページをリロード
+document.addEventListener("turbo:load", () => {
+  const careRelationshipListModal = document.getElementById("careRelationshipListModal");
+  if (careRelationshipListModal) {
+    careRelationshipListModal.addEventListener("hidden.bs.modal", () => {
+      window.location.reload();
+    });
+  }
+});
