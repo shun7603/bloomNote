@@ -2,6 +2,19 @@
   <div class="login-card card shadow-sm rounded-4 p-4">
     <h2 class="login-title text-center mb-4">ログイン</h2>
 
+
+<% if flash[:alert].present? || resource.errors.any? %>
+  <div class="form-errors">
+    <% if flash[:alert].present? %>
+      <p><%= flash[:alert] %></p>
+    <% end %>
+
+    <% resource.errors.full_messages.each do |message| %>
+      <p><%= message %></p>
+    <% end %>
+  </div>
+<% end %>
+
     <%= form_for(resource, as: resource_name, url: session_path(resource_name)) do |f| %>
       <div class="mb-3">
         <%= f.label :email, "メールアドレス", class: "form-label" %>
