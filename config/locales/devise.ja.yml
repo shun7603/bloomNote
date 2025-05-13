@@ -1,0 +1,22 @@
+ja:
+  devise:
+    failure:
+      invalid: "メールアドレスまたはパスワードが正しくありません"
+      not_found_in_database: "メールアドレスまたはパスワードが正しくありません"
+      already_authenticated: "すでにログインしています"
+    sessions:
+      signed_in: "ログインしました"
+      signed_out: "ログアウトしました"
+    registrations:
+      signed_up: "アカウント登録が完了しました"
+      updated: "アカウント情報を更新しました"
+      destroyed: "アカウントを削除しました"
+    passwords:
+      send_instructions: "パスワード再設定用のメールを送信しました"
+      updated: "パスワードを変更しました"
+      updated_not_active: "パスワードは変更されましたが、アカウントは有効化されていません"
+
+  errors:
+    messages:
+      not_found: "が見つかりません"
+      
