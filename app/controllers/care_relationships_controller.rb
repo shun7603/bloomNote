@@ -10,7 +10,8 @@ class CareRelationshipsController < ApplicationController
       existing = CareRelationship.find_by(
         parent: current_user,
         caregiver: caregiver,
-        child: child
+        child: child,
+        status: :ongoing
       )
 
       if existing

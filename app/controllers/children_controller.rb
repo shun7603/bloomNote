@@ -3,12 +3,12 @@ class ChildrenController < ApplicationController
 
   def index
     @children = Child
-                .left_joins(:care_relationships)
-                .where(
-                  "children.user_id = :user_id OR (care_relationships.caregiver_id = :user_id AND care_relationships.status = :ongoing)",
-                  user_id: current_user.id,
-                  ongoing: CareRelationship.statuses[:ongoing]
-                )
+    .left_joins(:care_relationships)
+    .where(
+      "children.user_id = :user_id OR (care_relationships.caregiver_id = :user_id AND care_relationships.status = :ongoing)",
+      user_id: current_user.id,
+      ongoing: CareRelationship.statuses[:ongoing]
+    )
                 .distinct
                 .includes(:routines)
 
