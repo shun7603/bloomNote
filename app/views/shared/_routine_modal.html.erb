@@ -62,26 +62,47 @@
         <% task_value = routine.task_before_type_cast.to_i %>
         <% task_key = Routine.tasks.key(task_value) %>
         <% task_label = Routine.task_labels[task_key] || "不明なタスク" %>
-        <li class="list-group-item d-flex justify-content-between align-items-start">
-          <div>
-            <strong><%= task_label %></strong>
-            <div class="text-muted small">🕒 <%= routine.time.strftime('%H:%M') %></div>
-            <% if routine.memo.present? %>
-              <div class="text-muted small">📝 <%= routine.memo %></div>
-            <% end %>
-          </div>
+<li class="list-group-item routine-item">
+  <div class="routine-content-wrapper d-flex justify-content-between align-items-start">
+    <!-- 左：テキスト -->
+    <div class="routine-text-area">
+      <strong class="routine-label"><%= task_label %></strong>
+      <div class="routine-time text-muted small">🕒 <%= routine.time.strftime('%H:%M') %></div>
+      <% if routine.memo.present? %>
+        <div class="routine-memo text-muted small">📝 <%= routine.memo %></div>
+      <% end %>
+    </div>
 
-  <!-- 編集・削除ボタン -->
-<% if current_user.id == routine.child.user_id %>
-  <div class="text-end">
- <%= button_to "削除", child_routine_path(routine.child_id, routine),
-        method: :delete,
-        data: { turbo_confirm: "本当に削除しますか？" },
-        class: "btn btn-sm btn-outline-danger",
-        form: { class: "d-inline" } %>
+    <!-- 中央：画像 -->
+<% if routine.photo.attached? %>
+  <div class="routine-image-wrapper">
+    <%= image_tag routine.photo.variant(resize_to_limit: [200, 150]),
+        class: "routine-image clickable-image",
+        data: { bs_toggle: "modal", bs_target: "#imagePreviewModal", image_url: url_for(routine.photo) } %>
   </div>
 <% end %>
 
+    <!-- 右：削除ボタン -->
+    <% if current_user.id == routine.child.user_id %>
+      <div class="routine-button-wrapper">
+        <%= button_to "削除", child_routine_path(routine.child_id, routine),
+              method: :delete,
+              data: { turbo_confirm: "本当に削除しますか？" },
+              class: "btn btn-sm btn-outline-danger",
+              form: { class: "d-inline" } %>
+      </div>
+    <% end %>
+
+<!-- 拡大画像モーダル -->
+<div class="modal fade" id="imagePreviewModal" tabindex="-1" aria-labelledby="imagePreviewModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content">
+      <div class="modal-body text-center">
+        <img id="previewImage" src="#" alt="拡大表示" class="img-fluid modal-image">
+      </div>
+    </div>
+  </div>
+</div>
               <!-- 編集モーダル（個別に出力） -->
               <div class="modal fade" id="editRoutineModal-<%= routine.id %>" tabindex="-1" aria-labelledby="editRoutineModalLabel-<%= routine.id %>" aria-hidden="true">
                 <div class="modal-dialog">
@@ -153,3 +174,5 @@
     });
   </script>
 <% end %>
+
+

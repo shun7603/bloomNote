@@ -350,3 +350,14 @@ document.addEventListener("turbo:load", () => {
     });
   }
 });
+
+document.addEventListener("turbo:load", () => {
+  const images = document.querySelectorAll(".clickable-image");
+
+  images.forEach(img => {
+    img.addEventListener("click", function () {
+      const modalImage = document.getElementById("previewImage");
+      modalImage.src = this.dataset.imageUrl;
+    });
+  });
+});
