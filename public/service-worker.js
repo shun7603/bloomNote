@@ -1,7 +1,7 @@
-self.addEventListener("push", function(event) {
-  const data = event.data.json();
-  self.registration.showNotification(data.title, {
-    body: data.body,
-    icon: "/icon-192.png"
-  });
-});
+export async function register() {
+  if ("serviceWorker" in navigator) {
+    return await navigator.serviceWorker.register("/service-worker.js");
+  } else {
+    alert("Service Worker が未対応のブラウザです。");
+  }
+}

@@ -292,30 +292,36 @@ document.addEventListener("turbo:load", () => {
     });
   });
 
-  if ("serviceWorker" in navigator && "PushManager" in window) {
-    navigator.serviceWorker.ready.then(async (registration) => {
-      const permission = await Notification.requestPermission();
-      if (permission !== "granted") return;
+if ("serviceWorker" in navigator && "PushManager" in window) {
+  navigator.serviceWorker.ready.then(async (registration) => {
+    const permission = await Notification.requestPermission();
+    if (permission !== "granted") return;
 
-      const publicKey = "<%= ENV['VAPID_PUBLIC_KEY'] %>"; // 後ほどERBで埋め込む
-      const convertedKey = urlBase64ToUint8Array(publicKey);
+    // ✅ HTML内の<meta>からVAPID公開鍵を取得
+    const publicKey = document.querySelector("meta[name='vapid-public-key']").content;
 
-      const subscription = await registration.pushManager.subscribe({
-        userVisibleOnly: true,
-        applicationServerKey: convertedKey
-      });
+    // ✅ VAPID鍵をUint8Arrayに変換（WebPush仕様）
+    const convertedKey = urlBase64ToUint8Array(publicKey);
 
-      // サーバーに送信（すでに登録されている場合は無視）
-      await fetch("/subscriptions", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "X-CSRF-Token": document.querySelector("meta[name='csrf-token']").content
-        },
-        body: JSON.stringify(subscription.toJSON())
-      });
+    // ✅ Push通知を購読（ブラウザに通知を許可）
+    const subscription = await registration.pushManager.subscribe({
+      userVisibleOnly: true,
+      applicationServerKey: convertedKey
     });
-  }
+
+    // ✅ サーバーに送信（RailsのcontrollerにPOST）
+    await fetch("/subscriptions", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-CSRF-Token": document.querySelector("meta[name='csrf-token']").content
+      },
+      body: JSON.stringify(subscription.toJSON())
+    });
+
+    alert("通知を許可しました！");
+  });
+}
 
   // careRelationshipListModalが閉じられたときにページをリロード
   const careRelationshipListModal = document.getElementById("careRelationshipListModal");
@@ -448,22 +454,29 @@ document.addEventListener("turbo:load", () => {
 });
 
 // VAPID鍵用デコード関数
-function urlBase64ToUint8Array(base64String) {
-  const padding = "=".repeat((4 - base64String.length % 4) % 4);
-  const base64 = (base64String + padding).replace(/\-/g, "+").replace(/_/g, "/");
-  const raw = atob(base64);
-  return new Uint8Array([...raw].map(c => c.charCodeAt(0)));
-}
-
 document.addEventListener("DOMContentLoaded", () => {
   const button = document.getElementById("subscribeButton");
   if (!button) return;
 
   button.addEventListener("click", async () => {
-    const registration = await register();
+    if (!("serviceWorker" in navigator)) {
+      alert("Service Worker に対応していません。");
+      return;
+    }
+
+    const registration = await navigator.serviceWorker.register("/service-worker.js");
+    const permission = await Notification.requestPermission();
+    if (permission !== "granted") {
+      alert("通知の許可がされませんでした。");
+      return;
+    }
+
+    const publicKey = document.querySelector("meta[name='vapid-public-key']").content;
+    const convertedKey = urlBase64ToUint8Array(publicKey);
+
     const subscription = await registration.pushManager.subscribe({
       userVisibleOnly: true,
-      applicationServerKey: VAPID_PUBLIC_KEY // VAPIDの公開鍵をJS側に埋め込む必要あり
+      applicationServerKey: convertedKey
     });
 
     await fetch("/settings/subscribe", {
