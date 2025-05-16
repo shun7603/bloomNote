@@ -9,11 +9,8 @@ class RecordsController < ApplicationController
     @record = @child.records.build(record_params.merge(user_id: current_user.id))
   
     if @record.save
-      # 🔔 保育者が作成した場合のみ、親にPush通知を送る
-      if current_user.role_caregiver? && @child.user.present?
-        message = "#{current_user.nickname}さんが #{@child.name}ちゃん の記録を追加しました。"
-        PushNotificationJob.perform_now(@child.user, message)
-      end
+      # 🔔 保育者が作成した場合のみ、Push通知ジョブを実行
+      PushNotificationJob.perform_later(@record.id) if current_user.role_caregiver?
   
       flash[:notification_toast] = "記録を追加しました"
       redirect_to root_path

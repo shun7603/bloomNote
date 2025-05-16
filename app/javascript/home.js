@@ -454,3 +454,29 @@ function urlBase64ToUint8Array(base64String) {
   const raw = atob(base64);
   return new Uint8Array([...raw].map(c => c.charCodeAt(0)));
 }
+
+document.addEventListener("DOMContentLoaded", () => {
+  const button = document.getElementById("subscribeButton");
+  if (!button) return;
+
+  button.addEventListener("click", async () => {
+    const registration = await register();
+    const subscription = await registration.pushManager.subscribe({
+      userVisibleOnly: true,
+      applicationServerKey: VAPID_PUBLIC_KEY // VAPIDの公開鍵をJS側に埋め込む必要あり
+    });
+
+    await fetch("/settings/subscribe", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-CSRF-Token": document.querySelector('meta[name="csrf-token"]').content
+      },
+      body: JSON.stringify({
+        user: { subscription_token: JSON.stringify(subscription) }
+      })
+    });
+
+    alert("通知を許可しました！");
+  });
+});
