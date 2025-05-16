@@ -144,7 +144,7 @@
                     class: "btn btn-sm btn-outline-secondary me-2",
                     data: { bs_toggle: "modal", bs_target: "#editRecordModal-#{record.id}" } %>
 
-<%= button_to "削除", care_relationship_path(care_relationship),
+<%= button_to "削除", child_record_path(record.child, record),
       method: :delete,
       data: { turbo_frame: "_top", turbo_confirm: "本当に削除しますか？" },
       class: "btn btn-sm btn-outline-danger" %>
