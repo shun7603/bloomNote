@@ -1,4 +1,6 @@
 Rails.application.routes.draw do
+  get 'settings/notification'
+  get 'settings/subscribe'
   root to: 'homes#index'
 
   devise_for :users
