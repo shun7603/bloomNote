@@ -1,4 +1,7 @@
 ja:
+  time:
+    formats:
+      default: "%Y/%m/%d %H:%M"
   activerecord:
     models:
       record: "育児記録"

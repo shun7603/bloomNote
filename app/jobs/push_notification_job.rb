@@ -9,7 +9,8 @@ class PushNotificationJob < ApplicationJob
     child = record.child
     caregiver = record.user
 
-    care_relationships = CareRelationship.where(child: child, status: "in_care")
+    # statusを"ongoing"に修正！
+    care_relationships = CareRelationship.where(child: child, status: "ongoing")
 
     care_relationships.each do |cr|
       parent = cr.parent
