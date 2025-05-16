@@ -1,3 +1,5 @@
+
+
 <!-- ルーティン追加モーダル -->
 <div class="modal fade" id="routineModal" tabindex="-1" aria-labelledby="routineModalLabel" aria-hidden="true">
   <div class="modal-dialog">
@@ -62,66 +64,49 @@
         <% task_value = routine.task_before_type_cast.to_i %>
         <% task_key = Routine.tasks.key(task_value) %>
         <% task_label = Routine.task_labels[task_key] || "不明なタスク" %>
-        <li class="list-group-item d-flex justify-content-between align-items-start">
-          <div>
-            <strong><%= task_label %></strong>
-            <div class="text-muted small">🕒 <%= routine.time.strftime('%H:%M') %></div>
-            <% if routine.memo.present? %>
-              <div class="text-muted small">📝 <%= routine.memo %></div>
-            <% end %>
-          </div>
+<li class="list-group-item routine-item">
+  <div class="routine-content-wrapper d-flex justify-content-between align-items-start">
 
-  <!-- 編集・削除ボタン -->
-<% if current_user.id == routine.child.user_id %>
-  <div class="text-end">
- <%= button_to "削除", child_routine_path(routine.child_id, routine),
-        method: :delete,
-        data: { turbo_confirm: "本当に削除しますか？" },
-        class: "btn btn-sm btn-outline-danger",
-        form: { class: "d-inline" } %>
+    <!-- 左：テキスト -->
+    <div class="routine-text-area">
+      <strong class="routine-label"><%= task_label %></strong>
+      <div class="routine-time text-muted small">🕒 <%= routine.time.strftime('%H:%M') %></div>
+      <% if routine.memo.present? %>
+        <div class="routine-memo text-muted small">📝 <%= routine.memo %></div>
+      <% end %>
+    </div>
+
+    <!-- 中央：画像 -->
+<% if routine.photo.attached? %>
+  <div class="routine-image-wrapper">
+    <%= image_tag routine.photo.variant(resize_to_limit: [200, 150]),
+        class: "routine-image clickable-image",
+        data: { bs_toggle: "modal", bs_target: "#imagePreviewModal", image_url: url_for(routine.photo) } %>
   </div>
 <% end %>
 
-              <!-- 編集モーダル（個別に出力） -->
-              <div class="modal fade" id="editRoutineModal-<%= routine.id %>" tabindex="-1" aria-labelledby="editRoutineModalLabel-<%= routine.id %>" aria-hidden="true">
-                <div class="modal-dialog">
-                  <div class="modal-content">
-                    <%= form_with(model: routine, url: child_routine_path(routine.child_id, routine), method: :patch, local: true) do |f| %>
-                      <div class="modal-header">
-                        <h5 class="modal-title" id="editRoutineModalLabel-<%= routine.id %>">ルーティンを編集</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                      </div>
-                      <div class="modal-body">
-                        <% if flash[:routine_errors] && flash[:open_modal] == "editRoutineModal-#{routine.id}" %>
-                          <div class="alert alert-danger">
-                            <ul>
-                              <% flash[:routine_errors].each do |msg| %>
-                                <li><%= msg %></li>
-                              <% end %>
-                            </ul>
-                          </div>
-                        <% end %>
+    <!-- 右：編集・削除ボタン（縦並び） -->
+    <% if current_user.id == routine.child.user_id %>
+      <div class="d-flex flex-column align-items-end">
+        <div class="routine-button-wrapper mb-1">
+          <button class="btn btn-sm btn-outline-primary"
+                  data-bs-toggle="modal"
+                  data-bs-target="#editRoutineModal-<%= routine.id %>"
+                  data-open-next-modal="editRoutineModal-<%= routine.id %>">
+            編集
+          </button>
+        </div>
+        <div class="routine-button-wrapper">
+          <%= button_to "削除", child_routine_path(routine.child_id, routine),
+                method: :delete,
+                data: { turbo_confirm: "本当に削除しますか？" },
+                class: "btn btn-sm btn-outline-danger",
+                form: { class: "d-inline" } %>
+        </div>
+      </div>
+    <% end %>
 
-                        <div class="mb-3">
-                          <%= f.label :time, "時間" %>
-                          <%= f.time_field :time, class: "form-control" %>
-                        </div>
-                        <div class="mb-3">
-                          <%= f.label :task, "記録の種類" %>
-                          <%= f.select :task, Routine.task_options_for_select, {}, class: "form-select" %>
-                        </div>
-                        <div class="mb-3">
-                          <%= f.label :memo, "メモ" %>
-                          <%= f.text_area :memo, class: "form-control", rows: 2 %>
-                        </div>
-                      </div>
-                      <div class="modal-footer">
-                        <%= f.submit "更新", class: "btn btn-primary" %>
-                      </div>
-                    <% end %>
-                  </div>
-                </div>
-              </div>
+
             <% end %>
           </ul>
         <% else %>
@@ -131,6 +116,50 @@
     </div>
   </div>
 </div>
+
+<%# 編集モーダル（ループ終了後に個別に出力） %>
+<% if @current_child && @current_child.routines.any? %>
+  <% @current_child.routines.order(:time).each do |routine| %>
+    <div class="modal fade" id="editRoutineModal-<%= routine.id %>" tabindex="-1" aria-labelledby="editRoutineModalLabel-<%= routine.id %>" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <%= form_with(model: routine, url: child_routine_path(routine.child_id, routine), method: :patch, local: true) do |f| %>
+            <div class="modal-header">
+              <h5 class="modal-title" id="editRoutineModalLabel-<%= routine.id %>">ルーティンを編集</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+              <% if flash[:routine_errors] && flash[:open_modal] == "editRoutineModal-#{routine.id}" %>
+                <div class="alert alert-danger">
+                  <ul>
+                    <% flash[:routine_errors].each do |msg| %>
+                      <li><%= msg %></li>
+                    <% end %>
+                  </ul>
+                </div>
+              <% end %>
+              <div class="mb-3">
+                <%= f.label :time, "時間" %>
+                <%= f.time_field :time, class: "form-control" %>
+              </div>
+              <div class="mb-3">
+                <%= f.label :task, "記録の種類" %>
+                <%= f.select :task, Routine.task_options_for_select, {}, class: "form-select" %>
+              </div>
+              <div class="mb-3">
+                <%= f.label :memo, "メモ" %>
+                <%= f.text_area :memo, class: "form-control", rows: 2 %>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <%= f.submit "更新", class: "btn btn-primary" %>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  <% end %>
+<% end %>
 
 
 <% if flash[:routine_modal_error].present? %>
@@ -153,3 +182,15 @@
     });
   </script>
 <% end %>
+
+
+<!-- 拡大画像モーダル -->
+<div class="modal fade" id="imagePreviewModal" tabindex="-1" aria-labelledby="imagePreviewModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content">
+      <div class="modal-body text-center">
+        <img id="previewImage" src="#" alt="拡大表示" class="img-fluid modal-image">
+      </div>
+    </div>
+  </div>
+</div>

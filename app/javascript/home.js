@@ -60,35 +60,35 @@ document.addEventListener("turbo:load", () => {
     }
   }
 
-// ✅ 病院モーダル再表示（新規 or 編集）
-const hospitalModalError = document.body.dataset.hospitalModalError;
+  // ✅ 病院モーダル再表示（新規 or 編集）
+  const hospitalModalError = document.body.dataset.hospitalModalError;
 
-if (hospitalModalError) {
-  const modalId = hospitalModalError === "new"
-    ? "newHospitalModal"
-    : `editHospitalModal-${hospitalModalError}`;
-  const modalEl = document.getElementById(modalId);
+  if (hospitalModalError) {
+    const modalId = hospitalModalError === "new"
+      ? "newHospitalModal"
+      : `editHospitalModal-${hospitalModalError}`;
+    const modalEl = document.getElementById(modalId);
 
-  if (modalEl) {
-    // 既にモーダルが開いていたら閉じてから再表示
-    const opened = document.querySelector(".modal.show");
-    if (opened && opened.id !== modalId) {
-      const openedInstance = bootstrap.Modal.getInstance(opened);
-      if (openedInstance) {
-        opened.addEventListener("hidden.bs.modal", () => {
+    if (modalEl) {
+      // 既にモーダルが開いていたら閉じてから再表示
+      const opened = document.querySelector(".modal.show");
+      if (opened && opened.id !== modalId) {
+        const openedInstance = bootstrap.Modal.getInstance(opened);
+        if (openedInstance) {
+          opened.addEventListener("hidden.bs.modal", () => {
+            new bootstrap.Modal(modalEl).show();
+          }, { once: true });
+          openedInstance.hide();
+        } else {
           new bootstrap.Modal(modalEl).show();
-        }, { once: true });
-        openedInstance.hide();
+        }
       } else {
         new bootstrap.Modal(modalEl).show();
       }
-    } else {
-      new bootstrap.Modal(modalEl).show();
-    }
 
-    document.body.dataset.hospitalModalError = "";
+      document.body.dataset.hospitalModalError = "";
+    }
   }
-}
 
   // ✅ 子どもモーダル（new/edit）
   const childModalError = document.body.dataset.childModalError;
@@ -147,91 +147,86 @@ if (hospitalModalError) {
     });
   });
   // ✅ 病院新規登録モーダル（エラー付き再表示）
-const hospitalErrors = JSON.parse(document.body.dataset.hospitalErrors || "[]");
-const hospitalAttributes = JSON.parse(document.body.dataset.hospitalAttributes || "{}");
+  const hospitalErrors = JSON.parse(document.body.dataset.hospitalErrors || "[]");
+  const hospitalAttributes = JSON.parse(document.body.dataset.hospitalAttributes || "{}");
 
-if (document.body.dataset.hospitalModalError === "new") {
-  const modalEl = document.getElementById("newHospitalModal");
-  if (modalEl) {
-    const modal = new bootstrap.Modal(modalEl);
-    modal.show();
-    document.body.dataset.hospitalModalError = "";
+  if (document.body.dataset.hospitalModalError === "new") {
+    const modalEl = document.getElementById("newHospitalModal");
+    if (modalEl) {
+      const modal = new bootstrap.Modal(modalEl);
+      modal.show();
+      document.body.dataset.hospitalModalError = "";
 
-
-
-
-    // 入力値の再設定
-    const form = modalEl.querySelector("form");
-    if (form) {
-      form.querySelector("[name='hospital[name]']").value = hospitalAttributes.name || "";
-      form.querySelector("[name='hospital[phone_number]']").value = hospitalAttributes.phone_number || "";
-    }
-  }
-}
-// ✅ 育児記録モーダル（エラー付き再表示）
-const recordModalError = document.body.dataset.recordModalError;
-const recordErrors = JSON.parse(document.body.dataset.recordErrors || "[]");
-const recordAttributes = JSON.parse(document.body.dataset.recordAttributes || "{}");
-
-if (recordModalError === "true") {
-  const modalEl = document.getElementById("recordModal");
-  if (modalEl) {
-    const modal = new bootstrap.Modal(modalEl);
-    modal.show();
-    document.body.dataset.recordModalError = "";
-
-    // エラー表示
-
-
-    // 入力値の再反映
-    const form = modalEl.querySelector("form");
-    if (form) {
-      form.querySelector("[name='record[record_type]']").value = recordAttributes.record_type || "";
-      form.querySelector("[name='record[quantity]']").value = recordAttributes.quantity || "";
-      form.querySelector("[name='record[recorded_at]']").value = recordAttributes.recorded_at || "";
-      form.querySelector("[name='record[memo]']").value = recordAttributes.memo || "";
-    }
-  }
-}
-// ✅ 記録編集モーダル（エラー付き再表示）
-const editModalId = document.body.dataset.openModal;
-if (editModalId && editModalId.startsWith("editRecordModal-")) {
-  const modalEl = document.getElementById(editModalId);
-  if (modalEl) {
-    // モーダル初期化インスタンスがあれば破棄
-    const existingModal = bootstrap.Modal.getInstance(modalEl);
-    if (existingModal) existingModal.dispose();
-
-    const modal = new bootstrap.Modal(modalEl);
-    modal.show();
-
-    // 明示的に backdrop と open クラスを削除（閉じないバグ対策）
-    document.body.classList.remove("modal-open");
-    document.querySelectorAll(".modal-backdrop").forEach(el => el.remove());
-
-    document.body.dataset.openModal = ""; // 再実行防止
-
-    const recordErrors = JSON.parse(document.body.dataset.recordErrors || "[]");
-    if (recordErrors.length > 0) {
-      const alertDiv = document.createElement("div");
-      alertDiv.className = "alert alert-danger";
-      const ul = document.createElement("ul");
-      ul.classList.add("mb-0");
-      recordErrors.forEach(msg => {
-        const li = document.createElement("li");
-        li.textContent = msg;
-        ul.appendChild(li);
-      });
-      alertDiv.appendChild(ul);
-
+      // 入力値の再設定
       const form = modalEl.querySelector("form");
-      if (form) form.prepend(alertDiv);
+      if (form) {
+        form.querySelector("[name='hospital[name]']").value = hospitalAttributes.name || "";
+        form.querySelector("[name='hospital[phone_number]']").value = hospitalAttributes.phone_number || "";
+      }
     }
   }
-}
-});
+  // ✅ 育児記録モーダル（エラー付き再表示）
+  const recordModalError = document.body.dataset.recordModalError;
+  const recordErrors = JSON.parse(document.body.dataset.recordErrors || "[]");
+  const recordAttributes = JSON.parse(document.body.dataset.recordAttributes || "{}");
 
-document.addEventListener("turbo:load", () => {
+  if (recordModalError === "true") {
+    const modalEl = document.getElementById("recordModal");
+    if (modalEl) {
+      const modal = new bootstrap.Modal(modalEl);
+      modal.show();
+      document.body.dataset.recordModalError = "";
+
+      // エラー表示
+
+
+      // 入力値の再反映
+      const form = modalEl.querySelector("form");
+      if (form) {
+        form.querySelector("[name='record[record_type]']").value = recordAttributes.record_type || "";
+        form.querySelector("[name='record[quantity]']").value = recordAttributes.quantity || "";
+        form.querySelector("[name='record[recorded_at]']").value = recordAttributes.recorded_at || "";
+        form.querySelector("[name='record[memo]']").value = recordAttributes.memo || "";
+      }
+    }
+  }
+  // ✅ 記録編集モーダル（エラー付き再表示）
+  const editModalId = document.body.dataset.openModal;
+  if (editModalId && editModalId.startsWith("editRecordModal-")) {
+    const modalEl = document.getElementById(editModalId);
+    if (modalEl) {
+      // モーダル初期化インスタンスがあれば破棄
+      const existingModal = bootstrap.Modal.getInstance(modalEl);
+      if (existingModal) existingModal.dispose();
+
+      const modal = new bootstrap.Modal(modalEl);
+      modal.show();
+
+      // 明示的に backdrop と open クラスを削除（閉じないバグ対策）
+      document.body.classList.remove("modal-open");
+      document.querySelectorAll(".modal-backdrop").forEach(el => el.remove());
+
+      document.body.dataset.openModal = ""; // 再実行防止
+
+      const recordErrors = JSON.parse(document.body.dataset.recordErrors || "[]");
+      if (recordErrors.length > 0) {
+        const alertDiv = document.createElement("div");
+        alertDiv.className = "alert alert-danger";
+        const ul = document.createElement("ul");
+        ul.classList.add("mb-0");
+        recordErrors.forEach(msg => {
+          const li = document.createElement("li");
+          li.textContent = msg;
+          ul.appendChild(li);
+        });
+        alertDiv.appendChild(ul);
+
+        const form = modalEl.querySelector("form");
+        if (form) form.prepend(alertDiv);
+      }
+    }
+  }
+
   const editChildModal = document.getElementById("editChildModal");
   if (editChildModal) {
     editChildModal.addEventListener("hidden.bs.modal", () => {
@@ -239,9 +234,7 @@ document.addEventListener("turbo:load", () => {
       if (errorBox) errorBox.remove();
     });
   }
-});
 
-document.addEventListener("turbo:load", () => {
   const newChildModal = document.getElementById("childModal");
   if (newChildModal) {
     newChildModal.addEventListener("hidden.bs.modal", () => {
@@ -250,18 +243,16 @@ document.addEventListener("turbo:load", () => {
     });
   }
 
-  const editChildModal = document.getElementById("editChildModal");
-  if (editChildModal) {
-    editChildModal.addEventListener("hidden.bs.modal", () => {
-      const errorBox = document.getElementById("edit-child-error");
-      if (errorBox) errorBox.remove();
-    });
+  // モーダルの余計な backdrop を除去する関数
+  function cleanupBackdrop() {
+    document.querySelectorAll(".modal-backdrop").forEach(el => el.remove());
+    document.body.classList.remove("modal-open");
   }
-});
 
-document.addEventListener("turbo:load", () => {
   // モーダルを安全に連続表示するための関数
   function openModalSafely(targetId) {
+    cleanupBackdrop(); // ← 余計な backdrop を除去
+
     const openedModal = document.querySelector(".modal.show");
     const targetModal = document.getElementById(targetId);
     if (!targetModal) return;
@@ -269,13 +260,11 @@ document.addEventListener("turbo:load", () => {
     if (openedModal) {
       const openedInstance = bootstrap.Modal.getInstance(openedModal);
       openedModal.addEventListener("hidden.bs.modal", () => {
-        const newModal = new bootstrap.Modal(targetModal);
-        newModal.show();
+        new bootstrap.Modal(targetModal).show();
       }, { once: true });
       openedInstance.hide();
     } else {
-      const modal = new bootstrap.Modal(targetModal);
-      modal.show();
+      new bootstrap.Modal(targetModal).show();
     }
   }
 
@@ -295,18 +284,14 @@ document.addEventListener("turbo:load", () => {
       openModalSafely(modalId);
     });
   });
-});
 
-document.addEventListener("turbo:load", () => {
   // 緊急連絡先モーダルが閉じられたら、エラーメッセージを削除する
   document.querySelectorAll("[id^='editHospitalModal-'], #newHospitalModal").forEach(modalEl => {
     modalEl.addEventListener("hidden.bs.modal", () => {
       modalEl.querySelectorAll(".alert").forEach(alert => alert.remove());
     });
   });
-});
 
-document.addEventListener("turbo:load", () => {
   if ("serviceWorker" in navigator && "PushManager" in window) {
     navigator.serviceWorker.ready.then(async (registration) => {
       const permission = await Notification.requestPermission();
@@ -329,6 +314,135 @@ document.addEventListener("turbo:load", () => {
         },
         body: JSON.stringify(subscription.toJSON())
       });
+    });
+  }
+
+  // careRelationshipListModalが閉じられたときにページをリロード
+  const careRelationshipListModal = document.getElementById("careRelationshipListModal");
+  if (careRelationshipListModal) {
+    careRelationshipListModal.addEventListener("hidden.bs.modal", () => {
+      window.location.reload();
+    });
+  }
+
+  console.log("✅ Turbo再バインド中...");
+
+  document.querySelectorAll(".clickable-image").forEach((img) => {
+    img.addEventListener("click", () => {
+      const modal = document.getElementById("imagePreviewModal");
+      const preview = document.getElementById("previewImage");
+      if (!modal || !preview) return;
+
+      preview.src = img.dataset.imageUrl;
+
+      const opened = document.querySelector(".modal.show");
+      if (opened) {
+        const instance = bootstrap.Modal.getInstance(opened);
+        opened.addEventListener("hidden.bs.modal", () => {
+          new bootstrap.Modal(modal).show();
+        }, { once: true });
+        instance.hide();
+      } else {
+        new bootstrap.Modal(modal).show();
+      }
+    });
+  });
+
+  // 画像プレビューモーダルが閉じられたとき、routineDetailModalが開いていなければ再度開く
+  const imagePreviewModal = document.getElementById("imagePreviewModal");
+  const routineDetailModal = document.getElementById("routineDetailModal");
+
+  if (imagePreviewModal && routineDetailModal) {
+    imagePreviewModal.addEventListener("hidden.bs.modal", () => {
+      const isRoutineModalOpen = routineDetailModal.classList.contains("show");
+      if (!isRoutineModalOpen) {
+        const openedModal = document.querySelector(".modal.show");
+        if (openedModal) {
+          const openedInstance = bootstrap.Modal.getInstance(openedModal);
+          openedModal.addEventListener("hidden.bs.modal", () => {
+            bootstrap.Modal.getOrCreateInstance(routineDetailModal).show();
+          }, { once: true });
+          openedInstance.hide();
+        } else {
+          bootstrap.Modal.getOrCreateInstance(routineDetailModal).show();
+        }
+      }
+    });
+  }
+
+  // ✅ ルーティン編集モーダル：開くと routineDetailModal を閉じる
+  document.querySelectorAll("[data-bs-target^='#editRoutineModal-']").forEach(button => {
+    button.addEventListener("click", (e) => {
+      const targetId = button.getAttribute("data-bs-target").replace("#", "");
+      const targetModal = document.getElementById(targetId);
+      const routineDetailModal = document.getElementById("routineDetailModal");
+
+      if (!targetModal) return;
+
+      const openedModal = document.querySelector(".modal.show");
+      const showTargetModal = () => {
+        const modal = new bootstrap.Modal(targetModal);
+        modal.show();
+      };
+
+      if (openedModal && openedModal.id !== targetId) {
+        const openedInstance = bootstrap.Modal.getInstance(openedModal);
+        if (openedInstance) {
+          openedModal.addEventListener("hidden.bs.modal", () => {
+            showTargetModal();
+          }, { once: true });
+          openedInstance.hide();
+        } else {
+          showTargetModal();
+        }
+      } else {
+        showTargetModal();
+      }
+    });
+  });
+
+  // ✅ ルーティン編集モーダル：閉じたら routineDetailModal を再表示
+  document.querySelectorAll("[id^='editRoutineModal-']").forEach(modalEl => {
+    modalEl.addEventListener("hidden.bs.modal", () => {
+      const routineDetailModal = document.getElementById("routineDetailModal");
+      if (!routineDetailModal.classList.contains("show")) {
+        bootstrap.Modal.getOrCreateInstance(routineDetailModal).show();
+      }
+    });
+  });
+
+  // ✅ ルーティン編集フォーム送信後、成功したら routineDetailModal を再表示
+  document.querySelectorAll("[id^='editRoutineModal-'] form").forEach(form => {
+    form.addEventListener("turbo:submit-end", (event) => {
+      if (event.detail.success) {
+        const routineDetailModal = document.getElementById("routineDetailModal");
+        if (!routineDetailModal) return;
+
+        const openedModal = document.querySelector(".modal.show");
+        if (openedModal) {
+          const openedInstance = bootstrap.Modal.getInstance(openedModal);
+          openedModal.addEventListener("hidden.bs.modal", () => {
+            bootstrap.Modal.getOrCreateInstance(routineDetailModal).show();
+          }, { once: true });
+          openedInstance.hide();
+        } else {
+          bootstrap.Modal.getOrCreateInstance(routineDetailModal).show();
+        }
+      }
+    });
+  });
+
+  // ✅ routineDetailModal を閉じたとき、他にモーダルが残っていたら backdrop を正しく整理
+  const routineDetailModalEl = document.getElementById("routineDetailModal");
+  if (routineDetailModalEl) {
+    routineDetailModalEl.addEventListener("hidden.bs.modal", () => {
+      // まだ開いているモーダルがあれば backdrop を残す、それ以外は削除
+      const stillOpen = document.querySelector(".modal.show");
+      if (!stillOpen) {
+        // 明示的に backdrop を削除（暗転バグ対策）
+        document.querySelectorAll(".modal-backdrop").forEach(el => el.remove());
+        document.body.classList.remove("modal-open");
+      }
     });
   }
 });

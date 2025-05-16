@@ -392,3 +392,58 @@ h4, h5 {
   }
 }
 
+.routine-image-container {
+  margin: 0.5rem 0;
+}
+
+.routine-item {
+  padding: 1rem;
+}
+
+.routine-content-wrapper {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+}
+
+.routine-text-area {
+  flex-grow: 1;
+}
+
+.routine-label {
+  display: block;
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+}
+
+.routine-time,
+.routine-memo {
+  font-size: 0.875rem;
+  color: #666;
+}
+
+.routine-image-center {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+}
+
+.routine-image {
+  max-height: 90px;
+  width: auto;
+  display: block;
+  border-radius: 8px;
+}
+
+.routine-button-wrapper {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+}
+
+.modal-image {
+  max-width: 100%;
+  max-height: 80vh;
+  border-radius: 12px;
+}

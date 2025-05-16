@@ -22,7 +22,8 @@ class User < ApplicationRecord
   # 保育者として紐づくケアリレーションシップ（必要に応じて参照用に残す）
   has_many :care_relationships_as_caregiver,
            class_name: 'CareRelationship',
-           foreign_key: 'caregiver_id'
+           foreign_key: 'caregiver_id',
+           dependent: :destroy
 
   # enum（ユーザー権限）
   enum role: { role_parent: 0, role_caregiver: 1 }
