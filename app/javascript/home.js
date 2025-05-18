@@ -391,36 +391,27 @@ document.addEventListener("turbo:load", () => {
     });
   });
 
-  // ✅ ルーティン編集モーダル：閉じたら routineDetailModal を再表示
-  document.querySelectorAll("[id^='editRoutineModal-']").forEach(modalEl => {
-    modalEl.addEventListener("hidden.bs.modal", () => {
-      const routineDetailModal = document.getElementById("routineDetailModal");
-      if (!routineDetailModal.classList.contains("show")) {
-        bootstrap.Modal.getOrCreateInstance(routineDetailModal).show();
-      }
-    });
+// 編集フォーム送信成功時のみ自動で閉じる（オプション）
+document.querySelectorAll("[id^='editRoutineModal-'] form").forEach(form => {
+  form.addEventListener("turbo:submit-end", (event) => {
+    if (event.detail.success) {
+      const modalEl = form.closest(".modal");
+      if (!modalEl) return;
+      const modalInstance = bootstrap.Modal.getInstance(modalEl);
+      modalInstance.hide();
+    }
   });
+});
 
-  // ✅ ルーティン編集フォーム送信後、成功したら routineDetailModal を再表示
-  document.querySelectorAll("[id^='editRoutineModal-'] form").forEach(form => {
-    form.addEventListener("turbo:submit-end", (event) => {
-      if (event.detail.success) {
-        const routineDetailModal = document.getElementById("routineDetailModal");
-        if (!routineDetailModal) return;
-
-        const openedModal = document.querySelector(".modal.show");
-        if (openedModal) {
-          const openedInstance = bootstrap.Modal.getInstance(openedModal);
-          openedModal.addEventListener("hidden.bs.modal", () => {
-            bootstrap.Modal.getOrCreateInstance(routineDetailModal).show();
-          }, { once: true });
-          openedInstance.hide();
-        } else {
-          bootstrap.Modal.getOrCreateInstance(routineDetailModal).show();
-        }
-      }
-    });
+// 閉じたときは必ず routineDetailModal を開く（1本だけで十分）
+document.querySelectorAll("[id^='editRoutineModal-']").forEach(modalEl => {
+  modalEl.addEventListener("hidden.bs.modal", () => {
+    const routineDetailModal = document.getElementById("routineDetailModal");
+    if (!routineDetailModal.classList.contains("show")) {
+      bootstrap.Modal.getOrCreateInstance(routineDetailModal).show();
+    }
   });
+});
 
   // ✅ routineDetailModal を閉じたとき、他にモーダルが残っていたら backdrop を正しく整理
   const routineDetailModalEl = document.getElementById("routineDetailModal");
