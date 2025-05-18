@@ -21,10 +21,6 @@ class Record < ApplicationRecord
 
   enum category: {
     nutrition: "栄養",
-    life: "生活",
-    health: "健康",
-    medical: "医療",
-    schedule: "スケジュール",
     concern_note: "気になること"
   }
 

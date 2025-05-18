@@ -12,20 +12,20 @@
       <div>
         <strong>現在：</strong>
         <% if care_relationship.ongoing? %>
-          <span class="badge bg-success">預け中</span>
+          <span class="badge bg-success">共有中</span>
         <% else %>
-          <span class="badge bg-secondary">預け終了</span>
+          <span class="badge bg-secondary">共有終了</span>
         <% end %>
       </div>
 
       <div class="d-flex gap-2">
         <% if care_relationship.ongoing? %>
-          <%= button_to "預け終了", care_relationship_path(care_relationship),
+          <%= button_to "共有終了", care_relationship_path(care_relationship),
                 method: :patch,
                 data: { turbo_frame: "care_relationship_#{care_relationship.id}" },
                 class: "btn btn-sm btn-outline-secondary" %>
         <% else %>
-          <%= button_to "預ける", care_relationship_path(care_relationship),
+          <%= button_to "共有する", care_relationship_path(care_relationship),
                 method: :patch,
                 data: { turbo_frame: "care_relationship_#{care_relationship.id}" },
                 class: "btn btn-sm btn-outline-success" %>
