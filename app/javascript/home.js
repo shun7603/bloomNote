@@ -1,5 +1,19 @@
 console.log("✅ home.js 読み込まれました");
 
+
+function urlBase64ToUint8Array(base64String) {
+  const padding = "=".repeat((4 - base64String.length % 4) % 4);
+  const base64 = (base64String + padding)
+    .replace(/-/g, "+")
+    .replace(/_/g, "/");
+  const rawData = window.atob(base64);
+  const outputArray = new Uint8Array(rawData.length);
+  for (let i = 0; i < rawData.length; ++i) {
+    outputArray[i] = rawData.charCodeAt(i);
+  }
+  return outputArray;
+}
+
 // ルーティン表示切替
 window.showRoutine = function(childId, childName) {
   document.querySelectorAll(".child-routine-section").forEach(el => el.style.display = "none");
@@ -292,36 +306,6 @@ document.addEventListener("turbo:load", () => {
     });
   });
 
-if ("serviceWorker" in navigator && "PushManager" in window) {
-  navigator.serviceWorker.ready.then(async (registration) => {
-    const permission = await Notification.requestPermission();
-    if (permission !== "granted") return;
-
-    // ✅ HTML内の<meta>からVAPID公開鍵を取得
-    const publicKey = document.querySelector("meta[name='vapid-public-key']").content;
-
-    // ✅ VAPID鍵をUint8Arrayに変換（WebPush仕様）
-    const convertedKey = urlBase64ToUint8Array(publicKey);
-
-    // ✅ Push通知を購読（ブラウザに通知を許可）
-    const subscription = await registration.pushManager.subscribe({
-      userVisibleOnly: true,
-      applicationServerKey: convertedKey
-    });
-
-    // ✅ サーバーに送信（RailsのcontrollerにPOST）
-    await fetch("/subscriptions", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "X-CSRF-Token": document.querySelector("meta[name='csrf-token']").content
-      },
-      body: JSON.stringify(subscription.toJSON())
-    });
-
-    alert("通知を許可しました！");
-  });
-}
 
   // careRelationshipListModalが閉じられたときにページをリロード
   const careRelationshipListModal = document.getElementById("careRelationshipListModal");
