@@ -2,26 +2,37 @@
 class PushNotificationJob < ApplicationJob
   queue_as :default
 
-  def perform(user, message, title = "BloomNote")
-    vapid_keys = {
-      public_key: ENV['VAPID_PUBLIC_KEY'],
-      private_key: ENV['VAPID_PRIVATE_KEY']
-    }
+  def perform(record_id)
+    record = Record.find_by(id: record_id)
+    return unless record
 
-    user.subscriptions.find_each do |subscription|
+    child = record.child
+    caregiver = record.user
+
+    # statusを"ongoing"に修正！
+    care_relationships = CareRelationship.where(child: child, status: "ongoing")
+
+    care_relationships.each do |cr|
+      parent = cr.parent
+      next if parent.id == caregiver.id
+      next if parent.subscription_token.blank?
+
+      subscription = JSON.parse(parent.subscription_token) rescue nil
+      next unless subscription
+
+      message = "#{child.name}に#{I18n.t("enums.record.record_type.#{record.record_type}")}の記録をつけました！！（by #{caregiver.nickname}）"
+
       Webpush.payload_send(
-        message: JSON.generate({ title: title, body: message }),
-        endpoint: subscription.endpoint,
-        p256dh: subscription.p256dh_key,
-        auth: subscription.auth_key,
+        message: JSON.generate(title: "BloomNote", body: message),
+        endpoint: subscription["endpoint"],
+        p256dh: subscription["keys"]["p256dh"],
+        auth: subscription["keys"]["auth"],
         vapid: {
-          subject: "mailto:info@bloomnote.jp",
-          public_key: vapid_keys[:public_key],
-          private_key: vapid_keys[:private_key]
+          subject: "mailto:your-email@example.com",
+          public_key: ENV["VAPID_PUBLIC_KEY"],
+          private_key: ENV["VAPID_PRIVATE_KEY"]
         }
       )
-    rescue StandardError => e
-      Rails.logger.error "🔴 Push通知失敗: #{e.message}"
     end
   end
 end

@@ -1,8 +1,12 @@
 Rails.application.routes.draw do
+  get 'settings/notification'
+  get 'settings/subscribe'
   root to: 'homes#index'
 
   devise_for :users
-
+  # 通知設定ページ用ルート
+  get "/settings/notification", to: "settings#notification"
+  post "/settings/subscribe", to: "settings#subscribe"
   get 'up' => 'rails/health#show', as: :rails_health_check
 
   # ✅ 子ども選択用ルート（ドロップダウンからの切替に使用）

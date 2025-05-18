@@ -1,8 +1,8 @@
 FactoryBot.define do
   factory :subscription do
-    user { nil }
-    endpoint { "MyString" }
-    p256dh_key { "MyString" }
-    auth_key { "MyString" }
+    association :user
+    endpoint { "https://fcm.googleapis.com/fake-endpoint" }
+    p256dh_key { Base64.encode64("dummy_p256dh") }
+    auth_key { Base64.encode64("dummy_auth") }
   end
 end

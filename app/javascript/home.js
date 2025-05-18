@@ -1,5 +1,19 @@
 console.log("✅ home.js 読み込まれました");
 
+
+function urlBase64ToUint8Array(base64String) {
+  const padding = "=".repeat((4 - base64String.length % 4) % 4);
+  const base64 = (base64String + padding)
+    .replace(/-/g, "+")
+    .replace(/_/g, "/");
+  const rawData = window.atob(base64);
+  const outputArray = new Uint8Array(rawData.length);
+  for (let i = 0; i < rawData.length; ++i) {
+    outputArray[i] = rawData.charCodeAt(i);
+  }
+  return outputArray;
+}
+
 // ルーティン表示切替
 window.showRoutine = function(childId, childName) {
   document.querySelectorAll(".child-routine-section").forEach(el => el.style.display = "none");
@@ -292,30 +306,6 @@ document.addEventListener("turbo:load", () => {
     });
   });
 
-  if ("serviceWorker" in navigator && "PushManager" in window) {
-    navigator.serviceWorker.ready.then(async (registration) => {
-      const permission = await Notification.requestPermission();
-      if (permission !== "granted") return;
-
-      const publicKey = "<%= ENV['VAPID_PUBLIC_KEY'] %>"; // 後ほどERBで埋め込む
-      const convertedKey = urlBase64ToUint8Array(publicKey);
-
-      const subscription = await registration.pushManager.subscribe({
-        userVisibleOnly: true,
-        applicationServerKey: convertedKey
-      });
-
-      // サーバーに送信（すでに登録されている場合は無視）
-      await fetch("/subscriptions", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "X-CSRF-Token": document.querySelector("meta[name='csrf-token']").content
-        },
-        body: JSON.stringify(subscription.toJSON())
-      });
-    });
-  }
 
   // careRelationshipListModalが閉じられたときにページをリロード
   const careRelationshipListModal = document.getElementById("careRelationshipListModal");
@@ -401,36 +391,27 @@ document.addEventListener("turbo:load", () => {
     });
   });
 
-  // ✅ ルーティン編集モーダル：閉じたら routineDetailModal を再表示
-  document.querySelectorAll("[id^='editRoutineModal-']").forEach(modalEl => {
-    modalEl.addEventListener("hidden.bs.modal", () => {
-      const routineDetailModal = document.getElementById("routineDetailModal");
-      if (!routineDetailModal.classList.contains("show")) {
-        bootstrap.Modal.getOrCreateInstance(routineDetailModal).show();
-      }
-    });
+// 編集フォーム送信成功時のみ自動で閉じる（オプション）
+document.querySelectorAll("[id^='editRoutineModal-'] form").forEach(form => {
+  form.addEventListener("turbo:submit-end", (event) => {
+    if (event.detail.success) {
+      const modalEl = form.closest(".modal");
+      if (!modalEl) return;
+      const modalInstance = bootstrap.Modal.getInstance(modalEl);
+      modalInstance.hide();
+    }
   });
+});
 
-  // ✅ ルーティン編集フォーム送信後、成功したら routineDetailModal を再表示
-  document.querySelectorAll("[id^='editRoutineModal-'] form").forEach(form => {
-    form.addEventListener("turbo:submit-end", (event) => {
-      if (event.detail.success) {
-        const routineDetailModal = document.getElementById("routineDetailModal");
-        if (!routineDetailModal) return;
-
-        const openedModal = document.querySelector(".modal.show");
-        if (openedModal) {
-          const openedInstance = bootstrap.Modal.getInstance(openedModal);
-          openedModal.addEventListener("hidden.bs.modal", () => {
-            bootstrap.Modal.getOrCreateInstance(routineDetailModal).show();
-          }, { once: true });
-          openedInstance.hide();
-        } else {
-          bootstrap.Modal.getOrCreateInstance(routineDetailModal).show();
-        }
-      }
-    });
+// 閉じたときは必ず routineDetailModal を開く（1本だけで十分）
+document.querySelectorAll("[id^='editRoutineModal-']").forEach(modalEl => {
+  modalEl.addEventListener("hidden.bs.modal", () => {
+    const routineDetailModal = document.getElementById("routineDetailModal");
+    if (!routineDetailModal.classList.contains("show")) {
+      bootstrap.Modal.getOrCreateInstance(routineDetailModal).show();
+    }
   });
+});
 
   // ✅ routineDetailModal を閉じたとき、他にモーダルが残っていたら backdrop を正しく整理
   const routineDetailModalEl = document.getElementById("routineDetailModal");
@@ -448,9 +429,52 @@ document.addEventListener("turbo:load", () => {
 });
 
 // VAPID鍵用デコード関数
-function urlBase64ToUint8Array(base64String) {
-  const padding = "=".repeat((4 - base64String.length % 4) % 4);
-  const base64 = (base64String + padding).replace(/\-/g, "+").replace(/_/g, "/");
-  const raw = atob(base64);
-  return new Uint8Array([...raw].map(c => c.charCodeAt(0)));
+document.addEventListener("DOMContentLoaded", () => {
+  const button = document.getElementById("subscribeButton");
+  if (!button) return;
+
+  button.addEventListener("click", async () => {
+    if (!("serviceWorker" in navigator)) {
+      alert("Service Worker に対応していません。");
+      return;
+    }
+
+    const registration = await navigator.serviceWorker.register("/service-worker.js");
+    const permission = await Notification.requestPermission();
+    if (permission !== "granted") {
+      alert("通知の許可がされませんでした。");
+      return;
+    }
+
+    const publicKey = document.querySelector("meta[name='vapid-public-key']").content;
+    const convertedKey = urlBase64ToUint8Array(publicKey);
+
+    const subscription = await registration.pushManager.subscribe({
+      userVisibleOnly: true,
+      applicationServerKey: convertedKey
+    });
+
+    await fetch("/settings/subscribe", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-CSRF-Token": document.querySelector('meta[name="csrf-token"]').content
+      },
+      body: JSON.stringify({
+        user: { subscription_token: JSON.stringify(subscription) }
+      })
+    });
+
+    alert("通知を許可しました！");
+  });
+});
+
+
+// これは app/javascript/home.js などアプリ本体用
+export async function register() {
+  if ("serviceWorker" in navigator) {
+    return await navigator.serviceWorker.register("/service-worker.js");
+  } else {
+    alert("Service Worker が未対応のブラウザです。");
+  }
 }

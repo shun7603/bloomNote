@@ -1,4 +1,7 @@
 ja:
+  time:
+    formats:
+      default: "%Y/%m/%d %H:%M"
   activerecord:
     models:
       record: "育児記録"
@@ -46,19 +49,15 @@ ja:
         nap: "昼寝"
         toilet: "排泄"
         temperature: "体温"
-        medicine: "服薬"
+        medicine: "薬"
         hospital: "通院・予防接種"
-        bath: "お風呂"
+        bath: "おふろ"
         outing: "外出"
         event: "行事"
         concern: "気になる様子"
 
       category:
-        nutrition: "栄養"
-        life: "生活"
-        health: "健康"
-        medical: "医療"
-        schedule: "スケジュール"
+        nutrition: "正常"
         concern_note: "気になること"
 
     care_relationship:

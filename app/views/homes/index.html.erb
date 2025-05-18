@@ -7,6 +7,7 @@
 
 <!-- ヘッダー -->
 <header class="app-header d-flex justify-content-between align-items-center">
+  
   <!-- 今やるべきタスク表示 -->
   <div class="header-center text-center">
     <div class="task-info">
@@ -41,7 +42,7 @@
           <% @children.each do |child| %>
             <li>
               <%= button_to select_child_path(child), method: :patch, form: { class: "d-inline" }, class: "dropdown-item" do %>
-                <%= child.name %><%= "（預かり中）" if child.shared_with?(current_user) %>
+                <%= child.name %><%= "（共有中）" if child.shared_with?(current_user) %>
               <% end %>
             </li>
           <% end %>
@@ -71,7 +72,7 @@
     <h2 class="fs-4 fw-bold">
       <%= @current_child.name %>の育児記録
       <% if @is_shared_child %>
-        <span class="fs-6 text-muted">（預かり中）</span>
+        <span class="fs-6 text-muted">（共有中）</span>
       <% end %>
     </h2>
   <% else %>
@@ -499,18 +500,3 @@
 
 
 
-
-
-<div class="modal fade" id="testModal" tabindex="-1" aria-labelledby="testModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="testModalLabel">テストモーダル</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-      </div>
-      <div class="modal-body">
-        これはテストです。
-      </div>
-    </div>
-  </div>
-</div>
