@@ -21,7 +21,7 @@
           <%= form_with(model: [@current_child, @hospital], url: child_hospitals_path(@current_child), local: true) do |f| %>
             <%= f.hidden_field :child_id, value: @current_child.id %>
             <div class="mb-3">
-              <%= f.label :name, "病院名" %>
+              <%= f.label :name, "緊急連絡先" %>
               <%= f.text_field :name, class: "form-control" %>
             </div>
             <div class="mb-3">
