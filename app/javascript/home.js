@@ -477,3 +477,13 @@ document.addEventListener("DOMContentLoaded", () => {
     alert("通知を許可しました！");
   });
 });
+
+
+// これは app/javascript/home.js などアプリ本体用
+export async function register() {
+  if ("serviceWorker" in navigator) {
+    return await navigator.serviceWorker.register("/service-worker.js");
+  } else {
+    alert("Service Worker が未対応のブラウザです。");
+  }
+}
