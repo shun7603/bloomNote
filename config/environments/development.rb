@@ -73,4 +73,7 @@ Rails.application.configure do
 
   # Raise error when a before_action's only/except options reference missing actions
   config.action_controller.raise_on_missing_callback_actions = true
+  # ジョブを即時にターミナル内で実行（putsが即反映）
+  config.active_job.queue_adapter = :inline
 end
+

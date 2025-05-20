@@ -5,6 +5,7 @@ class PushNotificationJob < ApplicationJob
     record = Record.find_by(id: record_id)
     unless record
       Rails.logger.warn "❌ PushNotificationJob: record_id=#{record_id} が見つかりません"
+      puts "❌ PushNotificationJob: record_id=#{record_id} が見つかりません" # ターミナルにも
       return
     end
 
@@ -28,6 +29,7 @@ class PushNotificationJob < ApplicationJob
       message = "#{child.name}に#{I18n.t("enums.record.record_type.#{record.record_type}")}の記録をつけました！！（by #{caregiver.nickname}）"
 
       Rails.logger.info "📢 PushNotificationJob: parent_id=#{parent.id} (#{parent.nickname}) へ通知送信を開始"
+      puts "📢 PushNotificationJob: parent_id=#{parent.id} (#{parent.nickname}) へ通知送信を開始" # ターミナルにも
 
       begin
         Webpush.payload_send(
@@ -42,8 +44,10 @@ class PushNotificationJob < ApplicationJob
           }
         )
         Rails.logger.info "✅ PushNotificationJob: parent_id=#{parent.id} (#{parent.nickname}) へ通知送信成功"
+        puts "✅ PushNotificationJob: parent_id=#{parent.id} (#{parent.nickname}) へ通知送信成功" # ターミナルにも
       rescue StandardError => e
         Rails.logger.error "❌ PushNotificationJob: parent_id=#{parent.id} への通知送信失敗 - #{e.class}: #{e.message}"
+        puts "❌ PushNotificationJob: parent_id=#{parent.id} への通知送信失敗 - #{e.class}: #{e.message}" # ターミナルにも
       end
     end
   end
