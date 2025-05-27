@@ -51,6 +51,6 @@ test:
 production:
   <<: *default
   adapter:  postgresql
-  database: Bloom_note_production
-  username: Bloom_note
+  database: bloom_note_production
+  username: bloom_note
   password: <%= ENV["BLOOM_NOTE_DATABASE_PASSWORD"] %>
